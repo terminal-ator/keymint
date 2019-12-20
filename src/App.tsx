@@ -11,6 +11,7 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import STMT from "./pages/stmt";
 import menu from "./pages/menu";
 import Bank from "./pages/bank";
+import SalesImportPage from "./pages/sales";
 
 /* eslint-disable no-underscore-dangle */
 const store = createStore(
@@ -26,6 +27,7 @@ const App: React.FC = () => {
         <Route path="/menu" component={menu} />
         <Route path="/stmt/:id" component={STMT} />
         <Route path="/banks" component={Bank} />
+        <Route path="/sales" component={SalesImportPage} />
       </Router>
     </Provider>
   );
