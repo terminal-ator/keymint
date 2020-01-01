@@ -1,0 +1,14 @@
+.receipt-form {
+  padding: 2px;
+}
+
+.receipt-form > input {
+  padding: 5px 10px;
+}
+
+.receipt-form > button {
+  padding: 5px 10px;
+
+  outline: 1px solid black;
+  border: none;
+}
