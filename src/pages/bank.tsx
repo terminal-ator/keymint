@@ -47,7 +47,7 @@ const BankPage = (props: Props) => {
   const menuItems = normalize<MenuItem>(MenuRoutes);
   const renderItem = (arg: RenderItemProps<Bank>) => {
     return (
-      <SELTR selected={arg.isHighlighted}>
+      <SELTR>
         <td>{arg.item.name}</td>
       </SELTR>
     );

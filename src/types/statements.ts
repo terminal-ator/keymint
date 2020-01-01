@@ -20,11 +20,4 @@ export interface Statement {
 
 export interface StatementLiProps {
   statement: Statement;
-  master?: Master;
-  setMaster?(statementID: number, masterID: number): void;
-  inpRef?: MutableRefObject<any>;
-  toggleEnter?(id: number): void;
-  className?: string;
-  rowHeight?: number;
-  isHighlighted: boolean;
 }

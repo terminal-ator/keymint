@@ -20,6 +20,11 @@ const MenuRoutes = [
     id: 2,
     name: "Import Sales",
     route: "sales"
+  },
+  {
+    id: 3,
+    name: "Receipts",
+    route: "receipt"
   }
 ];
 
@@ -28,7 +33,7 @@ export default () => {
   const menuItems = normalize<MenuItem>(MenuRoutes);
   const renderItem = (arg: RenderItemProps<MenuItem>) => {
     return (
-      <SELTR selected={arg.isHighlighted}>
+      <SELTR>
         <td>{arg.item.name}</td>
       </SELTR>
     );

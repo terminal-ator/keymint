@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { AppState } from "../reducers";
 import { connect, ConnectedProps } from "react-redux";
 import { RouteComponentProps, useParams, useHistory } from "react-router";
 import MasterList from "../components/mstrlist";
 import KeyList from "../components/keylist";
-import { NormalizedCache, normalize, RenderItemProps } from "../types/generic";
+import {
+  NormalizedCache,
+  normalize,
+  RenderItemProps,
+  DeNormalize
+} from "../types/generic";
 import { Statement } from "../types/statements";
 import { getBankWiseStatements, postStatementMaster } from "../api";
 import StatementTR from "../components/sttmntTR";
@@ -46,6 +51,7 @@ type Props = PropsFromRedux & RouteComponentProps;
 const STMT = (props: Props) => {
   const [cursor, _] = useState(0);
   const [statements, setStatements] = useState<NormalizedCache<Statement>>();
+  const [filtered, setFiltered] = useState<NormalizedCache<Statement>>();
   const [selected, setSelected] = useState<number>();
 
   let { id } = useParams();
@@ -56,6 +62,7 @@ const STMT = (props: Props) => {
     if (id) {
       const req = await getBankWiseStatements(parseInt(id));
       setStatements(normalize<Statement>(req.data.statements));
+      setFiltered(normalize<Statement>(req.data.statements));
     }
   };
   useEffect(() => {
@@ -65,10 +72,21 @@ const STMT = (props: Props) => {
   const goBack = () => {
     history.goBack();
   };
+  const handleFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.checked) {
+      fetchStatements();
+    } else {
+      if (statements) {
+        const denormed = DeNormalize<Statement>(statements);
+        const filtered = denormed.filter(stat => !stat.cust_id.Valid);
+        setFiltered(normalize<Statement>(filtered));
+      }
+    }
+  };
 
   const handleStmtSelect = (cursor: number) => {
-    if (statements) {
-      const stat = statements.normalized[statements.all[cursor]];
+    if (filtered) {
+      const stat = filtered.normalized[filtered.all[cursor]];
       setSelected(stat.id);
       setDialog(true);
     }
@@ -76,8 +94,9 @@ const STMT = (props: Props) => {
   const handleMasterChange = async (masterID: number) => {
     // console.log("Changing master to:", masterID);
     // console.log()
-    if (statements && selected && props.masters) {
-      let toStatement = statements.normalized[selected];
+    if (filtered && statements && selected && props.masters) {
+      let toStatement = filtered.normalized[selected];
+      console.log({ toStatement });
       toStatement.cust_id = { Valid: true, Int64: masterID };
       toStatement.master = props.masters.normalized[masterID];
 
@@ -85,6 +104,16 @@ const STMT = (props: Props) => {
         all: statements.all,
         normalized: { ...statements.normalized, [toStatement.id]: toStatement }
       };
+
+      let filteredStatement: NormalizedCache<Statement> = {
+        all: filtered.all,
+        normalized: { ...filtered.normalized, [toStatement.id]: toStatement }
+      };
+      console.log("Showing sending packet: ", {
+        cust_id: masterID,
+        statement_id: selected,
+        company_id: props.cmpyID
+      });
       await postStatementMaster({
         cust_id: masterID,
         statement_id: selected,
@@ -92,6 +121,7 @@ const STMT = (props: Props) => {
       });
 
       setStatements(newStatements);
+      setFiltered(filteredStatement);
 
       setDialog(false);
     }
@@ -103,16 +133,26 @@ const STMT = (props: Props) => {
         <StatementTR
           key={arg.item.id.toString()}
           statement={statements.normalized[arg.item.id]}
-          isHighlighted={arg.isHighlighted}
-          rowHeight={arg.rowHeight}
         />
       );
     }
   };
   return (
     <div>
-      <h1>Statements</h1>
-      {statements ? (
+      <div
+        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+      >
+        <h1>Statements</h1>
+        <label>
+          <input
+            onChange={handleFilter}
+            type="checkbox"
+            placeholder="Show outstandings"
+          />
+          Show Outstandings
+        </label>
+      </div>
+      {filtered ? (
         <KeyList
           key={"stats"}
           columns={[
@@ -127,9 +167,9 @@ const STMT = (props: Props) => {
           ]}
           cursor={cursor}
           maxHeight={700}
-          rowHeight={40}
-          numberOfRows={14}
-          data={statements}
+          rowHeight={30}
+          numberOfRows={10}
+          data={filtered}
           renderItem={renderItem}
           handleEscape={goBack}
           handleEnter={handleStmtSelect}

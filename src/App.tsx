@@ -12,6 +12,7 @@ import STMT from "./pages/stmt";
 import menu from "./pages/menu";
 import Bank from "./pages/bank";
 import SalesImportPage from "./pages/sales";
+import receipt from "./pages/receipt";
 
 /* eslint-disable no-underscore-dangle */
 const store = createStore(
@@ -28,6 +29,7 @@ const App: React.FC = () => {
         <Route path="/stmt/:id" component={STMT} />
         <Route path="/banks" component={Bank} />
         <Route path="/sales" component={SalesImportPage} />
+        <Route path="/receipt" component={receipt} />
       </Router>
     </Provider>
   );

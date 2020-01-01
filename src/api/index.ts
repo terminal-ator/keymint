@@ -34,3 +34,18 @@ interface StatementMaster {
 export const postStatementMaster = async (arg: StatementMaster) => {
   return axios.post(SERVER_URL + "/statements", arg);
 };
+
+export const getUploadCompanies = async (companyID: number) => {
+  return axios.get(`${SERVER_URL}/uplcompany/${companyID}`);
+};
+
+export const postFileUpload = async (
+  companyID: number,
+  companyName: string,
+  formdata: FormData
+) => {
+  return axios.post(
+    `${SERVER_URL}/upload?company=${companyName}&id=${companyID}`,
+    formdata
+  );
+};

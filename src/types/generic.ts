@@ -15,12 +15,6 @@ export interface NullInt {
 }
 export interface RenderItemProps<T> {
   item: T;
-  style(index: number, rowHeight: number): any;
-  isHighlighted: boolean;
-  className?: string;
-  setFocus?(index: number): void;
-  index: number;
-  rowHeight?: number;
 }
 export interface nullableFloat {
   Float64: number;

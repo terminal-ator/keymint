@@ -8,6 +8,44 @@ const KeyTable = styled.table`
   border-collapse: collapse;
 `;
 
+export interface SELTRPROPS {
+  selected: boolean;
+  bgColorOn?: string;
+  bgColorOff?: string;
+  colorOn?: string;
+  colorOff?: string;
+  height?: string;
+}
+
+const KeyBody = styled.tbody`
+  background: ${(props: SELTRPROPS) =>
+    props.selected
+      ? props.bgColorOn
+        ? props.bgColorOn
+        : "#1f85de"
+      : props.bgColorOff
+      ? props.bgColorOff
+      : "white"};
+  color: ${(props: SELTRPROPS) =>
+    props.selected
+      ? props.colorOn
+        ? props.colorOn
+        : "white"
+      : props.colorOff
+      ? props.colorOff
+      : "black"};
+  height: ${(props: SELTRPROPS) => {
+    if (props.height) return props.height;
+    return "40px";
+  }};
+  :hover {
+    cursor: pointer;
+  }
+  td {
+    padding: 10px;
+  }
+`;
+
 interface KeyProps<T> {
   cursor: number;
   data: NormalizedCache<T>;
@@ -33,6 +71,8 @@ function KeyList<T>(props: KeyProps<T>) {
   const [upperCursorBound, setUpperCursorBound] = useState(
     props.cursor + props.numberOfRows
   );
+  const prevUpper = usePrevious(upperCursorBound);
+  const prevLower = usePrevious(lowerCursorBound);
   // console.log("Current cursors bound:", lowerCursorBound, upperCursorBound);
 
   useEffect(() => {
@@ -71,30 +111,25 @@ function KeyList<T>(props: KeyProps<T>) {
     }
   });
 
-  const [totalheight, setTotalHeight] = useState(
-    props.rowHeight * props.numberOfRows + props.rowHeight + 41 || 800
-  );
-  const [maxHeight, setMaxHeight] = useState(props.maxHeight || 600);
+  const totalheight =
+    props.rowHeight * props.numberOfRows + props.rowHeight + 41 || 800;
 
   const styles = {
     wrapper: {
-      height: totalheight,
       backgroundColor: "#fff",
       zIndex: 999,
       position: "relative" as "relative",
       top: 0,
-      bottom: 0
+      bottom: 0,
+      overflowY: "scroll" as "scroll",
+      height: props.maxHeight
     },
     listWrapper: {
       top: 0,
       left: 0,
-      right: 0,
-      bottom: 0,
-      overflowY: "hidden" as "hidden",
+
       position: "absolute" as "absolute",
-      height: totalheight,
       backgroundColor: "#fff",
-      width: props.width,
       padding: 10
     },
     list: (height: number) => ({
@@ -183,7 +218,17 @@ function KeyList<T>(props: KeyProps<T>) {
     setCursor(newCursor);
   };
 
+  const handleClick = (newCursor: number) => {
+    if (props.handleEnter) {
+      props.handleEnter(newCursor);
+    }
+  };
+
   // console.log(props.data);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
 
   return (
     <div style={styles.wrapper}>
@@ -192,6 +237,7 @@ function KeyList<T>(props: KeyProps<T>) {
         ref={Focus}
         tabIndex={0}
         style={styles.listWrapper}
+        onScroll={handleScroll}
       >
         <KeyTable>
           <thead>
@@ -201,21 +247,31 @@ function KeyList<T>(props: KeyProps<T>) {
               ))}
             </tr>
           </thead>
-          <tbody>
-            {props.data.all.map((itemid, i) => {
-              return checkIfVisible(i)
-                ? props.renderItem({
-                    item: props.data.normalized[itemid],
-                    isHighlighted: cursor === i,
-                    style: styles.item(i, props.rowHeight),
-                    className: cursor === i ? "selected" : "",
-                    setFocus: handleHover,
-                    index: i,
-                    rowHeight: props.rowHeight
-                  })
-                : null;
-            })}
-          </tbody>
+          {props.data.all.map((itemid, i) => {
+            return checkIfVisible(i) || false ? (
+              <KeyBody
+                onMouseMove={() => {
+                  handleHover(i);
+                }}
+                onMouseDown={() => {
+                  handleClick(i);
+                }}
+                selected={cursor === i}
+                height={`${props.rowHeight}px`}
+                key={itemid}
+              >
+                {props.renderItem({
+                  item: props.data.normalized[itemid],
+                  isHighlighted: cursor === i,
+                  style: styles.item(i, props.rowHeight),
+                  className: cursor === i ? "selected" : "",
+                  setFocus: handleHover,
+                  index: i,
+                  rowHeight: props.rowHeight
+                })}
+              </KeyBody>
+            ) : null;
+          })}
         </KeyTable>
       </div>
     </div>

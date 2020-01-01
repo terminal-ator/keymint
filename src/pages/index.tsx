@@ -28,10 +28,10 @@ export interface SELTRPROPS {
 }
 
 export const SELTR = styled.tr`
-  background: ${(props: SELTRPROPS) => (props.selected ? "#1f85de" : "white")};
-  color: ${(props: SELTRPROPS) => (props.selected ? "white" : "black")};
+  height: inherit;
   td {
     padding: 10px;
+    height: inherit;
   }
 `;
 
@@ -64,11 +64,7 @@ const Index = (props: Props) => {
 
   const renderItems = (arg: RenderItemProps<Company>) => {
     return (
-      <SELTR
-        selected={arg.isHighlighted}
-        key={arg.item.id.toString()}
-        style={{ ...arg.style }}
-      >
+      <SELTR key={arg.item.id.toString()}>
         <td>{arg.item.id}</td>
         <td>{arg.item.name}</td>
       </SELTR>

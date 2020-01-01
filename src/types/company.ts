@@ -3,3 +3,9 @@ export interface Company {
   name: string;
   year: string;
 }
+
+export interface UplCompany {
+  id: number;
+  name: string;
+  company_id: number;
+}

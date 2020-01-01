@@ -26,19 +26,10 @@ const LongTd = styled(SimTd)`
     overflow-x: scroll;
   }
 `;
-const StatementTR: FC<StatementLiProps> = ({
-  statement,
-  master,
-  inpRef,
-  toggleEnter,
-  className,
-  rowHeight,
-  isHighlighted
-}) => {
+const StatementTR: FC<StatementLiProps> = ({ statement }) => {
   // console.log(`Displaying masters ${masters}`);
-
   return (
-    <SELTR selected={isHighlighted} style={{ height: rowHeight }}>
+    <SELTR>
       <SimTd>{moment(statement.date).format("LL")}</SimTd>
       <LongTd className="narration-SimSimTd">{statement.narration}</LongTd>
       <LongTd className="narration-SimTd">

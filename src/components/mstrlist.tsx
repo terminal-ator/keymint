@@ -25,7 +25,7 @@ const MasterList: FC<MasterListProps> = props => {
     setMasters(props.masters);
   }, [props.masters]);
 
-  const columns = [filter];
+  const columns = ["Name"];
 
   const selectName = (cursor: number) => {
     if (props.handleEnter) props.handleEnter(props.masters.all[cursor]);
@@ -87,11 +87,7 @@ const MasterList: FC<MasterListProps> = props => {
   function renderItem(arg: RenderItemProps<Master>) {
     // console.log(arg);
     return (
-      <SELTR
-        style={{ ...arg.style }}
-        key={arg.item.id.toString()}
-        selected={arg.isHighlighted}
-      >
+      <SELTR key={arg.item.id.toString()}>
         <td style={{ padding: 5 }}>
           <span>
             {arg.item.chq_flg ? (
@@ -126,7 +122,7 @@ const MasterList: FC<MasterListProps> = props => {
         key={"master-list"}
         columns={columns}
         cursor={cursor}
-        rowHeight={40}
+        rowHeight={30}
         numberOfRows={15}
         maxHeight={800}
         handleCharacter={handleKey}
