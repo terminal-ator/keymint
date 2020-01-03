@@ -1,14 +1,16 @@
 .receipt-form {
-  padding: 2px;
+	padding: 2px;
 }
 
 .receipt-form > input {
-  padding: 5px 10px;
+	margin-left: 10px;
+	height: 30px;
 }
 
 .receipt-form > button {
-  padding: 5px 10px;
+	padding: 5px 10px;
 
-  outline: 1px solid black;
-  border: none;
+	outline: 1px solid black;
+	border: none;
+	margin-left: 10px;
 }

@@ -16,6 +16,7 @@ import StatementTR from "../components/sttmntTR";
 import withPop from "../components/popup";
 import styled from "styled-components";
 import Loading from "../components/loading";
+import Nav from "../components/nav";
 
 const mapState = (state: AppState) => ({
   masters: state.master.masters,
@@ -139,6 +140,7 @@ const STMT = (props: Props) => {
   };
   return (
     <div>
+      <Nav />
       <div
         style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
