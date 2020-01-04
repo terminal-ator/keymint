@@ -3,6 +3,8 @@ import KeyList from "../components/keylist";
 import { normalize, RenderItemProps } from "../types/generic";
 import { SELTR } from ".";
 import { useHistory } from "react-router";
+import { PageDiv } from "../components/styledComp";
+import Nav from '../components/nav';
 
 interface MenuItem {
   id: number;
@@ -25,6 +27,11 @@ const MenuRoutes = [
     id: 3,
     name: "Receipts",
     route: "receipt"
+  },
+  {
+    id:4,
+    name:"Ledgers",
+    route:"ledgers"
   }
 ];
 
@@ -57,7 +64,9 @@ export default () => {
 
   const cursor = 0;
   return (
-    <div>
+    <PageDiv>
+      <Nav />
+      <br />
       <KeyList
         columns={["Menu"]}
         cursor={cursor}
@@ -70,6 +79,6 @@ export default () => {
         handleEnter={handleEnter}
         handleMisc={keyMap}
       />
-    </div>
+    </PageDiv>
   );
 };

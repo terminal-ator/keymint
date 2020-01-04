@@ -54,3 +54,7 @@ export const postFileUpload = async (
 export const postLedger = async (date: string, recArray : Array<Receipt>, companyID: number)=>{
   return axios.post(`${SERVER_URL}/ledger/${companyID}`, { date, ledger_entry: recArray })
 }
+
+export const fetchLedger = async(custID: number, companyID:number)=>{
+  return axios.get(`${SERVER_URL}/ledger?cust_id=${custID}&company=${companyID}`)
+}

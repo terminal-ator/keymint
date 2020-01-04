@@ -7,6 +7,7 @@ import moment from "moment";
 import { PageDiv } from "../components/styledComp";
 import Nav from '../components/nav';
 import { postLedger } from "../api";
+import { TransitionGroup } from 'react-transition-group';
 
 export interface Receipt {
   id: number;
@@ -72,14 +73,23 @@ const Receipt = (props: PropType) => {
     }catch(err){
       console.log(err);
     }
-    
+  
+  }
 
+  const clear = ()=>{
+    const clearBool = window.confirm('Are you sure, all data will be lost ?');
+    if(clearBool){
+      setReceipt(newReciept);
+    }
   }
 
   return (
     <PageDiv>
       <Nav />
+      <div style={{ display: 'flex', flexDirection:'row', alignItems:'center' }}>
       <h1>Reciepts</h1>
+      <button disabled={receipt.length===1} style={{ height: 20, background: 'white'}} onClick={()=>{clear()}}>Clear</button>
+      </div>
       <input
         type="date"
         onChange={e => {
@@ -87,6 +97,7 @@ const Receipt = (props: PropType) => {
         }}
         defaultValue={currentDate}
       />
+    
       {receipt.map(receipt => {
         if (props.masters) {
           return (
@@ -100,7 +111,8 @@ const Receipt = (props: PropType) => {
           );
         }
       })}
-      <button>Save</button>
+
+      <button onClick={()=>{saveReceipt()}}>Save</button>
       <h2>{`Total: ${total}`}</h2>
     </PageDiv>
   );
