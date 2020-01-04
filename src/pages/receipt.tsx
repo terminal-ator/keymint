@@ -4,16 +4,21 @@ import { AppState } from "../reducers";
 import { connect, ConnectedProps } from "react-redux";
 import { NormalizedCache, normalize, DeNormalize } from "../types/generic";
 import moment from "moment";
+import { PageDiv } from "../components/styledComp";
+import Nav from '../components/nav';
+import { postLedger } from "../api";
+import { TransitionGroup } from 'react-transition-group';
 
 export interface Receipt {
   id: number;
-  CustID: number;
-  Cash: number;
+  cust_id: number;
+  cash: number;
 }
 
 const mapState = (state: AppState) => {
   return {
-    masters: state.master.masters
+    masters: state.master.masters,
+    companyID: state.sys.SelectedCompany
   };
 };
 
@@ -23,12 +28,14 @@ type PropType = ConnectedProps<typeof connector>;
 
 const Receipt = (props: PropType) => {
   const [total, setTotal] = useState(0);
-  const newReciept = [{ id: 1, CustID: 0, Cash: 0 }];
+  const newReciept = [{ id: 1, cust_id: 0, cash: 0 }];
   const [receipt, setReceipt] = useState<Array<Receipt>>(newReciept);
-  const [currentDate, setCurrentDate] = useState(moment().format());
+  const [currentDate, setCurrentDate] = useState(moment().format('YYYY-MM-DD'));
+
 
   let saveReceipts = async (rec: Receipt) => {
-    let newR = [rec, ...receipt];
+    let newR = [...receipt.slice(0,receipt.length-1), rec];
+    newR.push(newReciept[0])
     await setReceipt(newR);
     console.log({ newR });
   };
@@ -39,8 +46,8 @@ const Receipt = (props: PropType) => {
       if (rec.id == id) {
         const Rec = {
           id: id,
-          CustID: rec.CustID,
-          Cash: cash
+          cust_id: rec.cust_id,
+          cash: cash
         };
         return Rec;
       }
@@ -53,14 +60,36 @@ const Receipt = (props: PropType) => {
   useEffect(() => {
     let nTotal = 0;
     receipt.forEach(rec => {
-      nTotal = nTotal + rec.Cash;
+      nTotal = nTotal + rec.cash;
     });
     setTotal(nTotal);
   });
 
+  const saveReceipt = async ()=>{
+    try{
+      await postLedger(currentDate, receipt.slice(0,receipt.length-1), props.companyID);
+      setReceipt(newReciept);
+      setCurrentDate(moment().format('YYYY-MM-DD'));
+    }catch(err){
+      console.log(err);
+    }
+  
+  }
+
+  const clear = ()=>{
+    const clearBool = window.confirm('Are you sure, all data will be lost ?');
+    if(clearBool){
+      setReceipt(newReciept);
+    }
+  }
+
   return (
-    <div>
+    <PageDiv>
+      <Nav />
+      <div style={{ display: 'flex', flexDirection:'row', alignItems:'center' }}>
       <h1>Reciepts</h1>
+      <button disabled={receipt.length===1} style={{ height: 20, background: 'white'}} onClick={()=>{clear()}}>Clear</button>
+      </div>
       <input
         type="date"
         onChange={e => {
@@ -68,6 +97,7 @@ const Receipt = (props: PropType) => {
         }}
         defaultValue={currentDate}
       />
+    
       {receipt.map(receipt => {
         if (props.masters) {
           return (
@@ -81,8 +111,10 @@ const Receipt = (props: PropType) => {
           );
         }
       })}
+
+      <button onClick={()=>{saveReceipt()}}>Save</button>
       <h2>{`Total: ${total}`}</h2>
-    </div>
+    </PageDiv>
   );
 };
 

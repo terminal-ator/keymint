@@ -12,7 +12,7 @@ const FileUpload = (props: FileUploadProps) => {
     }
   };
   return (
-    <div>
+    <div style={{ marginTop: 10 }}>
       <input type="file" onChange={props.onChange} />
     </div>
   );

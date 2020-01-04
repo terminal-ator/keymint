@@ -22,8 +22,8 @@ const ReceiptForm = (props: RecieptFormProps) => {
   const handleSave = () => {
     const packet = {
       id: Math.floor(Math.random() * 930213),
-      CustID: cust_id,
-      Cash: cash
+      cust_id: cust_id,
+      cash: cash
     };
     props.Save(packet);
     setCustID(0);
@@ -41,8 +41,8 @@ const ReceiptForm = (props: RecieptFormProps) => {
   };
 
   useEffect(() => {
-    setCustID(props.Receipt.CustID);
-    setCash(props.Receipt.Cash);
+    setCustID(props.Receipt.cust_id);
+    setCash(props.Receipt.cash);
   }, [props.Receipt]);
 
   return (
@@ -55,9 +55,10 @@ const ReceiptForm = (props: RecieptFormProps) => {
       <Select
         value={cust_id}
         onChange={e => {
-          if (props.Receipt.CustID == 0) setCustID(parseInt(e.target.value));
+          if (props.Receipt.cust_id === 0) setCustID(parseInt(e.target.value));
         }}
         ref={selectRef}
+        disabled={props.Receipt.cust_id!==0}
       >
         <option value={0} disabled>
           Choose a name
@@ -74,7 +75,7 @@ const ReceiptForm = (props: RecieptFormProps) => {
       <input
         onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
           await setCash(parseInt(e.target.value));
-          if (props.Receipt.CustID != 0) {
+          if (props.Receipt.cust_id !== 0) {
             setTouched(true);
           }
         }}
@@ -82,12 +83,13 @@ const ReceiptForm = (props: RecieptFormProps) => {
         placeholder="amount"
         value={cash}
       />
-      {props.Receipt.CustID == 0 ? (
+      {props.Receipt.cust_id === 0 ? (
         <button
           onClick={e => {
             e.preventDefault();
             handleSave();
           }}
+          disabled={cust_id === 0}
         >
           Add
         </button>

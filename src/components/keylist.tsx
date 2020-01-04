@@ -122,7 +122,8 @@ function KeyList<T>(props: KeyProps<T>) {
       top: 0,
       bottom: 0,
       overflowY: "scroll" as "scroll",
-      height: props.maxHeight
+      height: props.maxHeight,
+      width: props.width || "100%"
     },
     listWrapper: {
       top: 0,

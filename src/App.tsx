@@ -5,6 +5,8 @@ import { createStore, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
 import { Provider } from "react-redux";
 import CReducer from "./reducers";
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 import "./App.css";
 import Index from "./pages";
 import { composeWithDevTools } from "redux-devtools-extension";
@@ -13,16 +15,27 @@ import menu from "./pages/menu";
 import Bank from "./pages/bank";
 import SalesImportPage from "./pages/sales";
 import receipt from "./pages/receipt";
+import LedgerPage from './pages/ledger';
+import { PersistGate } from "redux-persist/integration/react";
 
+const persistConfig = {
+  key: 'root',
+  storage
+}
+
+const perReducer = persistReducer(persistConfig, CReducer);
 /* eslint-disable no-underscore-dangle */
 const store = createStore(
-  CReducer,
+  perReducer,
   composeWithDevTools(applyMiddleware(thunk))
 );
+let persistor = persistStore(store);
+
 /* eslint-enable */
 const App: React.FC = () => {
   return (
     <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
       <Router>
         <Route exact path="/" component={Index} />
         <Route path="/menu" component={menu} />
@@ -30,7 +43,9 @@ const App: React.FC = () => {
         <Route path="/banks" component={Bank} />
         <Route path="/sales" component={SalesImportPage} />
         <Route path="/receipt" component={receipt} />
+        <Route path="/ledgers" component={LedgerPage} />
       </Router>
+      </PersistGate>
     </Provider>
   );
 };

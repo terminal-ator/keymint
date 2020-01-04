@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import FileUpload from "../components/fileupload";
-import { Select } from "../components/styledComp";
+import { Select, PageDiv } from "../components/styledComp";
 import { UplCompany } from "../types/company";
 import { AppState } from "../reducers";
 import { connect, ConnectedProps } from "react-redux";
 import { getUploadCompanies, postFileUpload } from "../api";
+import Nav from '../components/nav';
 
 const mapState = (state: AppState) => {
   return {
@@ -49,8 +50,10 @@ const SalesImportPage = (props: TypeFromRedux) => {
   }, []);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: 300 }}>
-      Import
+    <PageDiv>
+      <Nav />
+      <div style={{ display: 'flex', flexDirection:'column', width: 400}}>
+      <p>Import</p>
       <Select
         onChange={e => {
           setCompany(e.target.value);
@@ -69,13 +72,16 @@ const SalesImportPage = (props: TypeFromRedux) => {
       </Select>
       <FileUpload onChange={fileChange} />
       <button
+        style={{ marginTop: 20, height: 40, background: '#2776f5', color: 'white'  }}
         onClick={() => {
           OnSubmit();
         }}
+        disabled={file!==undefined}
       >
         Import
       </button>
-    </div>
+      </div>
+    </PageDiv>
   );
 };
 

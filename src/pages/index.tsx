@@ -9,6 +9,7 @@ import KeyList from "../components/keylist";
 import { RenderItemProps, DeNormalize } from "../types/generic";
 import { Company } from "../types/company";
 import styled from "styled-components";
+import { PageDiv } from "../components/styledComp";
 
 const mapState = (state: AppState) => ({
   companies: state.sys.Companies,
@@ -74,7 +75,7 @@ const Index = (props: Props) => {
   const [cursor, setCursor] = useState(0);
 
   return (
-    <div>
+    <PageDiv>
       {props.companies && (
         <KeyList
           columns={["ID", "Company"]}
@@ -88,7 +89,7 @@ const Index = (props: Props) => {
           handleEnter={selectCompany}
         />
       )}
-    </div>
+    </PageDiv>
   );
 };
 

@@ -8,6 +8,8 @@ import { AppState } from "../reducers";
 import Axios from "axios";
 import { getBanks } from "../api";
 import { connect, ConnectedProps } from "react-redux";
+import { PageDiv } from "../components/styledComp";
+import Nav from '../components/nav';
 
 interface MenuItem {
   id: number;
@@ -73,7 +75,9 @@ const BankPage = (props: Props) => {
 
   const cursor = 0;
   return (
-    <div>
+    <PageDiv>
+      <Nav />
+      <br />
       {banks && (
         <KeyList
           columns={["Banks"]}
@@ -88,7 +92,7 @@ const BankPage = (props: Props) => {
           handleMisc={keyMap}
         />
       )}
-    </div>
+    </PageDiv>
   );
 };
 
