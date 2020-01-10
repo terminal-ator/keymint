@@ -24,15 +24,17 @@ const mapState = (state: AppState) => ({
   cmpyID: state.sys.SelectedCompany
 });
 
-const DialogWrapper = styled.div`
+export const DialogWrapper = styled.div`
   position: fixed;
   top: 0;
   right: 0;
   z-index: 1000;
   height: 100%;
+  width:100%;
+  background: rgba(0,0,0,0.6);
 `;
 
-const DialogContent = styled.div`
+export const DialogContent = styled.div`
   background-color: #fff;
   width: 400px;
   height: 100%;

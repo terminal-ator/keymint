@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Receipt } from "../pages/receipt";
+import { QuickForm } from "../components/ledgerDetail";
 
 const SERVER_URL = `http://localhost:8080`;
 
@@ -57,4 +58,8 @@ export const postLedger = async (date: string, recArray : Array<Receipt>, compan
 
 export const fetchLedger = async(custID: number, companyID:number)=>{
   return axios.get(`${SERVER_URL}/ledger?cust_id=${custID}&company=${companyID}`)
+}
+
+export const putLedger = async (qck: QuickForm, companyID:number)=>{
+  return axios.put(`${SERVER_URL}/ledger/${companyID}`, qck);
 }
