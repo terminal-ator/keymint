@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Ledger } from '../types/ledger';
-import { fetchLedger, putLedger } from '../api';
+import { Ledger, Posting } from '../types/ledger';
+import { putLedger, getPostings } from '../api';
 import { Master } from '../types/master';
 import { NullInt } from '../types/generic';
 import moment from 'moment';
@@ -22,38 +22,32 @@ export interface QuickForm{
 
 const LedgerDetail = (props: LedgerProps)=>{
 
-  const [ ledgers, setLedgers ] = useState<Array<Ledger>>()
+  const [ ledgers, setLedgers ] = useState<Array<Posting>>()
   const [total, setTotal ] = useState(0);
 
   const [show, setShow ] = useState(false);
 
   useEffect(()=>{
-    fetchLedger(props.cust.cust_id.Int64 ,props.company_id);
+    fetchLedgers(props.cust.cust_id.Int64);
   })
   
   useEffect(()=>{
-    fetchLedgers(props.cust.cust_id,props.company_id)
+    fetchLedgers(props.cust.cust_id.Int64)
     setTotal(0);
   },[props.cust.cust_id, props.company_id])
 
   useEffect(()=>{
     let sum = 0;
     ledgers?.forEach((ledger)=>{
-      if(ledger.from_cust.Valid &&  ledger.from_cust.Int64!=0){
-        sum = sum - ledger.from_cust.Int64
-      }else if(ledger.to_cust.Valid){
-          sum = sum + ledger.to_cust.Int64
-      }else{
-        sum = 0;
-      }
-      setTotal(sum);
+      sum += ledger.amount;
     })
+    setTotal(0);
   },[ledgers])
 
-  const fetchLedgers = async(cust_id: NullInt, company_id: number)=>{
+  const fetchLedgers = async(cust_id: number)=>{
     try{
-      if(cust_id.Valid){
-        const resp = await fetchLedger(cust_id.Int64,company_id);
+      if(true){
+        const resp = await getPostings(cust_id);
         setLedgers(resp.data);
       }
       
@@ -62,18 +56,18 @@ const LedgerDetail = (props: LedgerProps)=>{
     }
   }
 
-  const LedgerItem = (ledger: Ledger)=>{
+  const LedgerItem = (ledger: Posting)=>{
     return(
-      <div style={{ alignSelf: (ledger.from_cust.Valid && ledger.from_cust.Int64!=0)?'flex-start':'flex-end',
+      <div style={{ alignSelf: (ledger.amount<0)?'flex-start':'flex-end',
       boxShadow:'0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',  padding: '10px 5px', borderRadius: 4, display:'flex', flexDirection:"column"}}>
       <div style={{ display:'flex', flexDirection: 'row', width:'400px',
        justifyContent: 'space-around', marginTop: 5,
        }} key={ledger.id}>
          <div>
-          <span style={{ fontSize: 11}}>{ moment(ledger.ledger_date).format('LL') }</span>
+          <span style={{ fontSize: 11}}>{ moment(ledger.date).format('LL') }</span>
         </div>
-        <span><b>{ledger.ledger_no.Valid && ledger.ledger_no.String || ledger.ledger_type}</b></span>
-      <span style={{ alignSelf: 'flex-end'}}>₹ {(ledger.to_cust.Valid && ledger.to_cust.Int64) || (ledger.from_cust.Valid && ledger.from_cust.Int64)}</span>
+        <span><b>{ledger.narration}</b></span>
+      <span style={{ alignSelf: 'flex-end'}}>₹ {Math.abs(ledger.amount)}</span>
       </div>
       <div>
        <button onClick={()=>{setShow(true)}}>Edit</button>
@@ -96,7 +90,7 @@ const LedgerDetail = (props: LedgerProps)=>{
       }catch(err){
         console.log(err);
       }finally{
-        const resp = await fetchLedger(props.cust.cust_id.Int64,props.company_id);
+        const resp = await getPostings(props.cust.cust_id.Int64);
         setLedgers(resp.data);
       }
       
@@ -123,15 +117,17 @@ const LedgerDetail = (props: LedgerProps)=>{
   }
 
   return(
-    <div style={{padding: '5px 10px', marginTop: 10 ,flex: 2}}> 
+    <div style={{padding: '5px 10px', marginTop: 10 ,flex: 2}}>
+    <h3>Ledger Details for {props.cust.name} Outstanding: {total}</h3>
+    <div style={{overflow: 'hidden', height: 400, overflowY:"scroll"}}> 
       {withPop(<DialogWrapper> <DialogContent> <EditStatement cust_id={props.cust.cust_id.Int64} statement={2}/></DialogContent></DialogWrapper>, show )}
-      <h3>Ledger Details for {props.cust.name} Outstanding: {total}</h3>
-      <div style={{display: 'flex', flexDirection:'column-reverse' ,flex:2, height: 400,overflowY:'scroll', justifyContent:'flex-end'}} >
+      <div style={{display: 'flex', flexDirection:'column-reverse' ,flex:2, height: 400, justifyContent:'flex-end'}} >
         {
           ledgers && ledgers.map((ledger)=>LedgerItem(ledger))
         }
       </div>
-      {InlineLedgerForm()}
+    </div>
+    {InlineLedgerForm()}
     </div>
   )
 }

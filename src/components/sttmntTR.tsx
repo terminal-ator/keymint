@@ -22,7 +22,6 @@ const LongTd = styled(SimTd)`
   padding-right: 10px;
 
   :hover {
-    max-width: 400px;
     overflow-x: scroll;
   }
 `;

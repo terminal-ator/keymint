@@ -2,7 +2,7 @@ import axios from "axios";
 import { Receipt } from "../pages/receipt";
 import { QuickForm } from "../components/ledgerDetail";
 
-const SERVER_URL = `http://localhost:8080`;
+const SERVER_URL = `http://192.168.0.124:8080`;
 
 export const getCompanies = async () => {
   const req = await axios.get(`${SERVER_URL}/companies`);
@@ -10,8 +10,8 @@ export const getCompanies = async () => {
 };
 
 export const getMasters = async (companyID: number) => {
-  const req = await axios.get(`${SERVER_URL}/masters/${companyID}`);
-  return req.data.masters;
+  const req = await axios.get(`${SERVER_URL}/accounts/${companyID}`);
+  return req.data;
 };
 
 export const getStatements = async (companyID: number) => {
@@ -62,4 +62,8 @@ export const fetchLedger = async(custID: number, companyID:number)=>{
 
 export const putLedger = async (qck: QuickForm, companyID:number)=>{
   return axios.put(`${SERVER_URL}/ledger/${companyID}`, qck);
+}
+
+export const getPostings = async (accountID: number)=>{
+  return axios.get(`${SERVER_URL}/postings/${accountID}`)
 }

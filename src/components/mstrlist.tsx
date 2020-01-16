@@ -123,8 +123,8 @@ const MasterList: FC<MasterListProps> = props => {
         columns={columns}
         cursor={cursor}
         rowHeight={30}
-        numberOfRows={10}
-        maxHeight={500}
+        numberOfRows={15}
+        maxHeight={800}
         handleCharacter={handleKey}
         data={masters}
         renderItem={renderItem}

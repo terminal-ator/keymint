@@ -11,3 +11,13 @@ export interface Ledger{
   from_cust: NullInt;
   company_id: number;
 }
+
+export interface Posting{
+  id: number;
+  date: string;
+  journal_id: number;
+  narration: string;
+  ref_no: string;
+  stat_id: number;
+  amount: number;
+}
