@@ -8,10 +8,11 @@ import {
   NormalizedCache,
   normalize,
   RenderItemProps,
-  DeNormalize
+  DeNormalize,
+  StatementMutation
 } from "../types/generic";
 import { Statement } from "../types/statements";
-import { getBankWiseStatements, postStatementMaster } from "../api";
+import { getBankWiseStatements, postStatementMaster, newSetStatement } from "../api";
 import StatementTR from "../components/sttmntTR";
 import withPop from "../components/popup";
 import styled from "styled-components";
@@ -112,21 +113,22 @@ const STMT = (props: Props) => {
         all: filtered.all,
         normalized: { ...filtered.normalized, [toStatement.id]: toStatement }
       };
+      if(id){
+      let packet: StatementMutation = { bank_id: parseInt(id), company_id: props.cmpyID, stat_id: toStatement.id, cust_id: masterID }
       console.log("Showing sending packet: ", {
-        cust_id: masterID,
-        statement_id: selected,
-        company_id: props.cmpyID
+        packet
       });
-      await postStatementMaster({
-        cust_id: masterID,
-        statement_id: selected,
-        company_id: props.cmpyID
-      });
-
-      setStatements(newStatements);
+      // await postStatementMaster({
+      //   cust_id: masterID,
+      //   statement_id: selected,
+      //   company_id: props.cmpyID
+      // });
+      await newSetStatement(packet);
+       setStatements(newStatements);
       setFiltered(filteredStatement);
 
       setDialog(false);
+    }     
     }
   };
 

@@ -8,6 +8,7 @@ import {
 import { Company } from "../types/company";
 import KeyList from "./keylist";
 import { SELTR } from "../pages";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 
 interface MasterListProps {
   masters: NormalizedCache<Master>;
@@ -16,7 +17,9 @@ interface MasterListProps {
   companies?: NormalizedCache<Company>;
 }
 
-const MasterList: FC<MasterListProps> = props => {
+type MProps = MasterListProps & RouteComponentProps;
+
+const MasterList: FC<MProps> = (props: MProps) => {
   const [filter, setFilter] = useState("");
   const [cursor, setCursor] = useState(0);
   const [masters, setMasters] = useState(props.masters);
@@ -103,7 +106,17 @@ const MasterList: FC<MasterListProps> = props => {
     );
   }
 
-  const handleEscape = props.handleEscape ? props.handleEscape : () => {};
+  const clearFilter= ()=>{
+    setFilter("");
+    return 
+  }
+
+  const handleEscape = (cursor: number , str: string)=>{
+    if(filter===""&&props.handleEscape) {props.handleEscape(cursor, str); return;}
+    else if(filter===""){props.history.goBack();return}
+    clearFilter();
+  }
+
   const handleMisc = [
     {
       key: 8,
@@ -136,4 +149,4 @@ const MasterList: FC<MasterListProps> = props => {
   );
 };
 
-export default MasterList;
+export default withRouter(MasterList);

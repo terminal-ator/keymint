@@ -21,6 +21,14 @@ export interface nullableFloat {
   Valid: boolean;
 }
 
+export interface StatementMutation{
+  stat_id: number
+	bank_id : number
+	cust_id: number,
+	company_id: number
+}
+
+
 export interface NormalizedCache<T> {
   all: Array<number>;
   normalized: { [key: number]: T };
@@ -75,3 +83,7 @@ export function DeNormalize<T>(cache: NormalizedCache<T>): Array<T> {
 
   return cacheToArray;
 }
+
+// export function DeNormalizeCustID<T extends HasId>(cache: NormalizedCache<T>):Array<T>{
+
+// }

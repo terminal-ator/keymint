@@ -18,6 +18,7 @@ export const FetchMasters = (
   companyID: number
 ): ThunkAction<void, AppState, null, Action<String>> => async dispatch => {
   const masters = await getMasters(companyID);
+  console.log(masters);
   dispatch({
     type: FETCH_MASTERS,
     payload: normalize<Master>(masters, true)

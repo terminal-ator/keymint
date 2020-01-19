@@ -65,7 +65,7 @@ const ReceiptForm = (props: RecieptFormProps) => {
         </option>
         {denormMasters.map(master => (
           <option
-            key={master.id}
+            key={master.cust_id.Int64}
             value={master.cust_id.Valid ? master.cust_id.Int64 : 0}
           >
             {master.name}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import KeyList from "../components/keylist";
-import { normalize, RenderItemProps, NormalizedCache } from "../types/generic";
+import { normalize, RenderItemProps, NormalizedCache, DeNormalize } from "../types/generic";
 import { SELTR } from ".";
 import { useHistory } from "react-router";
 import { Bank } from "../types/bank";
@@ -10,6 +10,7 @@ import { getBanks } from "../api";
 import { connect, ConnectedProps } from "react-redux";
 import { PageDiv } from "../components/styledComp";
 import Nav from '../components/nav';
+import { Master } from "../types/master";
 
 interface MenuItem {
   id: number;
@@ -26,7 +27,8 @@ const MenuRoutes = [
 ];
 
 const mapState = (state: AppState) => ({
-  companyId: state.sys.SelectedCompany
+  companyId: state.sys.SelectedCompany,
+  masters: state.master.masters
 });
 
 const connector = connect(mapState, {});
@@ -35,19 +37,33 @@ type Props = ConnectedProps<typeof connector>;
 
 const BankPage = (props: Props) => {
   let history = useHistory();
-  let [banks, setBanks] = useState<NormalizedCache<Bank>>();
+  let [banks, setBanks] = useState<NormalizedCache<Master>>();
 
-  useEffect(() => {
-    fetchBanks();
-  }, []);
+  // useEffect(() => {
+  //   if(props.masters){
+  //     const mstrs = DeNormalize<Master>(props.masters)
+  //     const bnks = mstrs.filter( (mstr) => {
+  //       if(mstr.group_id==5)return mstr}
+  //      )
+  //     setBanks(normalize<Master>(bnks))
+  //   }
+  // }, []);
 
-  const fetchBanks = async () => {
-    const req = await getBanks(props.companyId);
-    setBanks(normalize<Bank>(req.data.banks));
-  };
+  useEffect(()=>{
+    if(props.masters){
+      
+      const mstrs = DeNormalize<Master>(props.masters);
+      console.log(mstrs);
+      const bnks = mstrs.filter((mstr)=>mstr.group_id===5);
+      console.log(bnks);
+      const bnksf = normalize<Master>(bnks, true);
+      // console.log()
+      setBanks(bnksf);
+    }
+  },[]);
 
   const menuItems = normalize<MenuItem>(MenuRoutes);
-  const renderItem = (arg: RenderItemProps<Bank>) => {
+  const renderItem = (arg: RenderItemProps<Master>) => {
     return (
       <SELTR>
         <td>{arg.item.name}</td>
@@ -62,7 +78,7 @@ const BankPage = (props: Props) => {
   const handleEnter = (cursor: number) => {
     if (banks) {
       const selected = banks.normalized[banks.all[cursor]];
-      history.push(`stmt/${selected.id}`);
+      history.push(`stmt/${selected.cust_id.Int64}`);
     }
   };
 

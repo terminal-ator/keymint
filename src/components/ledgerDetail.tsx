@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Ledger, Posting } from '../types/ledger';
 import { putLedger, getPostings } from '../api';
 import { Master } from '../types/master';
-import { NullInt } from '../types/generic';
+import { NullInt, NormalizedCache, normalize, RenderItemProps } from '../types/generic';
 import moment from 'moment';
 import EditStatement from './editStatement';
 import withPop from './popup';
 import { DialogWrapper, DialogContent } from '../pages/stmt';
+import KeyList from './keylist';
 
 interface LedgerProps {
-  cust: Master;
-  company_id: number ;
+  cust: number;
+  handleEsc?():void;
 }
 export interface QuickForm{
   cust_id: number;
@@ -24,57 +25,39 @@ const LedgerDetail = (props: LedgerProps)=>{
 
   const [ ledgers, setLedgers ] = useState<Array<Posting>>()
   const [total, setTotal ] = useState(0);
-
+  const [ postings, setPosting ] = useState<NormalizedCache<Posting>>();
   const [show, setShow ] = useState(false);
 
-  useEffect(()=>{
-    fetchLedgers(props.cust.cust_id.Int64);
-  })
+  // useEffect(()=>{
+  //   fetchLedgers(props.cust.cust_id.Int64);
+  // })
   
   useEffect(()=>{
-    fetchLedgers(props.cust.cust_id.Int64)
+    setPosting(undefined);
+    fetchLedgers(props.cust)
     setTotal(0);
-  },[props.cust.cust_id, props.company_id])
+  },[props.cust])
 
   useEffect(()=>{
     let sum = 0;
-    ledgers?.forEach((ledger)=>{
-      sum += ledger.amount;
+    postings?.all.forEach((id)=>{
+      sum = sum + postings.normalized[id].amount;
     })
-    setTotal(0);
-  },[ledgers])
+    setTotal(sum);
+  },[postings])
 
   const fetchLedgers = async(cust_id: number)=>{
     try{
-      if(true){
+      {
         const resp = await getPostings(cust_id);
-        setLedgers(resp.data);
+        // setLedgers(resp.data);
+        setPosting(normalize<Posting>(resp.data));
       }
-      
     }catch(err){
-      console.log(`Error while fetching ledgers: ${err}`)
+      console.log(`Error while fetching ledgers: ${err}`);
     }
   }
 
-  const LedgerItem = (ledger: Posting)=>{
-    return(
-      <div style={{ alignSelf: (ledger.amount<0)?'flex-start':'flex-end',
-      boxShadow:'0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',  padding: '10px 5px', borderRadius: 4, display:'flex', flexDirection:"column"}}>
-      <div style={{ display:'flex', flexDirection: 'row', width:'400px',
-       justifyContent: 'space-around', marginTop: 5,
-       }} key={ledger.id}>
-         <div>
-          <span style={{ fontSize: 11}}>{ moment(ledger.date).format('LL') }</span>
-        </div>
-        <span><b>{ledger.narration}</b></span>
-      <span style={{ alignSelf: 'flex-end'}}>₹ {Math.abs(ledger.amount)}</span>
-      </div>
-      <div>
-       <button onClick={()=>{setShow(true)}}>Edit</button>
-      </div>
-      </div>
-   )
-  }
 
   const InlineLedgerForm = ()=>{
 
@@ -86,11 +69,11 @@ const LedgerDetail = (props: LedgerProps)=>{
     const handleAdd = async (e:React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault();
       try{
-        await putLedger({date, toFrom, type, amount, cust_id:props.cust.cust_id.Int64}, props.company_id);
+        // await putLedger({date, toFrom, type, amount, cust_id:props.cust.cust_id.Int64}, props.company_id);
       }catch(err){
         console.log(err);
       }finally{
-        const resp = await getPostings(props.cust.cust_id.Int64);
+        const resp = await getPostings(props.cust);
         setLedgers(resp.data);
       }
       
@@ -116,16 +99,38 @@ const LedgerDetail = (props: LedgerProps)=>{
       )
   }
 
+  const renderItem = (arg: RenderItemProps<Posting>)=>{
+    return(
+      <tr>
+        <td>{moment(arg.item.date).format('LL')}</td>
+        <td>{arg.item.narration}</td>
+        <td>{arg.item.ref_no}</td>
+        <td>{arg.item.amount<0?Math.abs(arg.item.amount):null}</td>
+        <td>{arg.item.amount>0?arg.item.amount:null}</td>
+      </tr>
+    )
+  }
+
+
   return(
     <div style={{padding: '5px 10px', marginTop: 10 ,flex: 2}}>
-    <h3>Ledger Details for {props.cust.name} Outstanding: {total}</h3>
-    <div style={{overflow: 'hidden', height: 400, overflowY:"scroll"}}> 
-      {withPop(<DialogWrapper> <DialogContent> <EditStatement cust_id={props.cust.cust_id.Int64} statement={2}/></DialogContent></DialogWrapper>, show )}
-      <div style={{display: 'flex', flexDirection:'column-reverse' ,flex:2, height: 400, justifyContent:'flex-end'}} >
-        {
-          ledgers && ledgers.map((ledger)=>LedgerItem(ledger))
-        }
-      </div>
+    <h3><button onClick={()=>{if(props.handleEsc){props.handleEsc()}}}>Close</button>&nbsp;
+    Ledger Details for {props.cust} Outstanding: { Math.abs(total)} { total<0?"debit":"credit" }</h3>
+    <div style={{overflow: 'hidden', height: 800, overflowY:"scroll"}}> 
+      {withPop(<DialogWrapper> <DialogContent> <EditStatement cust_id={props.cust} statement={2}/></DialogContent></DialogWrapper>, show )}
+      {
+        postings &&
+        <KeyList
+          columns={['date', 'narration','refno','debit','credit']}
+          cursor={0}
+          data={postings}
+          maxHeight={800}
+          rowHeight={20}
+          numberOfRows={15}
+          renderItem={renderItem}
+          handleEscape={props.handleEsc}
+         />
+      }
     </div>
     {InlineLedgerForm()}
     </div>

@@ -4,7 +4,7 @@ import { StatementLiProps } from "../types/statements";
 import { SELTR } from "../pages";
 import styled from "styled-components";
 
-const SimTd = styled.td`
+export const SimTd = styled.td`
   min-width: 150px;
   max-width: 150px;
   text-align: center;
@@ -14,7 +14,7 @@ const SimTd = styled.td`
   overflow: hidden;
 `;
 
-const LongTd = styled(SimTd)`
+export const LongTd = styled(SimTd)`
   overflow: hidden;
   max-width: 400px;
   min-width: 400px;

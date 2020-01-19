@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Receipt } from "../pages/receipt";
 import { QuickForm } from "../components/ledgerDetail";
+import { StatementMutation } from "../types/generic";
 
 const SERVER_URL = `http://192.168.0.124:8080`;
 
@@ -44,13 +45,16 @@ export const getUploadCompanies = async (companyID: number) => {
 export const postFileUpload = async (
   companyID: number,
   companyName: string,
+  saleId:number,
   formdata: FormData
 ) => {
   return axios.post(
-    `${SERVER_URL}/upload?company=${companyName}&id=${companyID}`,
+    `${SERVER_URL}/upload?company=${companyName}&id=${companyID}&sales=${saleId}`,
     formdata
   );
 };
+
+
 
 export const postLedger = async (date: string, recArray : Array<Receipt>, companyID: number)=>{
   return axios.post(`${SERVER_URL}/ledger/${companyID}`, { date, ledger_entry: recArray })
@@ -66,4 +70,9 @@ export const putLedger = async (qck: QuickForm, companyID:number)=>{
 
 export const getPostings = async (accountID: number)=>{
   return axios.get(`${SERVER_URL}/postings/${accountID}`)
+}
+
+export const newSetStatement = async (packet: StatementMutation)=>{
+  return axios.post(`${SERVER_URL}/statement/`, packet);
+  
 }

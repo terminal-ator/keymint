@@ -6,10 +6,14 @@ import { AppState } from "../reducers";
 import { connect, ConnectedProps } from "react-redux";
 import { getUploadCompanies, postFileUpload } from "../api";
 import Nav from '../components/nav';
+import { Master } from "../types/master";
+import { DeNormalize } from "../types/generic";
+import { useHistory } from "react-router-dom";
 
 const mapState = (state: AppState) => {
   return {
-    companyID: state.sys.SelectedCompany
+    companyID: state.sys.SelectedCompany,
+    masters: state.master.masters
   };
 };
 
@@ -19,8 +23,13 @@ type TypeFromRedux = ConnectedProps<typeof connector>;
 
 const SalesImportPage = (props: TypeFromRedux) => {
   const [companies, setCompanies] = useState<Array<UplCompany>>();
+  const [salesAccount, setSalesAccount ] = useState<Array<Master>>();
+
   const [company, setCompany] = useState("");
   const [file, setFile] = useState<File>();
+  const [ selSale, setSelSale ] = useState<number>();
+
+  const history = useHistory()
 
   const fetchCompanies = async () => {
     const req = await getUploadCompanies(props.companyID);
@@ -28,7 +37,13 @@ const SalesImportPage = (props: TypeFromRedux) => {
   };
 
   const sendFile = async (formdata: FormData) => {
-    await postFileUpload(props.companyID, company, formdata);
+    console.log("sending file 1")
+    if(selSale){
+      console.log("Sending file")
+        await postFileUpload(props.companyID, company, selSale, formdata);
+        history.goBack()
+    }
+  
   };
 
   const OnSubmit = () => {
@@ -47,6 +62,15 @@ const SalesImportPage = (props: TypeFromRedux) => {
 
   useEffect(() => {
     fetchCompanies();
+
+    // set sales account
+    if(props.masters){
+      const mstrs = DeNormalize<Master>(props.masters);
+      const sales = mstrs.filter( mstr => mstr.group_id==7)
+      
+      setSalesAccount(sales);
+    }
+    
   }, []);
 
   return (
@@ -54,6 +78,22 @@ const SalesImportPage = (props: TypeFromRedux) => {
       <Nav />
       <div style={{ display: 'flex', flexDirection:'column', width: 400}}>
       <p>Import</p>
+      <p>Choose the sales account</p>
+      <Select onChange = {e=>{
+        setSelSale(parseInt(e.target.value));
+      }}
+        value={selSale}
+      >
+      <option value="" disabled selected>
+          Select Sales
+        </option>
+        {
+          salesAccount?.map((sa)=>{
+            return <option key={sa.cust_id?.Int64} value={sa.cust_id?.Int64}>{sa.name}</option>
+          })
+        }
+      </Select>
+      <p>Choose a software</p>
       <Select
         onChange={e => {
           setCompany(e.target.value);
@@ -72,11 +112,11 @@ const SalesImportPage = (props: TypeFromRedux) => {
       </Select>
       <FileUpload onChange={fileChange} />
       <button
-        style={{ marginTop: 20, height: 40, background: '#2776f5', color: 'white'  }}
+        
         onClick={() => {
           OnSubmit();
         }}
-        disabled={file!==undefined}
+        disabled={file==undefined}
       >
         Import
       </button>
