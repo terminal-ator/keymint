@@ -3,7 +3,9 @@ import { Master } from "../types/master";
 import {
   RenderItemProps,
   NormalizedCache,
-  GenerateCacheFromAll
+  GenerateCacheFromAll,
+  DeNormalize,
+  normalize
 } from "../types/generic";
 import { Company } from "../types/company";
 import KeyList from "./keylist";
@@ -28,10 +30,10 @@ const MasterList: FC<MProps> = (props: MProps) => {
     setMasters(props.masters);
   }, [props.masters]);
 
-  const columns = ["Name"];
+  const columns = ["Name", "Balance"];
 
   const selectName = (cursor: number) => {
-    if (props.handleEnter) props.handleEnter(props.masters.all[cursor]);
+    if (props.handleEnter) props.handleEnter(masters.all[cursor]);
   };
 
   const filterBasedOnCompany = async (companyID: number) => {
@@ -47,6 +49,17 @@ const MasterList: FC<MProps> = (props: MProps) => {
     const newMasters = GenerateCacheFromAll<Master>(props.masters, newAll);
     setMasters(newMasters);
   };
+
+  const filterBasedOnBalance = (selected: boolean)=>{
+    if(selected){
+      const mstr = DeNormalize<Master>(props.masters)
+      const newMstr = mstr.filter((m)=>m.balance!==0);
+      const norml = normalize<Master>(newMstr, true);
+      setMasters(norml);
+    }else{
+      setMasters(props.masters)
+    }
+  }
 
   const filterBasedOnName = async (filteredString: string) => {
     // console.log("Got filterd string:", filteredString);
@@ -102,6 +115,9 @@ const MasterList: FC<MProps> = (props: MProps) => {
             <span>{arg.item.name}</span>
           </span>
         </td>
+        <td>{
+          Math.abs(arg.item.balance).toString()
+          }&nbsp;{arg.item.balance<0?"DR":"CR"}</td>
       </SELTR>
     );
   }
@@ -131,19 +147,22 @@ const MasterList: FC<MProps> = (props: MProps) => {
   return (
     <div style={{ height: "100%" }}>
       <p className="filter-text">{filter || "filter"}</p>
+      <span>
+        <input type="checkbox" name="handle" onChange={e=>{filterBasedOnBalance(e.target.checked)}} /><label htmlFor="handle">Hide Balanced</label>
+      </span>
       <KeyList
         key={"master-list"}
         columns={columns}
         cursor={cursor}
-        rowHeight={30}
-        numberOfRows={15}
-        maxHeight={800}
+        rowHeight={20}
+        numberOfRows={12}
+        maxHeight={700}
         handleCharacter={handleKey}
         data={masters}
         renderItem={renderItem}
         handleMisc={handleMisc}
         handleEnter={selectName}
-        width={"400px"}
+        width={"100%"}
       />
     </div>
   );

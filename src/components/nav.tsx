@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { AppState } from "../reducers";
 import { connect, ConnectedProps } from "react-redux";
+import { Link } from "react-router-dom";
 
 const NavBar = styled.nav`
   width: 100%;
@@ -32,9 +33,22 @@ const Nav = (props: PropsFromRedux) => {
   const selectedCompany = props.companies?.normalized[props.selected];
 
 
-  return <div style={{ display: 'flex', flexDirection: 'row',padding:'10px 5px', position:'relative', top:0, left:0, width:"100%", borderBottom:'1px solid black'}}><h4>
-    {selectedCompany?.name}
-    </h4></div>;
+  // return <div style={{ display: 'flex', flexDirection: 'row',padding:'10px 5px', position:'relative', top:0, left:0, width:"100%", borderBottom:'1px solid black'}}><h4>
+  //   {selectedCompany?.name}
+  //   </h4></div>;
+  return <ul className="nav" style={{ padding: 4}}>
+<li className="nav-item">
+  <Link className="nav-link navbar-brand" to="/menu">
+  {selectedCompany?.name}</Link></li>
+<li className="nav-item">
+  <Link className="nav-link" to="/master">Create Master</Link>
+</li>
+<li className="nav-item" style={{ float: 'right'}}>
+  <Link to="/" className="nav-link">Change Company</Link>
+</li>
+  </ul> 
+
+  
 };
 
 export default connector(Nav);

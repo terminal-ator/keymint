@@ -114,7 +114,7 @@ const LedgerDetail = (props: LedgerProps)=>{
 
   return(
     <div style={{padding: '5px 10px', marginTop: 10 ,flex: 2}}>
-    <h3><button onClick={()=>{if(props.handleEsc){props.handleEsc()}}}>Close</button>&nbsp;
+    <h3><button className="btn btn-danger" onClick={()=>{if(props.handleEsc){props.handleEsc()}}}>Close</button>&nbsp;
     Ledger Details for {props.cust} Outstanding: { Math.abs(total)} { total<0?"debit":"credit" }</h3>
     <div style={{overflow: 'hidden', height: 800, overflowY:"scroll"}}> 
       {withPop(<DialogWrapper> <DialogContent> <EditStatement cust_id={props.cust} statement={2}/></DialogContent></DialogWrapper>, show )}

@@ -17,6 +17,9 @@ import SalesImportPage from "./pages/sales";
 import receipt from "./pages/receipt";
 import LedgerPage from './pages/ledger';
 import { PersistGate } from "redux-persist/integration/react";
+import MasterForm from "./components/master";
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider  } from '@apollo/react-hooks';
 
 const persistConfig = {
   key: 'root',
@@ -31,12 +34,17 @@ const store = createStore(
 );
 let persistor = persistStore(store);
 
+const client = new ApolloClient({
+  uri: "http://localhost:4000"
+});
+
 /* eslint-enable */
 const App: React.FC = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-      <Router>
+      <ApolloProvider client={client}> 
+       <Router>
         <Route exact path="/" component={Index} />
         <Route path="/menu" component={menu} />
         <Route path="/stmt/:id" component={STMT} />
@@ -44,7 +52,9 @@ const App: React.FC = () => {
         <Route path="/sales" component={SalesImportPage} />
         <Route path="/receipt" component={receipt} />
         <Route path="/ledgers" component={LedgerPage} />
+        <Route path="/master" component={MasterForm} />
       </Router>
+      </ApolloProvider>
       </PersistGate>
     </Provider>
   );

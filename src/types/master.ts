@@ -11,4 +11,5 @@ export interface Master {
   company_id: number;
   chq_flg: number;
   group_id:number;
+  balance: number;
 }

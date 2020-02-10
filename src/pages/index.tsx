@@ -33,6 +33,7 @@ export const SELTR = styled.tr`
   td {
     padding: 10px;
     height: inherit;
+    
   }
 `;
 

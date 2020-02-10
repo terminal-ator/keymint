@@ -122,7 +122,7 @@ function KeyList<T>(props: KeyProps<T>) {
       top: 0,
       bottom: 0,
       overflowY: "scroll" as "scroll",
-      height: props.maxHeight,
+      height: 2*props.numberOfRows*props.rowHeight + 200,
       width: props.width || "100%"
     },
     listWrapper: {
@@ -131,7 +131,8 @@ function KeyList<T>(props: KeyProps<T>) {
 
       position: "absolute" as "absolute",
       backgroundColor: "#fff",
-      padding: 10
+      padding: 10,
+      height: props.rowHeight * props.data.all.length,
     },
     list: (height: number) => ({
       height,
@@ -229,10 +230,11 @@ function KeyList<T>(props: KeyProps<T>) {
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     e.preventDefault();
+    console.log("Handling scroll")
   };
 
   return (
-    <div style={styles.wrapper}>
+    <div style={styles.wrapper} onScroll={handleScroll}>
       <div
         onKeyDown={handleKeyDown}
         ref={Focus}

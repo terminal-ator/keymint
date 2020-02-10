@@ -37,9 +37,9 @@ export const DialogWrapper = styled.div`
 
 export const DialogContent = styled.div`
   background-color: #fff;
-  width: 400px;
   height: 100%;
   overflow: hidden;
+  width:500px;
   opacity: 1;
   float: right;
   padding: 10px;
