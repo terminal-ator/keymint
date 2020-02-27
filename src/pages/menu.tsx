@@ -4,7 +4,7 @@ import { normalize, RenderItemProps } from "../types/generic";
 import { SELTR } from ".";
 import { useHistory } from "react-router";
 import { PageDiv } from "../components/styledComp";
-import Nav from '../components/nav';
+import Nav from "../components/nav";
 
 interface MenuItem {
   id: number;
@@ -29,9 +29,14 @@ const MenuRoutes = [
     route: "receipt"
   },
   {
-    id:4,
-    name:"Ledgers",
-    route:"ledgers"
+    id: 4,
+    name: "Ledgers",
+    route: "ledgers"
+  },
+  {
+    id: 5,
+    name: "Errors",
+    route: "errors"
   }
 ];
 
@@ -67,18 +72,20 @@ export default () => {
     <PageDiv>
       <Nav />
       <br />
-      <KeyList
-        columns={["Menu"]}
-        cursor={cursor}
-        data={menuItems}
-        maxHeight={400}
-        numberOfRows={8}
-        width={"400px"}
-        rowHeight={50}
-        renderItem={renderItem}
-        handleEnter={handleEnter}
-        handleMisc={keyMap}
-      />
+      <div style={{ padding: 10 }}>
+        <KeyList
+          columns={["Menu"]}
+          cursor={cursor}
+          data={menuItems}
+          maxHeight={400}
+          numberOfRows={8}
+          width={"400px"}
+          rowHeight={50}
+          renderItem={renderItem}
+          handleEnter={handleEnter}
+          handleMisc={keyMap}
+        />
+      </div>
     </PageDiv>
   );
 };

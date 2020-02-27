@@ -49,18 +49,18 @@ const BankPage = (props: Props) => {
   //   }
   // }, []);
 
-  useEffect(()=>{
-    if(props.masters){
-      
+  useEffect(() => {
+    if (props.masters) {
+
       const mstrs = DeNormalize<Master>(props.masters);
       console.log(mstrs);
-      const bnks = mstrs.filter((mstr)=>mstr.group_id===5);
+      const bnks = mstrs.filter((mstr) => mstr.group_id === 5);
       console.log(bnks);
       const bnksf = normalize<Master>(bnks, true);
       // console.log()
       setBanks(bnksf);
     }
-  },[]);
+  }, []);
 
   const menuItems = normalize<MenuItem>(MenuRoutes);
   const renderItem = (arg: RenderItemProps<Master>) => {
@@ -94,20 +94,23 @@ const BankPage = (props: Props) => {
     <PageDiv>
       <Nav />
       <br />
-      {banks && (
-        <KeyList
-          columns={["Banks"]}
-          cursor={cursor}
-          data={banks}
-          maxHeight={400}
-          numberOfRows={8}
-          width={"400px"}
-          rowHeight={50}
-          renderItem={renderItem}
-          handleEnter={handleEnter}
-          handleMisc={keyMap}
-        />
-      )}
+      <div style={{ padding: 10 }}>
+        {banks && (
+          <KeyList
+            columns={["Banks"]}
+            cursor={cursor}
+            data={banks}
+            maxHeight={400}
+            numberOfRows={8}
+            width={"400px"}
+            rowHeight={50}
+            renderItem={renderItem}
+            handleEnter={handleEnter}
+            handleMisc={keyMap}
+          />
+        )}
+      </div>
+
     </PageDiv>
   );
 };

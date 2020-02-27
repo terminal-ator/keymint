@@ -64,6 +64,15 @@ interface KeyProps<T> {
   width?: string;
 }
 
+function GetDimensions() {
+  const { innerHeight: height, innerWidth: width } = window;
+  return { width, height };
+}
+
+function useGetDimenstion() {
+  const [dim, setDim] = useState(GetDimensions());
+}
+
 function KeyList<T>(props: KeyProps<T>) {
   const [cursor, setCursor] = useState(props.cursor);
   const prevCursor = usePrevious(cursor);
@@ -74,6 +83,8 @@ function KeyList<T>(props: KeyProps<T>) {
   const prevUpper = usePrevious(upperCursorBound);
   const prevLower = usePrevious(lowerCursorBound);
   // console.log("Current cursors bound:", lowerCursorBound, upperCursorBound);
+
+  // get dimension
 
   useEffect(() => {
     setCursor(props.cursor);
@@ -122,7 +133,7 @@ function KeyList<T>(props: KeyProps<T>) {
       top: 0,
       bottom: 0,
       overflowY: "scroll" as "scroll",
-      height: 2*props.numberOfRows*props.rowHeight + 200,
+      height: 2 * props.numberOfRows * props.rowHeight + 200,
       width: props.width || "100%"
     },
     listWrapper: {
@@ -131,8 +142,7 @@ function KeyList<T>(props: KeyProps<T>) {
 
       position: "absolute" as "absolute",
       backgroundColor: "#fff",
-      padding: 10,
-      height: props.rowHeight * props.data.all.length,
+      height: props.rowHeight * props.data.all.length
     },
     list: (height: number) => ({
       height,
@@ -179,6 +189,14 @@ function KeyList<T>(props: KeyProps<T>) {
       } else {
         setCursor(cursor + props.numberOfRows);
       }
+    }
+
+    if (e.keyCode == 36) {
+      setCursor(0);
+    }
+
+    if (e.keyCode == 35) {
+      setCursor(props.data.all.length - 1);
     }
 
     // character code logic
@@ -230,7 +248,7 @@ function KeyList<T>(props: KeyProps<T>) {
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     e.preventDefault();
-    console.log("Handling scroll")
+    console.log("Handling scroll");
   };
 
   return (
@@ -242,8 +260,8 @@ function KeyList<T>(props: KeyProps<T>) {
         style={styles.listWrapper}
         onScroll={handleScroll}
       >
-        <KeyTable>
-          <thead>
+        <KeyTable className="table">
+          <thead className="thead-light">
             <tr style={{ height: props.rowHeight }}>
               {props.columns.map(column_name => (
                 <th key={column_name}>{column_name}</th>

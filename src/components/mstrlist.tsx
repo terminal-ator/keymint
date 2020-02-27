@@ -104,7 +104,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
     // console.log(arg);
     return (
       <SELTR key={arg.item.id.toString()}>
-        <td style={{ padding: 5 }}>
+        <td style={{ padding: 5, overflow: "hidden" }}>
           <span>
             {arg.item.chq_flg ? (
               <span style={{ backgroundColor: "#53c97c", width: 5 }}>

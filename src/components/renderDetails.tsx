@@ -13,13 +13,14 @@ export const DialogContent = styled.div`
   height: 100%;
   overflow: hidden;
   opacity: 1;
-  width: 60%;
+  width: 69%;
   margin-left:20px;
   padding: 10px;
   background-color:white;
   postion:absolute;
   float:right;
   right:10px;
+  top: 10px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 `;
 

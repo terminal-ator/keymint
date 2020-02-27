@@ -33,10 +33,10 @@ const Nav = (props: PropsFromRedux) => {
   const selectedCompany = props.companies?.normalized[props.selected];
 
 
-  // return <div style={{ display: 'flex', flexDirection: 'row',padding:'10px 5px', position:'relative', top:0, left:0, width:"100%", borderBottom:'1px solid black'}}><h4>
+  // return <div className='' style={{ display: 'flex', flexDirection: 'row',padding:'10px 5px', position:'relative', top:0, left:0, width:"100%", borderBottom:'1px solid black'}}><h4>
   //   {selectedCompany?.name}
   //   </h4></div>;
-  return <ul className="nav" style={{ padding: 4}}>
+  return <div className="nav navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar  " style={{ backgroundColor: '#00416a'}}>
 <li className="nav-item">
   <Link className="nav-link navbar-brand" to="/menu">
   {selectedCompany?.name}</Link></li>
@@ -46,7 +46,7 @@ const Nav = (props: PropsFromRedux) => {
 <li className="nav-item" style={{ float: 'right'}}>
   <Link to="/" className="nav-link">Change Company</Link>
 </li>
-  </ul> 
+  </div> 
 
   
 };

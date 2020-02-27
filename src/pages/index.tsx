@@ -77,6 +77,8 @@ const Index = (props: Props) => {
 
   return (
     <PageDiv>
+     <div style={{width: 600, margin: '10px auto'}} >
+     <h1>Open Company </h1>
       {props.companies && (
         <KeyList
           columns={["ID", "Company"]}
@@ -90,6 +92,7 @@ const Index = (props: Props) => {
           handleEnter={selectCompany}
         />
       )}
+     </div>
     </PageDiv>
   );
 };

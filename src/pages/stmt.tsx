@@ -39,8 +39,8 @@ export const DialogContent = styled.div`
   background-color: #fff;
   height: 100%;
   overflow: hidden;
-  width:500px;
   opacity: 1;
+  width: 700px;
   float: right;
   padding: 10px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
@@ -168,8 +168,6 @@ const STMT = (props: Props) => {
             "Reference",
             "Deposit",
             "Withdrawl",
-            "Bank",
-            "Company"
           ]}
           cursor={cursor}
           maxHeight={700}

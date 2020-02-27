@@ -5,6 +5,5 @@ export const Select = styled.select`
 `;
 
 export const PageDiv = styled.div`
-  padding: 5px 10px;
   
 `

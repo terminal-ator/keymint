@@ -41,8 +41,6 @@ const StatementTR: FC<StatementLiProps> = ({ statement }) => {
       <SimTd>
         {(statement.withdrawl.Valid && statement.withdrawl.Float64) || 0}
       </SimTd>
-      <SimTd>{statement.bank.name}</SimTd>
-      <SimTd>{statement.company.name}</SimTd>
     </SELTR>
   );
 };

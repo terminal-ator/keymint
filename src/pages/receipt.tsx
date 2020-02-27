@@ -34,7 +34,7 @@ const Receipt = (props: PropType) => {
 
 
   let saveReceipts = async (rec: Receipt) => {
-    let newR = [...receipt.slice(0,receipt.length-1), rec];
+    let newR = [...receipt.slice(0, receipt.length - 1), rec];
     newR.push(newReciept[0])
     await setReceipt(newR);
     console.log({ newR });
@@ -65,20 +65,20 @@ const Receipt = (props: PropType) => {
     setTotal(nTotal);
   });
 
-  const saveReceipt = async ()=>{
-    try{
-      await postLedger(currentDate, receipt.slice(0,receipt.length-1), props.companyID);
+  const saveReceipt = async () => {
+    try {
+      await postLedger(currentDate, receipt.slice(0, receipt.length - 1), props.companyID);
       setReceipt(newReciept);
       setCurrentDate(moment().format('YYYY-MM-DD'));
-    }catch(err){
+    } catch (err) {
       console.log(err);
     }
-  
+
   }
 
-  const clear = ()=>{
+  const clear = () => {
     const clearBool = window.confirm('Are you sure, all data will be lost ?');
-    if(clearBool){
+    if (clearBool) {
       setReceipt(newReciept);
     }
   }
@@ -86,34 +86,36 @@ const Receipt = (props: PropType) => {
   return (
     <PageDiv>
       <Nav />
-      <div style={{ display: 'flex', flexDirection:'row', alignItems:'center' }}>
-      <h1>Reciepts</h1>
-      <button disabled={receipt.length===1} style={{ height: 20, background: 'white'}} onClick={()=>{clear()}}>Clear</button>
-      </div>
-      <input
-        type="date"
-        onChange={e => {
-          setCurrentDate(e.target.value);
-        }}
-        defaultValue={currentDate}
-      />
-    
-      {receipt.map(receipt => {
-        if (props.masters) {
-          return (
-            <ReceiptForm
-              key={receipt.id}
-              MasterList={props.masters}
-              Receipt={receipt}
-              Save={saveReceipts}
-              UpdateReceiptCash={updateCash}
-            />
-          );
-        }
-      })}
+      <div style={{ padding: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <h1>Reciepts</h1>
+          <button className="btn" disabled={receipt.length === 1} style={{ height: 20, background: 'white' }} onClick={() => { clear() }}>Clear</button>
+        </div>
+        <input
+          type="date"
+          onChange={e => {
+            setCurrentDate(e.target.value);
+          }}
+          defaultValue={currentDate}
+        />
 
-      <button onClick={()=>{saveReceipt()}}>Save</button>
-      <h2>{`Total: ${total}`}</h2>
+        {receipt.map(receipt => {
+          if (props.masters) {
+            return (
+              <ReceiptForm
+                key={receipt.id}
+                MasterList={props.masters}
+                Receipt={receipt}
+                Save={saveReceipts}
+                UpdateReceiptCash={updateCash}
+              />
+            );
+          }
+        })}
+
+        <button onClick={() => { saveReceipt() }}>Save</button>
+        <h2>{`Total: ${total}`}</h2>
+      </div>
     </PageDiv>
   );
 };

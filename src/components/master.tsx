@@ -56,8 +56,11 @@ interface Errors {
     [key: string]: string | undefined;
 }
 
-const MasterContent = styled(DialogContent)`
+const MasterContent = styled.div`
+    width: 500px;
+    float: clear;
     margin: 0px auto;
+    position: relative;
 `
 
 const MasterForm = (props: Props) => {
@@ -79,8 +82,8 @@ const MasterForm = (props: Props) => {
         }
     })
 
-    if (loading) return <div>Loading.......</div>
-    if (error) return <div>{error.message}</div>
+    // if (loading) return <div>Loading.......</div>
+    // if (error) return <div>{error.message}</div>
     console.log(data)
 
 

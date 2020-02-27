@@ -3,7 +3,7 @@ import { Receipt } from "../pages/receipt";
 import { QuickForm } from "../components/ledgerDetail";
 import { StatementMutation } from "../types/generic";
 
-const SERVER_URL = `http://192.168.0.124:8080`;
+const SERVER_URL = `http://192.168.0.116:8080`;
 
 export const getCompanies = async () => {
   const req = await axios.get(`${SERVER_URL}/companies`);
@@ -45,7 +45,7 @@ export const getUploadCompanies = async (companyID: number) => {
 export const postFileUpload = async (
   companyID: number,
   companyName: string,
-  saleId:number,
+  saleId: number,
   formdata: FormData
 ) => {
   return axios.post(
@@ -54,25 +54,31 @@ export const postFileUpload = async (
   );
 };
 
+export const postLedger = async (
+  date: string,
+  recArray: Array<Receipt>,
+  companyID: number
+) => {
+  return axios.post(`${SERVER_URL}/ledger/${companyID}`, {
+    date,
+    ledger_entry: recArray
+  });
+};
 
+export const fetchLedger = async (custID: number, companyID: number) => {
+  return axios.get(
+    `${SERVER_URL}/ledger?cust_id=${custID}&company=${companyID}`
+  );
+};
 
-export const postLedger = async (date: string, recArray : Array<Receipt>, companyID: number)=>{
-  return axios.post(`${SERVER_URL}/ledger/${companyID}`, { date, ledger_entry: recArray })
-}
-
-export const fetchLedger = async(custID: number, companyID:number)=>{
-  return axios.get(`${SERVER_URL}/ledger?cust_id=${custID}&company=${companyID}`)
-}
-
-export const putLedger = async (qck: QuickForm, companyID:number)=>{
+export const putLedger = async (qck: QuickForm, companyID: number) => {
   return axios.put(`${SERVER_URL}/ledger/${companyID}`, qck);
-}
+};
 
-export const getPostings = async (accountID: number)=>{
-  return axios.get(`${SERVER_URL}/postings/${accountID}`)
-}
+export const getPostings = async (accountID: number) => {
+  return axios.get(`${SERVER_URL}/postings/${accountID}`);
+};
 
-export const newSetStatement = async (packet: StatementMutation)=>{
+export const newSetStatement = async (packet: StatementMutation) => {
   return axios.post(`${SERVER_URL}/statement/`, packet);
-  
-}
+};
