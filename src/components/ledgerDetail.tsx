@@ -8,6 +8,8 @@ import EditStatement from './editStatement';
 import withPop from './popup';
 import { DialogWrapper, DialogContent } from '../pages/stmt';
 import KeyList from './keylist';
+import { stateSelector } from '../reducers';
+import { Card } from 'antd';
 
 interface LedgerProps {
   cust: number;
@@ -27,7 +29,7 @@ const LedgerDetail = (props: LedgerProps) => {
   const [total, setTotal] = useState(0);
   const [postings, setPosting] = useState<NormalizedCache<Posting>>();
   const [show, setShow] = useState(false);
-
+  const masters = stateSelector(state => state.master.masters);
   // useEffect(()=>{
   //   fetchLedgers(props.cust.cust_id.Int64);
   // })
@@ -111,12 +113,21 @@ const LedgerDetail = (props: LedgerProps) => {
     )
   }
 
+  const masterItem = (mstr: Master | undefined, total: number) => {
+    if (mstr) {
+      return <Card title={mstr.name} bordered={false} style={{ marginTop: 10 }}  >
+        <p>{mstr.cust_id.Int64}</p>
+        <p>Outstanding: {Math.abs(total)} {total < 0 ? "debit" : "credit"} </p>
+      </Card>
+    }
+    return null
+  }
 
   return (
     <div style={{ padding: '5px 10px', marginTop: 10, flex: 2 }}>
-      <h3><button className="btn btn-danger" onClick={() => { if (props.handleEsc) { props.handleEsc() } }}>Close</button>&nbsp;
-    Ledger Details for {props.cust} Outstanding: {Math.abs(total)} {total < 0 ? "debit" : "credit"}</h3>
-      <div style={{ overflow: 'hidden', height: 800, overflowY: "scroll" }}>
+      <h3><button className="btn btn-danger" onClick={() => { if (props.handleEsc) { props.handleEsc() } }}>Close</button>&nbsp;</h3>
+      {masterItem(masters?.normalized[props.cust], total)}
+      <div style={{ overflow: 'hidden', height: 800, overflowY: "hidden" }}>
         {withPop(<DialogWrapper> <DialogContent> <EditStatement cust_id={props.cust} statement={2} /></DialogContent></DialogWrapper>, show)}
         {
           postings &&
@@ -124,9 +135,9 @@ const LedgerDetail = (props: LedgerProps) => {
             columns={['date', 'narration', 'refno', 'debit', 'credit']}
             cursor={0}
             data={postings}
-            maxHeight={800}
+            maxHeight={400}
             rowHeight={20}
-            numberOfRows={10}
+            numberOfRows={7}
 
             renderItem={renderItem}
             handleEscape={props.handleEsc}

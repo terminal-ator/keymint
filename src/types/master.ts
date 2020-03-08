@@ -10,6 +10,7 @@ export interface Master {
   CreatedAt: NullString;
   company_id: number;
   chq_flg: number;
-  group_id:number;
+  group_id: number;
   balance: number;
+  beat_id: number;
 }

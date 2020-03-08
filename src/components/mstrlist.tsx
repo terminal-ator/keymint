@@ -11,6 +11,11 @@ import { Company } from "../types/company";
 import KeyList from "./keylist";
 import { SELTR } from "../pages";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { stateSelector } from "../reducers";
+import { Beat } from "../actions/beatActions";
+import { Select } from "./styledComp";
+
 
 interface MasterListProps {
   masters: NormalizedCache<Master>;
@@ -19,44 +24,33 @@ interface MasterListProps {
   companies?: NormalizedCache<Company>;
 }
 
+
+
 type MProps = MasterListProps & RouteComponentProps;
 
 const MasterList: FC<MProps> = (props: MProps) => {
   const [filter, setFilter] = useState("");
   const [cursor, setCursor] = useState(0);
   const [masters, setMasters] = useState(props.masters);
-  // const focusRef = useRef();
+  const bts = stateSelector(state => state.beats.beats)
+
   useEffect(() => {
     setMasters(props.masters);
   }, [props.masters]);
 
-  const columns = ["Name", "Balance"];
+  const columns = ["Name", "Beat", "Balance"];
 
   const selectName = (cursor: number) => {
     if (props.handleEnter) props.handleEnter(masters.all[cursor]);
   };
 
-  const filterBasedOnCompany = async (companyID: number) => {
-    if (companyID === 0) {
-      setMasters(props.masters);
-      return;
-    }
-
-    const newAll = masters.all.filter(
-      id => props.masters.normalized[id].company_id == companyID
-    );
-
-    const newMasters = GenerateCacheFromAll<Master>(props.masters, newAll);
-    setMasters(newMasters);
-  };
-
-  const filterBasedOnBalance = (selected: boolean)=>{
-    if(selected){
+  const filterBasedOnBalance = (selected: boolean) => {
+    if (selected) {
       const mstr = DeNormalize<Master>(props.masters)
-      const newMstr = mstr.filter((m)=>m.balance!==0);
+      const newMstr = mstr.filter((m) => m.balance !== 0);
       const norml = normalize<Master>(newMstr, true);
       setMasters(norml);
-    }else{
+    } else {
       setMasters(props.masters)
     }
   }
@@ -82,6 +76,17 @@ const MasterList: FC<MProps> = (props: MProps) => {
     }
     return 1;
   };
+
+  const filterByBeat = (val: number) => {
+    if (val == 0) {
+      setMasters(props.masters)
+      return;
+    }
+    const denorm = DeNormalize(props.masters);
+    const filtered = denorm.filter((mstr) => mstr.beat_id == val)
+    const normed = normalize(filtered, true);
+    setMasters(normed);
+  }
 
   // const filterOut = async (filteredString: string) => {
   //   if (filteredString === "") setMasters(props.masters);
@@ -115,21 +120,24 @@ const MasterList: FC<MProps> = (props: MProps) => {
             <span>{arg.item.name}</span>
           </span>
         </td>
+        <td>
+          {bts?.normalized[arg.item.beat_id].short_name}
+        </td>
         <td>{
           Math.abs(arg.item.balance).toString()
-          }&nbsp;{arg.item.balance<0?"DR":"CR"}</td>
+        }&nbsp;{arg.item.balance < 0 ? "DR" : "CR"}</td>
       </SELTR>
     );
   }
 
-  const clearFilter= ()=>{
+  const clearFilter = () => {
     setFilter("");
-    return 
+    return
   }
 
-  const handleEscape = (cursor: number , str: string)=>{
-    if(filter===""&&props.handleEscape) {props.handleEscape(cursor, str); return;}
-    else if(filter===""){props.history.goBack();return}
+  const handleEscape = (cursor: number, str: string) => {
+    if (filter === "" && props.handleEscape) { props.handleEscape(cursor, str); return; }
+    else if (filter === "") { props.history.goBack(); return }
     clearFilter();
   }
 
@@ -146,9 +154,15 @@ const MasterList: FC<MProps> = (props: MProps) => {
 
   return (
     <div style={{ height: "100%" }}>
+      <Select onChange={(e) => { filterByBeat(parseInt(e.target.value)) }} >
+        <option value={0}>All</option>
+        {
+          bts?.all.map((id) => <option key={bts.normalized[id].id} value={bts.normalized[id].id}>{bts.normalized[id].name}</option>)
+        }
+      </Select>
       <p className="filter-text">{filter || "filter"}</p>
       <span>
-        <input type="checkbox" name="handle" onChange={e=>{filterBasedOnBalance(e.target.checked)}} /><label htmlFor="handle">Hide Balanced</label>
+        <input type="checkbox" name="handle" onChange={e => { filterBasedOnBalance(e.target.checked) }} /><label htmlFor="handle">Hide Balanced</label>
       </span>
       <KeyList
         key={"master-list"}

@@ -5,19 +5,23 @@ import { ConnectedProps, connect } from 'react-redux';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { Select } from './styledComp';
-import { DialogWrapper } from '../pages/stmt';
-import { DialogContent } from './renderDetails';
 import styled from 'styled-components';
+import { FetchMasters } from "../actions/masterActions";
+import { Input, message } from 'antd';
+import { postCreateMaster } from '../api';
+import { Master } from '../types/master';
 
 const mapState = (state: AppState) => {
     return ({
         companyID: state.sys.SelectedCompany
     })
 }
+interface XProps {
+    master?: Master
+}
+const connector = connect(mapState, { FetchMasters })
 
-const connector = connect(mapState, {})
-
-type Props = ConnectedProps<typeof connector>;
+type Props = ConnectedProps<typeof connector> & XProps;
 
 const FETCH_FIELDS = gql`
    query fetchCompany($id: Int){
@@ -56,6 +60,13 @@ interface Errors {
     [key: string]: string | undefined;
 }
 
+export interface FormValues {
+    name: string
+    beat_id: number;
+    group_id: number;
+    i_code: string;
+}
+
 const MasterContent = styled.div`
     width: 500px;
     float: clear;
@@ -88,55 +99,65 @@ const MasterForm = (props: Props) => {
 
 
     return (
-        <DialogWrapper>
-            <MasterContent>
-                <Formik
-                    initialValues={{ name: "", beatID: 1, groupID: 1 }}
-                    onSubmit={(values) => {
-                        window.alert(JSON.stringify(values))
-                    }
-                    }
-                    validate={(values) => {
-                        let errors: Errors = {};
-                        if (!values.name) {
-                            errors.name = "Name is required";
-                        }
-                        return errors;
-                    }}
-                >
-                    {
-                        ({ }) => (
-                            <Form style={{ display: "block", padding: 10, width: 500, margin: '10px auto' }} className='card'>
-                                <div className="form-group">
-                                    <label className="mr-2" htmlFor="name">Name </label>
-                                    <Field innerRef={inputR} type="text" placeholder="name" name="name" />
-                                    <ErrorMessage name="name" className="ml-5" />
-                                </div>
-                                <div className="form-group">
-                                    <label className="mr-2" htmlFor="groupid" >Group </label>
-                                    {data && <Field name="groupID" as={Select} >
-                                        {
-                                            data.getCompany.groups.map((g) => <option key={g.id} value={g.id} >{g.name}</option>)
-                                        }
-                                    </Field>}
-                                </div>
-                                <div className="form-group">
-                                    <label className="mr-2" htmlFor="beatID" >Beat</label>
-                                    {data && <Field as={Select} name="beatID">
-                                        {
-                                            data.getCompany.beats.map((b) => <option key={b.id} value={b.id} >{b.name}</option>)
-                                        }
-                                    </Field>}
-                                </div>
-                                <button className="btn btn-primary btn-block" type="submit">Create</button>
+        <Formik
+            initialValues={{ name: "", beat_id: 1, group_id: 1, i_code: "GENERIC" }}
+            onSubmit={async (values: FormValues, { resetForm }) => {
+                // window.alert(JSON.stringify(values))
+                const resp = await postCreateMaster(values, props.companyID);
+                if (resp.status == 200) {
+                    message.success("Successfully added new master");
+                    props.FetchMasters(props.companyID)
+                    resetForm();
+                } else {
+                    message.error("Failed, please try again")
+                }
 
-                            </Form>
-                        )
-                    }
+            }
+            }
+            validate={(values) => {
+                let errors: Errors = {};
+                if (!values.name) {
+                    errors.name = "Name is required";
+                }
+                return errors;
+            }}
+        >
+            {
+                ({ }) => (
+                    <Form style={{ display: "block", padding: 10, margin: '10px auto' }} className='card'>
+                        <div className="form-group">
+                            <label className="mr-2" htmlFor="name">Name </label>
+                            <Field innerRef={inputR} as={Input} type="text" placeholder="name" name="name" />
+                            <ErrorMessage name="name" className="ml-5" />
+                        </div>
+                        <div className="form-group">
+                            <label className="mr-2" htmlFor="i_code">Interface</label>
+                            <Field innerRef={inputR} as={Input} type="text" placeholder="Interface" name="i_code" />
+                            <ErrorMessage name="interface" className="ml-5" />
+                        </div>
+                        <div className="form-group">
+                            <label className="mr-2" htmlFor="group_id" >Group </label>
+                            {data && <Field name="group_id" as={Select} >
+                                {
+                                    data.getCompany.groups.map((g) => <option key={g.id} value={g.id} >{g.name}</option>)
+                                }
+                            </Field>}
+                        </div>
+                        <div className="form-group">
+                            <label className="mr-2" htmlFor="beat_id" >Beat</label>
+                            {data && <Field as={Select} name="beat_id">
+                                {
+                                    data.getCompany.beats.map((b) => <option key={b.id} value={b.id} >{b.name}</option>)
+                                }
+                            </Field>}
+                        </div>
+                        <button className="btn btn-primary btn-block" type="submit">Create</button>
 
-                </Formik>
-            </MasterContent>
-        </DialogWrapper>
+                    </Form>
+                )
+            }
+
+        </Formik>
     )
 }
 

@@ -24,14 +24,13 @@ const connector = connect(mapState, {});
 type PropType = ConnectedProps<typeof connector> & RouteComponentProps;
 
 
-const LedgerPage = (props:PropType)=>{
+const LedgerPage = (props: PropType) => {
 
-  const [ cust ,setCust ] = useState<Master>();
-  const [ show, setShow ] = useState(false);
+  const [cust, setCust] = useState<Master>();
+  const [show, setShow] = useState(false);
 
-  const selectMaster = (masterID: number)=>{
-    if(props.masters)
-    {
+  const selectMaster = (masterID: number) => {
+    if (props.masters) {
       props.history.push(`/ledgers/${masterID}`)
       setCust(props.masters.normalized[masterID]);
       setShow(true);
@@ -40,7 +39,7 @@ const LedgerPage = (props:PropType)=>{
 
 
 
-  return(
+  return (
     <PageDiv>
       <Nav />
       {/* { cust && withPop(
@@ -50,12 +49,12 @@ const LedgerPage = (props:PropType)=>{
         </DialogContent> 
         </DialogWrapper>, show)} */}
       <Route exact path={'/ledgers/:id'} component={renderDetail} />
-      <div style={{ display: 'flex', marginTop: 5}}>
-      <div style={{ flex: 1}}>
-      <div style={{border:'1px solid black', padding:'5px'}}>
-      { props.masters && <MasterList masters={props.masters} handleEnter={selectMaster} /> }
-      </div>
-      </div>
+      <div style={{ display: 'flex', marginTop: 5 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ border: '1px solid black', padding: '5px', width: 600 }}>
+            {props.masters && <MasterList masters={props.masters} handleEnter={selectMaster} />}
+          </div>
+        </div>
       </div>
     </PageDiv>
   )

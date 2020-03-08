@@ -24,16 +24,16 @@ const KeyBody = styled.tbody`
         ? props.bgColorOn
         : "#1f85de"
       : props.bgColorOff
-      ? props.bgColorOff
-      : "white"};
+        ? props.bgColorOff
+        : "white"};
   color: ${(props: SELTRPROPS) =>
     props.selected
       ? props.colorOn
         ? props.colorOn
         : "white"
       : props.colorOff
-      ? props.colorOff
-      : "black"};
+        ? props.colorOff
+        : "black"};
   height: ${(props: SELTRPROPS) => {
     if (props.height) return props.height;
     return "40px";

@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { GetCompanies, SelectCompany } from "../actions/systemActions";
 import { FetchMasters } from "../actions/masterActions";
-import { FetchStats } from "../actions/stmtActions";
+import { FetchBeat } from '../actions/beatActions';
 import { AppState } from "../reducers";
 import { RouteComponentProps } from "react-router";
 import KeyList from "../components/keylist";
@@ -21,7 +21,7 @@ const mapDispatch = {
   GetCompanies,
   SelectCompany,
   FetchMasters,
-  FetchStats
+  FetchBeat
 };
 
 export interface SELTRPROPS {
@@ -60,6 +60,7 @@ const Index = (props: Props) => {
       const companyID = denorm[cursor].id;
       props.SelectCompany(companyID);
       props.FetchMasters(companyID);
+      props.FetchBeat(companyID);
       props.history.push("/menu");
     }
   };
@@ -77,22 +78,22 @@ const Index = (props: Props) => {
 
   return (
     <PageDiv>
-     <div style={{width: 600, margin: '10px auto'}} >
-     <h1>Open Company </h1>
-      {props.companies && (
-        <KeyList
-          columns={["ID", "Company"]}
-          cursor={cursor}
-          data={props.companies}
-          maxHeight={500}
-          numberOfRows={10}
-          rowHeight={30}
-          width={"400px"}
-          renderItem={renderItems}
-          handleEnter={selectCompany}
-        />
-      )}
-     </div>
+      <div style={{ width: 600, margin: '10px auto' }} >
+        <h1>Open Company </h1>
+        {props.companies && (
+          <KeyList
+            columns={["ID", "Company"]}
+            cursor={cursor}
+            data={props.companies}
+            maxHeight={500}
+            numberOfRows={10}
+            rowHeight={30}
+            width={"400px"}
+            renderItem={renderItems}
+            handleEnter={selectCompany}
+          />
+        )}
+      </div>
     </PageDiv>
   );
 };

@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
 import { Provider } from "react-redux";
-import CReducer from "./reducers";
+import CReducer, { stateSelector } from "./reducers";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import Index from "./pages";
@@ -20,6 +20,11 @@ import MasterForm from "./components/master";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import Errors from "./pages/errors";
+import Master from './components/master';
+
+import 'antd/dist/antd.css';
+import { Modal } from "antd";
+import Glob from "./Glob";
 
 const persistConfig = {
   key: "root",
@@ -35,11 +40,14 @@ const store = createStore(
 let persistor = persistStore(store);
 
 const client = new ApolloClient({
-  uri: "http://192.168.0.116:4000"
+  uri: "http://192.168.0.125:4000"
 });
 
 /* eslint-enable */
 const App: React.FC = () => {
+
+  // 
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -55,6 +63,7 @@ const App: React.FC = () => {
             <Route path="/master" component={MasterForm} />
             <Route path="/errors" component={Errors} />
           </Router>
+          <Glob />
         </ApolloProvider>
       </PersistGate>
     </Provider>
