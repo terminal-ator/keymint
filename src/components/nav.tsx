@@ -5,7 +5,7 @@ import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Modal, Button } from "antd";
 import Master from '../components/master';
-import { ToggleMaster } from "../actions/uiActions";
+import { ToggleMaster, ToggleJournal } from "../actions/uiActions";
 
 const NavBar = styled.nav`
   width: 100%;
@@ -50,6 +50,9 @@ const Nav = (props: PropsFromRedux) => {
           {selectedCompany?.name}</Link></li>
       <li className="nav-item">
         <Button onClick={() => { dispatch(ToggleMaster(true)) }}>Add Master</Button>
+      </li>
+      <li className="nav-item">
+        <Button onClick={() => { dispatch(ToggleJournal(true, false, 0)) }}>Add Journal</Button>
       </li>
       <li className="nav-item" style={{ float: 'right' }}>
         <Link to="/" className="nav-link">Change Company</Link>

@@ -3,12 +3,14 @@ import { Receipt } from "../pages/receipt";
 import { QuickForm } from "../components/ledgerDetail";
 import { StatementMutation } from "../types/generic";
 import { FormValues } from "../components/master";
+import { Master } from "../types/master";
+import { Journal } from "../types/ledger";
 
 const ax = axios.create({
-  baseURL: 'http://192.168.0.125:8080'
+  baseURL: 'http://localhost:8080'
 })
 
-const SERVER_URL = `http://192.168.0.125:8080`;
+const SERVER_URL = `http://localhost:8080`;
 
 export const getCompanies = async () => {
   const req = await axios.get(`${SERVER_URL}/companies`);
@@ -93,10 +95,26 @@ export const postErrors = async (cust_id: number, error_id: number) => {
 }
 
 
-export const postCreateMaster = async (value: FormValues, companyID: number) => {
+export const postCreateMaster = async (value: any, companyID: number) => {
   return axios.post(`${SERVER_URL}/master/${companyID}`, value);
 }
 
-export const fetchBeats = async(companyID: number)=>{
+export const fetchBeats = async (companyID: number) => {
   return ax.get(`/beat/${companyID}`)
+}
+
+export const putUpdateMaster = async (master: { name: string, beat_id: number, group_id: number, }, custID: number) => {
+
+  const packet = { cust_id: { Valid: true, Int64: custID }, ...master }
+  console.log({ packet })
+  return ax.put('/master', packet)
+
+}
+
+export const postNewJournal = async (journal: Journal) => {
+  return ax.post('/journal', journal)
+}
+
+export const getJournal = async (journalID: number) => {
+  return ax.get(`/journal/${journalID}`)
 }

@@ -5,13 +5,15 @@ import { StmtReducer } from "./stmtReducer";
 import { BeatReducer } from "./beatReducer";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { UIReducer } from "./uiReducer";
+import { PostingReducer } from "./postingReducer";
 
 const rootReducer = combineReducers({
   sys: SystemReducer,
   master: MasterReducer,
   stmt: StmtReducer,
   beats: BeatReducer,
-  ui: UIReducer
+  ui: UIReducer,
+  posts: PostingReducer,
 });
 
 export type AppState = ReturnType<typeof rootReducer>;

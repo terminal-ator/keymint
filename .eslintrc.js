@@ -24,6 +24,5 @@ module.exports = {
       }
     ],
     "@typescript-eslint/indent": [2, 2],
-    avoidEscape: true
   }
 };

@@ -256,7 +256,7 @@ function KeyList<T>(props: KeyProps<T>) {
       <div
         onKeyDown={handleKeyDown}
         ref={Focus}
-        tabIndex={0}
+        tabIndex={1}
         style={styles.listWrapper}
         onScroll={handleScroll}
       >

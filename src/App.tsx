@@ -25,6 +25,7 @@ import Master from './components/master';
 import 'antd/dist/antd.css';
 import { Modal } from "antd";
 import Glob from "./Glob";
+import JournalPage from "./pages/journal";
 
 const persistConfig = {
   key: "root",
@@ -40,7 +41,7 @@ const store = createStore(
 let persistor = persistStore(store);
 
 const client = new ApolloClient({
-  uri: "http://192.168.0.125:4000"
+  uri: "http://localhost:4000"
 });
 
 /* eslint-enable */
@@ -62,6 +63,7 @@ const App: React.FC = () => {
             <Route path="/ledgers" component={LedgerPage} />
             <Route path="/master" component={MasterForm} />
             <Route path="/errors" component={Errors} />
+            <Route path="/journal" component={JournalPage} />
           </Router>
           <Glob />
         </ApolloProvider>

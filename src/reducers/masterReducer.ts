@@ -3,11 +3,11 @@ import { Master } from "../types/master";
 import { MasterActions, FETCH_MASTERS } from "../actions/masterActions";
 
 export interface MasterState {
-  masters: NormalizedCache<Master> | undefined;
+  masters: NormalizedCache<Master>
 }
 
 const initialState: MasterState = {
-  masters: undefined
+  masters: { normalized: {}, all: [] }
 };
 
 export const MasterReducer = (

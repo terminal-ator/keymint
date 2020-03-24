@@ -44,6 +44,7 @@ export function normalize<T extends HasId>(array: Array<T>, useCustID = false) {
     all: [],
     normalized: {}
   };
+  if (array == null) return normal;
   if (array.length < 1) return normal;
   array.forEach(element => {
     normal.all.push(

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { AppState } from '../reducers';
+import { AppState, stateSelector } from '../reducers';
 import { ConnectedProps, connect } from 'react-redux';
 import { useQuery, useLazyQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
@@ -8,7 +8,7 @@ import { Select } from './styledComp';
 import styled from 'styled-components';
 import { FetchMasters } from "../actions/masterActions";
 import { Input, message } from 'antd';
-import { postCreateMaster } from '../api';
+import { postCreateMaster, putUpdateMaster } from '../api';
 import { Master } from '../types/master';
 
 const mapState = (state: AppState) => {
@@ -62,8 +62,8 @@ interface Errors {
 
 export interface FormValues {
     name: string
-    beat_id: number;
-    group_id: number;
+    beat_id: string;
+    group_id: string;
     i_code: string;
 }
 
@@ -97,13 +97,55 @@ const MasterForm = (props: Props) => {
     // if (error) return <div>{error.message}</div>
     console.log(data)
 
+    // get type from state
+    const updateMaster = stateSelector(state => state.ui.masterToUpdate);
+    const masters = stateSelector(state => state.master.masters);
+    const masterID = stateSelector(state => state.ui.masterCustID);
+    let initialValues = { name: "", beat_id: "1", group_id: "1", i_code: "GENERIC" };
+
+    useEffect(() => {
+        if (updateMaster && masterID) {
+            const editMaster = masters?.normalized[masterID];
+            if (editMaster) {
+                console.log("Checking master:", editMaster)
+                initialValues = {
+                    name: editMaster?.name, beat_id: editMaster?.beat_id.toString(),
+                    group_id: editMaster?.group_id.toString(), i_code: 'EDIT IC'
+                }
+            }
+
+        }
+    }, [masterID]);
+
+    if (updateMaster && masterID) {
+        const editMaster = masters?.normalized[masterID];
+        if (editMaster)
+            initialValues = {
+                name: editMaster?.name, beat_id: editMaster?.beat_id.toString(),
+                group_id: editMaster?.group_id.toString(), i_code: 'EDIT IC'
+            }
+    }
 
     return (
         <Formik
-            initialValues={{ name: "", beat_id: 1, group_id: 1, i_code: "GENERIC" }}
-            onSubmit={async (values: FormValues, { resetForm }) => {
+            initialValues={initialValues}
+            onSubmit={async (values, { resetForm }) => {
+
+                const parsedFormValues = {
+                    name: values.name,
+                    beat_id: parseInt(values.beat_id),
+                    group_id: parseInt(values.group_id),
+                    i_code: values.i_code
+                }
                 // window.alert(JSON.stringify(values))
-                const resp = await postCreateMaster(values, props.companyID);
+                let resp: any;
+                if (updateMaster && masterID) {
+                    resp = await putUpdateMaster(parsedFormValues, masterID);
+
+                } else {
+                    resp = await postCreateMaster(parsedFormValues, props.companyID);
+                }
+
                 if (resp.status == 200) {
                     message.success("Successfully added new master");
                     props.FetchMasters(props.companyID)

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppState } from '../reducers';
-import { connect, ConnectedProps } from 'react-redux';
+import {connect, ConnectedProps, useDispatch} from 'react-redux';
 import { PageDiv } from '../components/styledComp';
 import Nav from '../components/nav';
 import MasterList from '../components/mstrlist';
@@ -11,6 +11,7 @@ import { DialogWrapper } from './stmt';
 import styled from 'styled-components';
 import { BrowserRouterProps, Route, RouteComponentProps } from 'react-router-dom';
 import renderDetail from '../components/renderDetails';
+import {fetchPosting} from "../actions/postingActions";
 
 const mapState = (state: AppState) => {
   return {
@@ -28,11 +29,13 @@ const LedgerPage = (props: PropType) => {
 
   const [cust, setCust] = useState<Master>();
   const [show, setShow] = useState(false);
+  const dispatch = useDispatch();
 
-  const selectMaster = (masterID: number) => {
+  const selectMaster = async (masterID: number) => {
     if (props.masters) {
       props.history.push(`/ledgers/${masterID}`)
       setCust(props.masters.normalized[masterID]);
+      await dispatch(fetchPosting(props.masters.normalized[masterID].cust_id.Int64));
       setShow(true);
     }
   }

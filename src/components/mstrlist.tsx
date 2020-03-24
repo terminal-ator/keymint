@@ -154,16 +154,19 @@ const MasterList: FC<MProps> = (props: MProps) => {
 
   return (
     <div style={{ height: "100%" }}>
+      <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
       <Select onChange={(e) => { filterByBeat(parseInt(e.target.value)) }} >
         <option value={0}>All</option>
         {
           bts?.all.map((id) => <option key={bts.normalized[id].id} value={bts.normalized[id].id}>{bts.normalized[id].name}</option>)
         }
       </Select>
-      <p className="filter-text">{filter || "filter"}</p>
-      <span>
-        <input type="checkbox" name="handle" onChange={e => { filterBasedOnBalance(e.target.checked) }} /><label htmlFor="handle">Hide Balanced</label>
+      <p className="filter-text" style={{ marginTop: 2, marginLeft: 2}}>{filter || "Search will appear here"}</p>
+      <span style={{float: 'right', alignSelf: 'center'}}>
+        <input type="checkbox" name="handle" onChange={e => { filterBasedOnBalance(e.target.checked) }} />
+        <label htmlFor="handle">&nbsp; Hide Balanced</label>
       </span>
+      </div>
       <KeyList
         key={"master-list"}
         columns={columns}

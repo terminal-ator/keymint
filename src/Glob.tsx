@@ -3,24 +3,29 @@ import { stateSelector } from './reducers';
 import { Modal } from 'antd';
 import Master from './components/master';
 import { useDispatch } from 'react-redux';
-import { ToggleMaster } from './actions/uiActions';
+import { ToggleMaster, ToggleJournal } from './actions/uiActions';
+import JournalForm from './components/journalForm';
 
 
 const Glob = () => {
     const masterToggle = stateSelector(state => state.ui.masterToggle);
-    const cust_id = stateSelector(state => state.ui.masterCustID);
-    const to_update = stateSelector(state => state.ui.masterToUpdate);
-    const masters = stateSelector(state => state.master.masters)
+    const journalToggle = stateSelector(state => state.ui.journalToggle);
     const dispatch = useDispatch();
 
     return (
-        <Modal visible={masterToggle}
-            title={'Create User'}
-            footer={null}
-            onCancel={() => { dispatch(ToggleMaster(false)) }}
-        >
-            <Master />
-        </Modal>
+        <div>
+            <Modal visible={masterToggle}
+                title={'Create User'}
+                footer={null}
+                onCancel={() => { dispatch(ToggleMaster(false)) }}
+                destroyOnClose={true}
+            >
+                <Master />
+            </Modal>
+            <Modal visible={journalToggle} destroyOnClose onCancel={() => { dispatch(ToggleJournal(false, false, 0)) }} footer={null} style={{ minWidth: 900, top: 10 }} bodyStyle={{ minHeight: "500px", minWidth: "700px" }}>
+                <JournalForm />
+            </Modal>
+        </div>
     )
 }
 

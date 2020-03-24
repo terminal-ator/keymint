@@ -113,22 +113,22 @@ const STMT = (props: Props) => {
         all: filtered.all,
         normalized: { ...filtered.normalized, [toStatement.id]: toStatement }
       };
-      if(id){
-      let packet: StatementMutation = { bank_id: parseInt(id), company_id: props.cmpyID, stat_id: toStatement.id, cust_id: masterID }
-      console.log("Showing sending packet: ", {
-        packet
-      });
-      // await postStatementMaster({
-      //   cust_id: masterID,
-      //   statement_id: selected,
-      //   company_id: props.cmpyID
-      // });
-      await newSetStatement(packet);
-       setStatements(newStatements);
-      setFiltered(filteredStatement);
+      if (id) {
+        let packet: StatementMutation = { bank_id: parseInt(id), company_id: props.cmpyID, stat_id: toStatement.id, cust_id: masterID }
+        console.log("Showing sending packet: ", {
+          packet
+        });
+        // await postStatementMaster({
+        //   cust_id: masterID,
+        //   statement_id: selected,
+        //   company_id: props.cmpyID
+        // });
+        await newSetStatement(packet);
+        setStatements(newStatements);
+        setFiltered(filteredStatement);
 
-      setDialog(false);
-    }     
+        setDialog(false);
+      }
     }
   };
 
@@ -179,24 +179,24 @@ const STMT = (props: Props) => {
           handleEnter={handleStmtSelect}
         />
       ) : (
-        <Loading />
-      )}
+          <Loading />
+        )}
       {props.masters
         ? withPop(
-            <DialogWrapper>
-              <DialogContent>
-                <MasterList
-                  masters={props.masters}
-                  companies={props.companies}
-                  handleEscape={(_: number, __: string) => {
-                    setDialog(false);
-                  }}
-                  handleEnter={handleMasterChange}
-                />
-              </DialogContent>
-            </DialogWrapper>,
-            showDialog
-          )
+          <DialogWrapper>
+            <DialogContent>
+              <MasterList
+                masters={props.masters}
+                companies={props.companies}
+                handleEscape={(_: number, __: string) => {
+                  setDialog(false);
+                }}
+                handleEnter={handleMasterChange}
+              />
+            </DialogContent>
+          </DialogWrapper>,
+          showDialog
+        )
         : null}
 
       {/* {props.masters && (
