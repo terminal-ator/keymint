@@ -24,6 +24,11 @@ const MenuRoutes = [
     route: "sales"
   },
   {
+    id: 6,
+    name: 'Import Statement',
+    route: 'imrstat',
+  },
+  {
     id: 3,
     name: "Receipts",
     route: "receipt"
@@ -56,7 +61,7 @@ export default () => {
   };
 
   const handleEnter = (cursor: number) => {
-    const selected = menuItems.normalized[menuItems.all[cursor]];
+    const selected = menuItems.normalized[cursor];
     history.push(selected.route);
   };
 
@@ -71,16 +76,15 @@ export default () => {
   return (
     <PageDiv>
       <Nav />
-      <br />
-      <div style={{ padding: 10 }}>
+      <div>
         <KeyList
           columns={["Menu"]}
           cursor={cursor}
           data={menuItems}
           maxHeight={400}
           numberOfRows={8}
-          width={"400px"}
-          rowHeight={50}
+          width={"250px"}
+          rowHeight={20}
           renderItem={renderItem}
           handleEnter={handleEnter}
           handleMisc={keyMap}

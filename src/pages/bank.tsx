@@ -77,7 +77,7 @@ const BankPage = (props: Props) => {
 
   const handleEnter = (cursor: number) => {
     if (banks) {
-      const selected = banks.normalized[banks.all[cursor]];
+      const selected = banks.normalized[cursor];
       history.push(`stmt/${selected.cust_id.Int64}`);
     }
   };
@@ -93,8 +93,7 @@ const BankPage = (props: Props) => {
   return (
     <PageDiv>
       <Nav />
-      <br />
-      <div style={{ padding: 10 }}>
+      <div>
         {banks && (
           <KeyList
             columns={["Banks"]}
@@ -102,8 +101,8 @@ const BankPage = (props: Props) => {
             data={banks}
             maxHeight={400}
             numberOfRows={8}
-            width={"400px"}
-            rowHeight={50}
+            width={"250px"}
+            rowHeight={20}
             renderItem={renderItem}
             handleEnter={handleEnter}
             handleMisc={keyMap}

@@ -34,7 +34,7 @@ export interface NormalizedCache<T> {
   normalized: { [key: number]: T };
 }
 
-interface HasId {
+export interface HasId {
   id: number;
   cust_id?: NullInt;
 }

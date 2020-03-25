@@ -61,6 +61,14 @@ export const postFileUpload = async (
   );
 };
 
+export  const postStatementUpload = async (
+  companyID: number,
+  bankID: number,
+  formData: FormData
+) =>{
+  return ax.post(`/statement/import?bank=${bankID}&company=${companyID}`, formData)
+}
+
 export const postLedger = async (
   date: string,
   recArray: Array<Receipt>,

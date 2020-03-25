@@ -1,11 +1,17 @@
 import React, { FC, useState, useEffect, useRef } from "react";
-import { RenderItemProps, NormalizedCache } from "../types/generic";
+import {
+  RenderItemProps,
+  NormalizedCache,
+  DeNormalize,
+  HasId
+} from "../types/generic";
 import styled from "styled-components";
 
 const KeyTable = styled.table`
   table-layout: fixed;
   white-space: nowrap;
   border-collapse: collapse;
+  width: 100%;
 `;
 
 export interface SELTRPROPS {
@@ -22,18 +28,18 @@ const KeyBody = styled.tbody`
     props.selected
       ? props.bgColorOn
         ? props.bgColorOn
-        : "#1f85de"
+        : "#EEEEEE"
       : props.bgColorOff
-        ? props.bgColorOff
-        : "white"};
+      ? props.bgColorOff
+      : "white"};
   color: ${(props: SELTRPROPS) =>
     props.selected
       ? props.colorOn
         ? props.colorOn
-        : "white"
+        : "black"
       : props.colorOff
-        ? props.colorOff
-        : "black"};
+      ? props.colorOff
+      : "black"};
   height: ${(props: SELTRPROPS) => {
     if (props.height) return props.height;
     return "40px";
@@ -62,6 +68,7 @@ interface KeyProps<T> {
     handler: (cursor: number, e: string) => void | undefined;
   }[];
   width?: string;
+  filter?(data: T): boolean;
 }
 
 function GetDimensions() {
@@ -73,7 +80,7 @@ function useGetDimenstion() {
   const [dim, setDim] = useState(GetDimensions());
 }
 
-function KeyList<T>(props: KeyProps<T>) {
+function KeyList<T extends HasId>(props: KeyProps<T>) {
   const [cursor, setCursor] = useState(props.cursor);
   const prevCursor = usePrevious(cursor);
   const [lowerCursorBound, setLoweCursorBound] = useState(props.cursor);
@@ -82,15 +89,9 @@ function KeyList<T>(props: KeyProps<T>) {
   );
   const prevUpper = usePrevious(upperCursorBound);
   const prevLower = usePrevious(lowerCursorBound);
-  // console.log("Current cursors bound:", lowerCursorBound, upperCursorBound);
-
-  // get dimension
-
   useEffect(() => {
     setCursor(props.cursor);
   }, [props.cursor]);
-  // console.log("Getting cursor in keylist", cursor, props.cursor);
-
   useEffect(() => {
     const jumpFactor = cursor - prevCursor > 1 ? props.numberOfRows / 2 - 3 : 0;
     if (cursor > upperCursorBound) {
@@ -104,7 +105,6 @@ function KeyList<T>(props: KeyProps<T>) {
       return;
     }
   }, [cursor]);
-
   function usePrevious(value: number): number {
     const ref = useRef<number>(0);
 
@@ -114,17 +114,12 @@ function KeyList<T>(props: KeyProps<T>) {
 
     return ref.current;
   }
-
   const Focus = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (Focus && Focus.current) {
       Focus.current.focus();
     }
   });
-
-  const totalheight =
-    props.rowHeight * props.numberOfRows + props.rowHeight + 41 || 800;
-
   const styles = {
     wrapper: {
       backgroundColor: "#fff",
@@ -139,10 +134,11 @@ function KeyList<T>(props: KeyProps<T>) {
     listWrapper: {
       top: 0,
       left: 0,
-
+      outline: "hidden",
       position: "absolute" as "absolute",
       backgroundColor: "#fff",
-      height: props.rowHeight * props.data.all.length
+      height: props.rowHeight * props.data.all.length,
+      minWidth: 200
     },
     list: (height: number) => ({
       height,
@@ -157,19 +153,17 @@ function KeyList<T>(props: KeyProps<T>) {
       position: "relative" as "relative"
     })
   };
-
   const checkIfVisible = (index: number): boolean => {
     if (lowerCursorBound <= index && index <= upperCursorBound) return true;
     return false;
   };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
 
     if (e.keyCode == 38 && cursor > 0) {
       setCursor(cursor - 1);
     }
-    if (e.keyCode == 40 && cursor < props.data.all.length - 1) {
+    if (e.keyCode == 40 && cursor < dataArray.length - 1) {
       setCursor(cursor + 1);
     }
 
@@ -214,7 +208,19 @@ function KeyList<T>(props: KeyProps<T>) {
     // handle Enter
     if (e.keyCode === 13) {
       if (props.handleEnter) {
-        props.handleEnter(cursor);
+        let id: number = 0;
+        const selectedElement = dataArray[cursor];
+        console.log(`Selected element`, { selectedElement });
+        if (selectedElement.id != 0) {
+          id = selectedElement.id;
+          console.log("Handling with ID: ", selectedElement.id);
+        } else if (selectedElement.cust_id?.Valid) {
+          id = selectedElement.cust_id.Int64;
+          console.log("Handling with cust_id:", selectedElement.cust_id.Int64);
+        } else {
+          id = selectedElement.id;
+        }
+        props.handleEnter(id);
       }
     }
 
@@ -233,23 +239,37 @@ function KeyList<T>(props: KeyProps<T>) {
       });
     }
   };
-
   const handleHover = (newCursor: number) => {
     setCursor(newCursor);
   };
-
   const handleClick = (newCursor: number) => {
     if (props.handleEnter) {
-      props.handleEnter(newCursor);
+      //props.handleEnter();
+      let id: number = 0;
+      const selectedElement = dataArray[cursor];
+      console.log(`Selected element`, { selectedElement });
+      if (selectedElement.id != 0) {
+        id = selectedElement.id;
+        console.log("Handling with ID: ", selectedElement.id);
+      } else if (selectedElement.cust_id?.Valid) {
+        id = selectedElement.cust_id.Int64;
+        console.log("Handling with cust_id:", selectedElement.cust_id.Int64);
+      } else {
+        id = selectedElement.id;
+      }
+      props.handleEnter(id);
     }
   };
-
-  // console.log(props.data);
-
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     e.preventDefault();
     console.log("Handling scroll");
   };
+
+  const { data } = props;
+  let dataArray = DeNormalize(data);
+  if (props.filter) {
+    dataArray = dataArray.filter(item => props.filter?.(item));
+  }
 
   return (
     <div style={styles.wrapper} onScroll={handleScroll}>
@@ -260,16 +280,19 @@ function KeyList<T>(props: KeyProps<T>) {
         style={styles.listWrapper}
         onScroll={handleScroll}
       >
-        <KeyTable className="table">
-          <thead className="thead-light">
+        <KeyTable className="">
+          <thead>
             <tr style={{ height: props.rowHeight }}>
               {props.columns.map(column_name => (
-                <th key={column_name}>{column_name}</th>
+                <th style={{ paddingLeft: 5 }} key={column_name}>
+                  {column_name}
+                </th>
               ))}
             </tr>
           </thead>
-          {props.data.all.map((itemid, i) => {
-            return checkIfVisible(i) || false ? (
+          {dataArray.map((item, i) => {
+            return checkIfVisible(i) ||
+              (false) ? (
               <KeyBody
                 onMouseMove={() => {
                   handleHover(i);
@@ -279,10 +302,10 @@ function KeyList<T>(props: KeyProps<T>) {
                 }}
                 selected={cursor === i}
                 height={`${props.rowHeight}px`}
-                key={itemid}
+                key={i}
               >
                 {props.renderItem({
-                  item: props.data.normalized[itemid],
+                  item: item,
                   isHighlighted: cursor === i,
                   style: styles.item(i, props.rowHeight),
                   className: cursor === i ? "selected" : "",

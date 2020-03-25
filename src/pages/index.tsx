@@ -31,7 +31,7 @@ export interface SELTRPROPS {
 export const SELTR = styled.tr`
   height: inherit;
   td {
-    padding: 10px;
+    padding: 5px;
     height: inherit;
     
   }

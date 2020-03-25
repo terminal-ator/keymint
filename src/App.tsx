@@ -26,6 +26,7 @@ import 'antd/dist/antd.css';
 import { Modal } from "antd";
 import Glob from "./Glob";
 import JournalPage from "./pages/journal";
+import ImportStatementPage from "./pages/importStatement";
 
 const persistConfig = {
   key: "root",
@@ -64,6 +65,7 @@ const App: React.FC = () => {
             <Route path="/master" component={MasterForm} />
             <Route path="/errors" component={Errors} />
             <Route path="/journal" component={JournalPage} />
+            <Route path={'/imrstat'} component={ImportStatementPage} />
           </Router>
           <Glob />
         </ApolloProvider>

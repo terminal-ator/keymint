@@ -47,17 +47,6 @@ const LedgerDetail = (props: LedgerProps) => {
   const masters = stateSelector(state => state.master.masters);
   const companyID = stateSelector(state => state.sys.SelectedCompany);
   const dispatch = useDispatch();
-
-  // useEffect(()=>{
-  //   fetchLedgers(props.cust.cust_id.Int64);
-  // })
-
-  // useEffect(() => {
-  //   setPosting(undefined);
-  //   fetchLedgers(props.cust)
-  //   setTotal(0);
-  // }, [props.cus])
-
   useEffect(() => {
     let sum = 0;
     if (propPostings) {
@@ -67,71 +56,15 @@ const LedgerDetail = (props: LedgerProps) => {
       setTotal(sum);
     }
   }, [propPostings]);
-
-  const fetchLedgers = async (cust_id: number) => {
-    try {
-      {
-        const resp = await getPostings(cust_id);
-        // setLedgers(resp.data);
-        setPosting(normalize<Posting>(resp.data));
-      }
-    } catch (err) {
-      console.log(`Error while fetching ledgers: ${err}`);
-    }
-  };
-
   const EditMaster = () => {
     dispatch(UpdateMaster(props.cust));
   };
-
   const InlineLedgerForm = () => {
     const [date, setDate] = useState(moment().format("YYYY-MM-DD"));
     const [toFrom, setToFrom] = useState("From");
     const [type, setType] = useState("Less");
     const [amount, setAmount] = useState("0");
     const dispatch = useDispatch();
-
-    // const handleAdd = async () => {
-    //   try {
-    //     const resp = await putLedger({ date, toFrom, type, amount, cust_id: props.cust }, companyID);
-    //     if (resp.status == 200) {
-    //       message.success("Successfully added ledger")
-    //     } else {
-    //       message.error("Failed! Try Again.")
-    //     }
-    //   } catch (err) {
-    //     console.log(err);
-    //   } finally {
-
-    //   }
-    // }
-
-    // const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //   const val = parseFloat(e.target.value) || 0
-    //   setAmount(val)
-    // }
-
-    // return (
-    //   <div style={{ position: "absolute", bottom: 10, zIndex: 99999 }}>
-    //     <form style={{ padding: 5 }}>
-    //       <input onChange={(e) => { setDate(e.target.value) }} key={"date"} type="date" value={date} />
-    //       <select onChange={(e) => { setToFrom(e.target.value) }} value={toFrom} style={{ marginLeft: 5 }}>
-    //         <option value={'From'}>From</option>
-    //         <option value={'To'}>To</option>
-    //       </select>
-    //       <select onChange={(e) => { setType(e.target.value) }} value={type} style={{ marginLeft: 5 }}>
-    //         <option value={'Less'}>Less</option>
-    //         <option value={'Cash'}>Cash</option>
-    //         <option value={'Bill'}>Bill</option>
-    //       </select>
-    //       <input key={"amount"}
-    //         onChange={handleAmountChange}
-    //         tabIndex={0}
-    //         value={amount} style={{ marginLeft: 5 }} placeholder="amount" />
-    //       <button onClick={(e) => { e.preventDefault(); handleAdd(); }}>Add</button>
-    //     </form>
-    //   </div>
-    // )
     const DateInput = (props: any) => <input type="date" {...props} />;
     return (
       <div style={{ position: "absolute", bottom: 10, zIndex: 99999 }}>
@@ -228,8 +161,7 @@ const LedgerDetail = (props: LedgerProps) => {
 
   const handleEnter = (cursor: number) => {
     if (propPostings) {
-      const id = propPostings?.all[cursor];
-      const post = propPostings?.normalized[id];
+      const post = propPostings?.normalized[cursor];
       dispatch(FetchJournal(post.journal_id));
     }
   };
@@ -252,16 +184,6 @@ const LedgerDetail = (props: LedgerProps) => {
       </p>
       {masterItem(masters?.normalized[props.cust], total)}
       <div style={{ overflow: "hidden", height: 800, overflowY: "scroll" }}>
-        {withPop(
-          <DialogWrapper>
-            {" "}
-            <DialogContent>
-              {" "}
-              <EditStatement cust_id={props.cust} statement={2} />
-            </DialogContent>
-          </DialogWrapper>,
-          show
-        )}
         {propPostings && (
           <KeyList
             columns={["date", "narration", "refno", "debit", "credit"]}

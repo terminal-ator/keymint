@@ -20,17 +20,14 @@ export const LongTd = styled(SimTd)`
   min-width: 400px;
   padding-left: 10px;
   padding-right: 10px;
-
-  :hover {
-    overflow-x: scroll;
-  }
+  
 `;
 const StatementTR: FC<StatementLiProps> = ({ statement }) => {
   // console.log(`Displaying masters ${masters}`);
   return (
     <SELTR>
       <SimTd>{moment(statement.date).format("LL")}</SimTd>
-      <LongTd className="narration-SimSimTd">{statement.narration}</LongTd>
+      <LongTd className="narration-SimTd">{statement.narration}</LongTd>
       <LongTd className="narration-SimTd">
         {(statement.master && statement.master.name) || "No ledger selected"}
       </LongTd>
