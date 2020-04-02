@@ -34,7 +34,16 @@ export const GetCompanies = (): ThunkAction<
   });
 };
 
-export const SelectCompany = (id: number) => ({
+export const SelectCompany  = (id: number): ThunkAction<void, AppState, null, Action<String>> => async dispatch => {
+  await localStorage.setItem('company', id.toString());
+  dispatch({
+    type: SELECT_COMPANY,
+    payload: id
+  })
+}
+
+
+export const oldSelectCompany = (id: number) => ({
   type: SELECT_COMPANY,
   payload: id
 });

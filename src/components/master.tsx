@@ -1,207 +1,183 @@
-import React, { useEffect, useRef } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { AppState, stateSelector } from '../reducers';
-import { ConnectedProps, connect } from 'react-redux';
-import { useQuery, useLazyQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
-import { Select } from './styledComp';
-import styled from 'styled-components';
+import React, { useEffect, useRef, useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { AppState, stateSelector } from "../reducers";
+import {ConnectedProps, connect, useDispatch} from "react-redux";
+import { useQuery, useLazyQuery } from "@apollo/react-hooks";
+import { gql } from "apollo-boost";
+import styled from "styled-components";
 import { FetchMasters } from "../actions/masterActions";
-import { Input, message } from 'antd';
-import { postCreateMaster, putUpdateMaster } from '../api';
-import { Master } from '../types/master';
+import {Button, Input, message, Select} from "antd";
+import { postCreateMaster, putUpdateMaster } from "../api";
+import { Master } from "../types/master";
+import dotPropImmutable from "dot-prop-immutable";
+import {ToggleMasterForm} from "../actions/uiActions";
 
 const mapState = (state: AppState) => {
-    return ({
-        companyID: state.sys.SelectedCompany
-    })
-}
+  return {
+    companyID: state.sys.SelectedCompany
+  };
+};
 interface XProps {
-    master?: Master
+  master?: Master;
 }
-const connector = connect(mapState, { FetchMasters })
+const connector = connect(mapState, { FetchMasters });
 
 type Props = ConnectedProps<typeof connector> & XProps;
 
 const FETCH_FIELDS = gql`
-   query fetchCompany($id: Int){
-        getCompany(id: $id){
-            id
-            beats{
-                id
-                name
-            }
-            groups{
-                id
-                name
-            }
-        }
+  query fetchCompany($id: Int) {
+    getCompany(id: $id) {
+      id
+      beats {
+        id
+        name
+        addn1
+      }
+      groups {
+        id
+        name
+      }
     }
-`
+  }
+`;
 
 interface FetchCompany {
-
-    getCompany: {
-        id: number
-        beats: {
-            id: number,
-            name: string
-        }[],
-        groups: {
-            id: number,
-            name: string
-        }[]
-    }
-
+  getCompany: {
+    id: number;
+    beats: {
+      id: number;
+      name: string;
+      addn1: string;
+    }[];
+    groups: {
+      id: number;
+      name: string;
+    }[];
+  };
 }
 
 interface Errors {
-    name?: string | undefined
-    [key: string]: string | undefined;
+  name?: string | undefined;
+  [key: string]: string | undefined;
 }
 
 export interface FormValues {
-    name: string
-    beat_id: string;
-    group_id: string;
-    i_code: string;
+  name: string;
+  beat_id: string;
+  group_id: string;
+  i_code: string;
 }
 
 const MasterContent = styled.div`
-    width: 500px;
-    float: clear;
-    margin: 0px auto;
-    position: relative;
-`
+  width: 500px;
+  float: clear;
+  margin: 0px auto;
+  position: relative;
+`;
 
 const MasterForm = (props: Props) => {
+  const [fetchFields, { data, loading, error }] = useLazyQuery<FetchCompany>(
+    FETCH_FIELDS
+  );
+  const inputR = useRef<Input>(null);
 
-    const [fetchFields, { data, loading, error }] = useLazyQuery<FetchCompany>(FETCH_FIELDS);
-    const inputR = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        console.log(`Got company id : ${props.companyID}`)
-        if (props.companyID) {
-            fetchFields({ variables: { id: props.companyID } })
-        }
-    }, [props.companyID
-    ])
-
-    useEffect(() => {
-        if (inputR && inputR.current) {
-            inputR.current.focus()
-        }
-    })
-
-    // if (loading) return <div>Loading.......</div>
-    // if (error) return <div>{error.message}</div>
-    console.log(data)
-
-    // get type from state
-    const updateMaster = stateSelector(state => state.ui.masterToUpdate);
-    const masters = stateSelector(state => state.master.masters);
-    const masterID = stateSelector(state => state.ui.masterCustID);
-    let initialValues = { name: "", beat_id: "1", group_id: "1", i_code: "GENERIC" };
-
-    useEffect(() => {
-        if (updateMaster && masterID) {
-            const editMaster = masters?.normalized[masterID];
-            if (editMaster) {
-                console.log("Checking master:", editMaster)
-                initialValues = {
-                    name: editMaster?.name, beat_id: editMaster?.beat_id.toString(),
-                    group_id: editMaster?.group_id.toString(), i_code: 'EDIT IC'
-                }
-            }
-
-        }
-    }, [masterID]);
-
-    if (updateMaster && masterID) {
-        const editMaster = masters?.normalized[masterID];
-        if (editMaster)
-            initialValues = {
-                name: editMaster?.name, beat_id: editMaster?.beat_id.toString(),
-                group_id: editMaster?.group_id.toString(), i_code: 'EDIT IC'
-            }
+  useEffect(() => {
+    console.log(`Got company id : ${props.companyID}`);
+    if (props.companyID) {
+      fetchFields({ variables: { id: props.companyID } });
     }
+  }, [props.companyID]);
 
-    return (
-        <Formik
-            initialValues={initialValues}
-            onSubmit={async (values, { resetForm }) => {
+  useEffect(()=>{
+    if(inputR.current)inputR.current.focus();
+  },[props.master])
 
-                const parsedFormValues = {
-                    name: values.name,
-                    beat_id: parseInt(values.beat_id),
-                    group_id: parseInt(values.group_id),
-                    i_code: values.i_code
-                }
-                // window.alert(JSON.stringify(values))
-                let resp: any;
-                if (updateMaster && masterID) {
-                    resp = await putUpdateMaster(parsedFormValues, masterID);
+  // if (loading) return <div>Loading.......</div>
+  // if (error) return <div>{error.message}</div>
+  console.log(data);
 
-                } else {
-                    resp = await postCreateMaster(parsedFormValues, props.companyID);
-                }
+  // get type from state
+  const updateMaster = stateSelector(state => state.ui.masterToUpdate);
+  const masters = stateSelector(state => state.master.masters);
+  const masterID = stateSelector(state => state.ui.masterCustID);
+  const master = stateSelector(state => state.ui.master);
+  const dispatch = useDispatch();
+  let initialValues: Master = {
+    name: "",
+    beat_id: 1,
+    group_id: 1,
+    i_code: "GENERIC",
+    cust_id: { Int64: 0, Valid: false },
+    company_id: props.companyID,
+    id: 0
+  };
 
-                if (resp.status == 200) {
-                    message.success("Successfully added new master");
-                    props.FetchMasters(props.companyID)
-                    resetForm();
-                } else {
-                    message.error("Failed, please try again")
-                }
+  const [formValues, setValues] = useState(master || initialValues);
 
+  return (
+    <form>
+      <Input
+        value={formValues.name}
+        onChange={e => {
+          const n = dotPropImmutable.set(formValues, "name", e.target.value);
+          setValues(n);
+        }}
+        placeholder={"Name"}
+        ref={inputR}
+      />
+      <Input
+        style={{ marginTop: 10 }}
+        value={formValues.i_code}
+        onChange={e => {
+          const n = dotPropImmutable.set(formValues, "i_code", e.target.value);
+          setValues(n);
+        }}
+        placeholder={"Interface"}
+      />
+      <Select value={formValues.beat_id} style={{ width: 200, marginTop: 10 }} onChange={(e)=>{
+        const n = dotPropImmutable.set(formValues,'beat_id', e);
+        setValues(n);
+      }} >
+        {data &&
+          data.getCompany.beats.map(b => (
+            <Select.Option key={b.id} value={b.id}>
+              {b.name}
+            </Select.Option>
+          ))}
+      </Select>
+      <Select value={formValues.group_id} style={{ width: 200, marginTop: 10, marginLeft:5 }} onChange={(e)=>{
+        const n = dotPropImmutable.set(formValues,'group_id', e);
+        setValues(n);
+      }} >
+        {data &&
+        data.getCompany.groups.map(b => (
+          <Select.Option key={b.id} value={b.id}>
+            {b.name}
+          </Select.Option>
+        ))}
+      </Select>
+      <Button value={"Save"} style={{ display: "block", marginTop: 10}} type={"primary"}  onClick={async (e)=>{
+        try {
+          console.log("Outputting form values",formValues)
+          const resp = await putUpdateMaster(formValues, props.companyID);
+          if(resp.status===200){
+            message.success("Saved Successfully");
+            dispatch(FetchMasters())
+            if(formValues.cust_id.Int64!=0){
+              dispatch(ToggleMasterForm(false, undefined));
+              return;
             }
-            }
-            validate={(values) => {
-                let errors: Errors = {};
-                if (!values.name) {
-                    errors.name = "Name is required";
-                }
-                return errors;
-            }}
-        >
-            {
-                ({ }) => (
-                    <Form style={{ display: "block", padding: 10, margin: '10px auto' }} className='card'>
-                        <div className="form-group">
-                            <label className="mr-2" htmlFor="name">Name </label>
-                            <Field innerRef={inputR} as={Input} type="text" placeholder="name" name="name" />
-                            <ErrorMessage name="name" className="ml-5" />
-                        </div>
-                        <div className="form-group">
-                            <label className="mr-2" htmlFor="i_code">Interface</label>
-                            <Field innerRef={inputR} as={Input} type="text" placeholder="Interface" name="i_code" />
-                            <ErrorMessage name="interface" className="ml-5" />
-                        </div>
-                        <div className="form-group">
-                            <label className="mr-2" htmlFor="group_id" >Group </label>
-                            {data && <Field name="group_id" as={Select} >
-                                {
-                                    data.getCompany.groups.map((g) => <option key={g.id} value={g.id} >{g.name}</option>)
-                                }
-                            </Field>}
-                        </div>
-                        <div className="form-group">
-                            <label className="mr-2" htmlFor="beat_id" >Beat</label>
-                            {data && <Field as={Select} name="beat_id">
-                                {
-                                    data.getCompany.beats.map((b) => <option key={b.id} value={b.id} >{b.name}</option>)
-                                }
-                            </Field>}
-                        </div>
-                        <button className="btn btn-primary btn-block" type="submit">Create</button>
-
-                    </Form>
-                )
-            }
-
-        </Formik>
-    )
-}
-
+            setValues(initialValues);
+            if(inputR.current) inputR.current.focus();
+          }else{
+            message.error("Saving failed. Please try again.")
+          }
+        }catch (e) {
+          message.error("Failed to save")
+        }
+      }}>Save</Button>
+    </form>
+  );
+};
 
 export default connector(MasterForm);

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import ReceiptForm from "../components/receiptForm";
 import { AppState } from "../reducers";
-import { connect, ConnectedProps } from "react-redux";
+import {connect, ConnectedProps, useDispatch} from "react-redux";
 import { NormalizedCache, normalize, DeNormalize } from "../types/generic";
 import moment from "moment";
 import { PageDiv } from "../components/styledComp";
 import Nav from '../components/nav';
 import { postLedger } from "../api";
 import { TransitionGroup } from 'react-transition-group';
+import {FetchMasters} from "../actions/masterActions";
 
 export interface Receipt {
   id: number;
@@ -31,6 +32,7 @@ const Receipt = (props: PropType) => {
   const newReciept = [{ id: 1, cust_id: 0, cash: 0 }];
   const [receipt, setReceipt] = useState<Array<Receipt>>(newReciept);
   const [currentDate, setCurrentDate] = useState(moment().format('YYYY-MM-DD'));
+  const dispatch = useDispatch();
 
 
   let saveReceipts = async (rec: Receipt) => {
@@ -68,6 +70,7 @@ const Receipt = (props: PropType) => {
   const saveReceipt = async () => {
     try {
       await postLedger(currentDate, receipt.slice(0, receipt.length - 1), props.companyID);
+      dispatch(FetchMasters);
       setReceipt(newReciept);
       setCurrentDate(moment().format('YYYY-MM-DD'));
     } catch (err) {

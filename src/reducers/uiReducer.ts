@@ -1,5 +1,6 @@
 import { UiActions, TOGGLE_MASTER, UPDATE_MASTER, TOGGLE_JOURNAL, FETCH_JOURNAL } from '../actions/uiActions';
 import { Journal } from '../types/ledger';
+import {Master} from "../types/master";
 interface UIState {
     masterToggle: boolean
     masterToUpdate: boolean
@@ -9,7 +10,9 @@ interface UIState {
         valid: boolean;
         id: number;
     }
-    journal: Journal | undefined
+    journal: Journal | undefined,
+    masterFormToggle: boolean,
+    master: Master | undefined,
 }
 
 const initialState: UIState = {
@@ -21,7 +24,9 @@ const initialState: UIState = {
         valid: false,
         id: 0
     },
-    journal: undefined
+    journal: undefined,
+    masterFormToggle: false,
+    master: undefined
 }
 
 export const UIReducer = (state = initialState, action: UiActions): UIState => {
@@ -34,6 +39,8 @@ export const UIReducer = (state = initialState, action: UiActions): UIState => {
             return { ...state, journalToggle: action.payload.show, journalID: { valid: action.payload.valid, id: action.payload.id } }
         case FETCH_JOURNAL:
             return { ...state, journal: action.payload }
+        case "SHOW_MASTER_FORM":
+            return { ...state, masterFormToggle: action.show, master: action.master }
         default:
             return state
     }

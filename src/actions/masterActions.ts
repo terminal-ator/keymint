@@ -15,8 +15,8 @@ interface fetchMasterAction {
 export type MasterActions = fetchMasterAction;
 
 export const FetchMasters = (
-  companyID: number
-): ThunkAction<void, AppState, null, Action<String>> => async dispatch => {
+): ThunkAction<void, AppState, null, Action<String>> => async (dispatch, getState) => {
+  const companyID = getState().sys.SelectedCompany;
   const masters = await getMasters(companyID);
   console.log(masters);
   dispatch({

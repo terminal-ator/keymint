@@ -80,19 +80,30 @@ function useGetDimenstion() {
   const [dim, setDim] = useState(GetDimensions());
 }
 
-function KeyList<T extends HasId>(props: KeyProps<T>) {
+function  KeyList<T extends HasId>(props: KeyProps<T>) {
   const [cursor, setCursor] = useState(props.cursor);
   const prevCursor = usePrevious(cursor);
   const [lowerCursorBound, setLoweCursorBound] = useState(props.cursor);
+  const divRef = useRef<HTMLDivElement>(null);
   const [upperCursorBound, setUpperCursorBound] = useState(
     props.cursor + props.numberOfRows
   );
+  const [ scrollIndex, setScrollIndex] = useState(0);
+  const prevScrollIndex = usePrevious(scrollIndex);
+  const { data } = props;
+  let dataArray = DeNormalize(data);
+  if (props.filter) {
+    dataArray = dataArray.filter(item => props.filter?.(item));
+  }
   const prevUpper = usePrevious(upperCursorBound);
   const prevLower = usePrevious(lowerCursorBound);
   useEffect(() => {
     setCursor(props.cursor);
   }, [props.cursor]);
   useEffect(() => {
+    if(cursor> dataArray.length){
+      setCursor(1);
+    }
     const jumpFactor = cursor - prevCursor > 1 ? props.numberOfRows / 2 - 3 : 0;
     if (cursor > upperCursorBound) {
       setUpperCursorBound(cursor + jumpFactor);
@@ -105,6 +116,11 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
       return;
     }
   }, [cursor]);
+  useEffect(()=>{
+    if(dataArray.length<cursor){
+      setCursor(0);
+    }
+  },[dataArray.length])
   function usePrevious(value: number): number {
     const ref = useRef<number>(0);
 
@@ -177,9 +193,9 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
     }
 
     // handle Page down
-    if (e.keyCode == 34 && cursor < props.data.all.length - 1) {
-      if (cursor + props.numberOfRows > props.data.all.length) {
-        setCursor(props.data.all.length - 1);
+    if (e.keyCode == 34 && cursor < dataArray.length - 1) {
+      if (cursor + props.numberOfRows > dataArray.length) {
+        setCursor(dataArray.length - 1);
       } else {
         setCursor(cursor + props.numberOfRows);
       }
@@ -261,26 +277,31 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
     }
   };
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    e.preventDefault();
+    if(divRef.current){
+      //console.log(`Logging scroll events with scrolltop: ${divRef.current.scrollTop}`);
+      const scTop = divRef.current.scrollTop;
+      const updateIndex =  Math.round(scTop / props.rowHeight);
+      //console.log(updateIndex)
+      const scroll = prevScrollIndex < updateIndex ? updateIndex : -updateIndex;
+      setCursor(cursor+scroll);
+      setScrollIndex(updateIndex);
+      //setLoweCursorBound(prevLower-1);
+      //setUpperCursorBound(prevUpper + props.numberOfRows -1);
+    }
     console.log("Handling scroll");
   };
 
-  const { data } = props;
-  let dataArray = DeNormalize(data);
-  if (props.filter) {
-    dataArray = dataArray.filter(item => props.filter?.(item));
-  }
+
 
   return (
-    <div style={styles.wrapper} onScroll={handleScroll}>
+    <div style={styles.wrapper} ref={divRef} onScroll={handleScroll} >
       <div
         onKeyDown={handleKeyDown}
         ref={Focus}
         tabIndex={1}
         style={styles.listWrapper}
-        onScroll={handleScroll}
       >
-        <KeyTable className="">
+        <KeyTable  className="">
           <thead>
             <tr style={{ height: props.rowHeight }}>
               {props.columns.map(column_name => (
@@ -303,6 +324,7 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
                 selected={cursor === i}
                 height={`${props.rowHeight}px`}
                 key={i}
+
               >
                 {props.renderItem({
                   item: item,

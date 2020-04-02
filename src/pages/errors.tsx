@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { AppState } from "../reducers";
 import Nav from "../components/nav";
 import { PageDiv } from "../components/styledComp";
 import { postErrors } from "../api";
-import { message } from 'antd';
+import { Button, message } from "antd";
+import { ToggleMasterForm } from "../actions/uiActions";
+import { Master } from "../types/master";
 
 interface ErrorInterface {
   id: number;
@@ -47,30 +49,33 @@ const Errors = () => {
   if (error) return <div>Error</div>;
   if (loading) return <div>Loading....</div>;
 
-
   // handle the error merging with current existing user
   const handleMerge = async (cust_id: number, error_id: number) => {
     const resp = await postErrors(cust_id, error_id);
     if (resp.status == 200) {
-      message.success("Successfully merged the masters")
-      await refetch({ input: companyID })
+      message.success("Successfully merged the masters");
+      await refetch({ input: companyID });
     } else {
-      message.error("Unable to reach the server, please try again")
+      message.error("Unable to reach the server, please try again");
     }
+  };
+
+  interface ErrorProps {
+    err: ErrorInterface;
   }
 
-
-  const RenderError = (err: ErrorInterface) => {
-
-    let sel = 0
+  const RenderError = (props: ErrorProps) => {
+    const dispatch = useDispatch();
+    const { err } = props;
+    let sel = 0;
 
     const setSel = (val: number) => {
       sel = val;
-    }
+    };
 
     const handleSave = () => {
       handleMerge(sel, err.id);
-    }
+    };
     return (
       <div className="card">
         <div className="card-body">
@@ -79,15 +84,48 @@ const Errors = () => {
             {err.interfacecode} - {err.to_customer}
           </h6>
           <div>
-            <select onChange={(e) => { setSel(parseInt(e.target.value)) }}>
+            <select
+              onChange={e => {
+                setSel(parseInt(e.target.value));
+              }}
+            >
               {masters?.all.map(id => (
-                <option value={masters.normalized[id].cust_id.Int64}>
+                <option key={id} value={masters.normalized[id].cust_id.Int64}>
                   {masters.normalized[id].name}
                 </option>
               ))}
             </select>
           </div>
-          <button onClick={() => { handleSave() }} style={{ marginTop: 10 }} className="btn">Save</button>
+          <div style={{ display: "flex" }}>
+            <Button
+              type={"dashed"}
+              onClick={() => {
+                handleSave();
+              }}
+              style={{ marginTop: 10 }}
+              className="btn"
+            >
+              Save
+            </Button>
+            <Button
+              type={"primary"}
+              onClick={() => {
+                const master: Master = {
+                  id:0,
+                  cust_id: { Int64: 0, Valid: false },
+                  i_code: err.interfacecode,
+                  beat_id: 1,
+                  group_id: 1,
+                  name: err.master_name,
+                  company_id: companyID
+                };
+                dispatch(ToggleMasterForm(true, master));
+              }}
+              style={{ marginTop: 10, marginLeft: 5 }}
+            >
+              Create New
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -98,7 +136,9 @@ const Errors = () => {
       <Nav />
       <div className="container-fluid">
         <h1>Errors</h1>
-        {data?.getErrors.map(err => RenderError(err))}
+        {data?.getErrors.map(err => (
+          <RenderError err={err} />
+        ))}
       </div>
     </PageDiv>
   );

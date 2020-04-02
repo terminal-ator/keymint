@@ -88,3 +88,11 @@ export function DeNormalize<T>(cache: NormalizedCache<T>): Array<T> {
 // export function DeNormalizeCustID<T extends HasId>(cache: NormalizedCache<T>):Array<T>{
 
 // }
+
+export interface Year {
+  id: number;
+  start_date: string;
+  end_date: string;
+  year_string: string;
+  company_id: number;
+}

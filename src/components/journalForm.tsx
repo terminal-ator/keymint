@@ -12,6 +12,7 @@ import { postNewJournal } from "../api";
 import { useDispatch } from "react-redux";
 import {ToggleJournal} from "../actions/uiActions";
 import {fetchPosting} from "../actions/postingActions";
+import {FetchMasters} from "../actions/masterActions";
 
 const JournalForm = () => {
   const cmpnyID = stateSelector(stt => stt.sys.SelectedCompany);
@@ -109,6 +110,7 @@ const JournalForm = () => {
       } else if (resp.status == 200 && ui.valid) {
         message.success("Update Success");
         await dispatch(fetchPosting(selectedID));
+        await dispatch(FetchMasters());
         await dispatch(ToggleJournal(false,false, 0));
 
       } else {

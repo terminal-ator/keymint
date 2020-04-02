@@ -16,6 +16,7 @@ import { stateSelector } from "../reducers";
 import { Beat } from "../actions/beatActions";
 import { Select } from "./styledComp";
 import { compareTwoStrings } from 'string-similarity';
+import {Input} from "antd";
 
 interface MasterListProps {
   masters: NormalizedCache<Master>;
@@ -67,13 +68,13 @@ const MasterList: FC<MProps> = (props: MProps) => {
   const handleKey = async (_: number, key: string) => {
     const newFilter = filter + key;
     // console.log("New filter:", newFilter);
-    // const val = await filterBasedOnName(newFilter);
-    // if (val == 0) setFilter(newFilter);
-    setFilter(newFilter);
+    const val = await filterBasedOnName(newFilter);
+    if (val == 0) setFilter(newFilter);
+    // setFilter(newFilter);
   };
   const handleBackSpace = async (_: number, key: string) => {
     const newFilter = filter.slice(0, -1);
-    // await filterBasedOnName(newFilter);
+    await filterBasedOnName(newFilter);
     setFilter(newFilter);
   };
   function renderItem(arg: RenderItemProps<Master>) {
@@ -91,10 +92,10 @@ const MasterList: FC<MProps> = (props: MProps) => {
             <span>{arg.item.name}</span>
           </span>
         </td>
-        <td>{bts?.normalized[arg.item.beat_id].short_name}</td>
+        <td>{bts?.normalized[arg.item.beat_id]?.short_name}</td>
         <td>
-          {Math.abs(arg.item.balance).toString()}&nbsp;
-          {arg.item.balance < 0 ? "DR" : "CR"}
+          {Math.abs(arg.item.balance || 0).toString()}&nbsp;
+          {arg.item.balance || 0  < 0 ? "CR" : "DR"}
         </td>
       </SELTR>
     );
@@ -129,7 +130,6 @@ const MasterList: FC<MProps> = (props: MProps) => {
   const filterFunc = (data: Master): boolean => {
     return (
       (!balanceFilter || data.balance !== 0)
-      && data.name.toLowerCase().startsWith(filter.toLowerCase())
       && (beatFilter===0 || data.beat_id == beatFilter)
     );
   };
@@ -157,7 +157,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
           ))}
         </Select>
         <p className="filter-text" style={{ marginTop: 2, marginLeft: 2 }}>
-          {filter || "Search will appear here"}
+          <Input value={filter} onChange={event => {setFilter(event.target.value)}} placeholder={"Search Here"} />
         </p>
         <span style={{ float: "right", alignSelf: "center" }}>
           <input

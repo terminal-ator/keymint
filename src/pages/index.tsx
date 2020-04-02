@@ -10,6 +10,7 @@ import { RenderItemProps, DeNormalize } from "../types/generic";
 import { Company } from "../types/company";
 import styled from "styled-components";
 import { PageDiv } from "../components/styledComp";
+import {FetchYears} from "../actions/yearsActions";
 
 const mapState = (state: AppState) => ({
   companies: state.sys.Companies,
@@ -21,7 +22,8 @@ const mapDispatch = {
   GetCompanies,
   SelectCompany,
   FetchMasters,
-  FetchBeat
+  FetchBeat,
+  FetchYears
 };
 
 export interface SELTRPROPS {
@@ -54,14 +56,15 @@ const Index = (props: Props) => {
     console.log(props.masters);
   }
 
-  const selectCompany = (cursor: number) => {
+  const selectCompany = async (cursor: number) => {
     if (props.companies) {
-      const denorm = DeNormalize<Company>(props.companies);
-      const companyID = denorm[cursor].id;
-      props.SelectCompany(companyID);
-      props.FetchMasters(companyID);
-      props.FetchBeat(companyID);
-      props.history.push("/menu");
+      // const denorm = DeNormalize<Company>(props.companies);
+      // const companyID = denorm[cursor].id;
+      await props.SelectCompany(cursor);
+      //await props.FetchMasters(cursor);
+      await props.FetchBeat(cursor);
+      await props.FetchYears();
+      props.history.push("/years");
     }
   };
 

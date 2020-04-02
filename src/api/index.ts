@@ -1,16 +1,16 @@
 import axios from "axios";
 import { Receipt } from "../pages/receipt";
 import { QuickForm } from "../components/ledgerDetail";
-import { StatementMutation } from "../types/generic";
+import {NullInt, StatementMutation} from "../types/generic";
 import { FormValues } from "../components/master";
 import { Master } from "../types/master";
 import { Journal } from "../types/ledger";
 
 const ax = axios.create({
-  baseURL: 'http://localhost:8080'
-})
+  baseURL: 'http://unraidone.duckdns.org:8080',
+});
 
-const SERVER_URL = `http://localhost:8080`;
+const SERVER_URL = `http://unraidone.duckdns.org:8080`;
 
 export const getCompanies = async () => {
   const req = await axios.get(`${SERVER_URL}/companies`);
@@ -18,7 +18,13 @@ export const getCompanies = async () => {
 };
 
 export const getMasters = async (companyID: number) => {
-  const req = await axios.get(`${SERVER_URL}/accounts/${companyID}`);
+  const yearID = await localStorage.getItem('yearID');
+  const req = await ax.get(`/accounts`, {
+    headers:{
+      "Authorization": companyID,
+      "yearID": yearID
+    }
+  });
   return req.data;
 };
 
@@ -32,7 +38,12 @@ export const getBanks = async (companyID: number) => {
 };
 
 export const getBankWiseStatements = async (bankID: number) => {
-  return axios.get(`${SERVER_URL}/statements/${bankID}`);
+  const yearID = await localStorage.getItem('yearID');
+  return axios.get(`${SERVER_URL}/statements/${bankID}`,{
+    headers:{
+      "yearID": yearID
+    }
+  });
 };
 
 interface StatementMaster {
@@ -74,6 +85,7 @@ export const postLedger = async (
   recArray: Array<Receipt>,
   companyID: number
 ) => {
+  console.log({ recArray });
   return axios.post(`${SERVER_URL}/ledger/${companyID}`, {
     date,
     ledger_entry: recArray
@@ -91,7 +103,13 @@ export const putLedger = async (qck: QuickForm, companyID: number) => {
 };
 
 export const getPostings = async (accountID: number) => {
-  return axios.get(`${SERVER_URL}/postings/${accountID}`);
+  const yearID = await localStorage.getItem("yearID");
+  return axios.get(`${SERVER_URL}/postings/${accountID}`,
+    {
+      headers:{
+        "yearID" : yearID
+      }
+    });
 };
 
 export const newSetStatement = async (packet: StatementMutation) => {
@@ -111,12 +129,8 @@ export const fetchBeats = async (companyID: number) => {
   return ax.get(`/beat/${companyID}`)
 }
 
-export const putUpdateMaster = async (master: { name: string, beat_id: number, group_id: number, }, custID: number) => {
-
-  const packet = { cust_id: { Valid: true, Int64: custID }, ...master }
-  console.log({ packet })
-  return ax.put('/master', packet)
-
+export const putUpdateMaster = async (master: { name: string, beat_id: number, group_id: number, cust_id: NullInt }, companyID:number) => {
+  return ax.put(`/master/${companyID}`, master)
 }
 
 export const postNewJournal = async (journal: Journal) => {
@@ -125,4 +139,13 @@ export const postNewJournal = async (journal: Journal) => {
 
 export const getJournal = async (journalID: number) => {
   return ax.get(`/journal/${journalID}`)
+}
+
+export const fetchYears = async ( company: number )=>{
+  const companyID = await localStorage.getItem('company');
+  return  ax.get('/years',{
+    headers:{
+      "Authorization": companyID
+    }
+  })
 }

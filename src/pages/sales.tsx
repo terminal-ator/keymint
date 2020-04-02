@@ -9,6 +9,7 @@ import Nav from '../components/nav';
 import { Master } from "../types/master";
 import { DeNormalize } from "../types/generic";
 import { useHistory } from "react-router-dom";
+import {Result} from "antd";
 
 const mapState = (state: AppState) => {
   return {
@@ -28,6 +29,8 @@ const SalesImportPage = (props: TypeFromRedux) => {
   const [company, setCompany] = useState("");
   const [file, setFile] = useState<File>();
   const [selSale, setSelSale] = useState<number>();
+  const [ sCnt, setScnt ] = useState(0);
+  const [ eCnt, setEcnt ] = useState(0);
 
   const history = useHistory()
 
@@ -40,8 +43,15 @@ const SalesImportPage = (props: TypeFromRedux) => {
     console.log("sending file 1")
     if (selSale) {
       console.log("Sending file")
-      await postFileUpload(props.companyID, company, selSale, formdata);
-      history.goBack()
+      const data = await postFileUpload(props.companyID, company, selSale, formdata);
+      if(data.status==200){
+        setFile(undefined);
+        setSelSale(undefined);
+        setCompany("");
+        setScnt(data.data.success);
+        setEcnt(data.data.error);
+      }
+      //history.goBack()
     }
 
   };
@@ -121,6 +131,18 @@ const SalesImportPage = (props: TypeFromRedux) => {
           Import
       </button>
       </div>
+      {sCnt !== 0 || eCnt !== 0 && <div>
+          <Result
+              status={"success"}
+              title={`Total Successful submissions: ${sCnt}`}
+          />
+          <Result
+              status={"error"}
+              title={`Total errors : ${eCnt}`}
+              subTitle={`Correct errors by visiting /errors`}
+          />
+      </div>
+      }
     </PageDiv>
   );
 };

@@ -27,6 +27,7 @@ import { Modal } from "antd";
 import Glob from "./Glob";
 import JournalPage from "./pages/journal";
 import ImportStatementPage from "./pages/importStatement";
+import YearPage from "./pages/year";
 
 const persistConfig = {
   key: "root",
@@ -42,7 +43,7 @@ const store = createStore(
 let persistor = persistStore(store);
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000"
+  uri: "http://unraidone.duckdns.org:4000"
 });
 
 /* eslint-enable */
@@ -65,6 +66,7 @@ const App: React.FC = () => {
             <Route path="/master" component={MasterForm} />
             <Route path="/errors" component={Errors} />
             <Route path="/journal" component={JournalPage} />
+            <Route path="/years" component={YearPage} />
             <Route path={'/imrstat'} component={ImportStatementPage} />
           </Router>
           <Glob />

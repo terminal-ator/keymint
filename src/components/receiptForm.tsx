@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { NormalizedCache, DeNormalize } from "../types/generic";
 import { Master } from "../types/master";
 import { Receipt } from "../pages/receipt";
-import { Select } from "./styledComp";
+//import { Select } from "./styledComp";
+import {Button, Input, Select} from 'antd';
 import "./rForm.css";
 
 interface RecieptFormProps {
@@ -16,7 +17,7 @@ const ReceiptForm = (props: RecieptFormProps) => {
   const denormMasters = DeNormalize<Master>(props.MasterList);
   const [cust_id, setCustID] = useState(0);
   const [cash, setCash] = useState(0);
-  const selectRef = useRef<HTMLSelectElement>(null);
+  const selectRef = useRef<Select>(null);
   const [isTouched, setTouched] = useState(false);
 
   const handleSave = () => {
@@ -45,6 +46,8 @@ const ReceiptForm = (props: RecieptFormProps) => {
     setCash(props.Receipt.cash);
   }, [props.Receipt]);
 
+  // @ts-ignore
+  // @ts-ignore
   return (
     <form
       onSubmit={e => {
@@ -53,26 +56,36 @@ const ReceiptForm = (props: RecieptFormProps) => {
       className="receipt-form"
     >
       <Select
+        showSearch
         value={cust_id}
         onChange={e => {
-          if (props.Receipt.cust_id === 0) setCustID(parseInt(e.target.value));
+          if (props.Receipt.cust_id === 0) {setCustID(parseInt(e.toString()));}
         }}
+        style={{ width: 300}}
         ref={selectRef}
-        disabled={props.Receipt.cust_id!==0}
+        filterOption = {
+          (input, option)=>{
+            if(option){
+              return (option.children.toString().toLowerCase().startsWith(input.toString().toLowerCase()) > 0)
+            }
+            return false;
+          }
+        }
       >
-        <option value={0} disabled>
+        <Select.Option value={0} disabled>
           Choose a name
-        </option>
+        </Select.Option>
         {denormMasters.map(master => (
-          <option
+          <Select.Option
             key={master.cust_id.Int64}
             value={master.cust_id.Valid ? master.cust_id.Int64 : 0}
           >
             {master.name}
-          </option>
+          </Select.Option>
         ))}
       </Select>
-      <input
+      <Input
+        style={{ width: 300}}
         onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
           await setCash(parseInt(e.target.value));
           if (props.Receipt.cust_id !== 0) {
@@ -84,25 +97,26 @@ const ReceiptForm = (props: RecieptFormProps) => {
         value={cash}
       />
       {props.Receipt.cust_id === 0 ? (
-        <button
+        <Button
           onClick={e => {
             e.preventDefault();
             handleSave();
           }}
           disabled={cust_id === 0}
+          type={"primary"}
         >
           Add
-        </button>
+        </Button>
       ) : null}
       {isTouched ? (
-        <button
+        <Button
           onClick={e => {
             e.preventDefault();
             handleUpdate();
           }}
         >
           Update
-        </button>
+        </Button>
       ) : null}
     </form>
   );

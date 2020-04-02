@@ -3,9 +3,11 @@ import { ThunkAction } from "redux-thunk";
 import { getJournal } from "../api";
 import { AppState } from "../reducers";
 import { Action } from "redux";
+import {Master} from "../types/master";
 
 export const TOGGLE_MASTER = `TOGGLE_MASTER`;
 export const UPDATE_MASTER = `UPDATE_MASTER`;
+export const SHOW_MASTER_FORM = `SHOW_MASTER_FORM`;
 
 export const TOGGLE_JOURNAL = `TOGGLE_JOURNAL`;
 export const FETCH_JOURNAL = `FETCH_JOURNAL`;
@@ -37,7 +39,13 @@ interface FetchJouralAction {
     payload: Journal
 }
 
-export type UiActions = ShowCreateMaster | UpdateMaster | ShowJournal | FetchJouralAction;
+interface ShowMasterForm {
+    type: typeof SHOW_MASTER_FORM;
+    show: boolean;
+    master: Master | undefined;
+}
+
+export type UiActions = ShowCreateMaster | UpdateMaster | ShowJournal | FetchJouralAction | ShowMasterForm;
 
 export const ToggleMaster = (show: boolean) => {
     return ({
@@ -53,6 +61,14 @@ export const UpdateMaster = (cust_id: number) => {
             payload: cust_id
         }
     )
+}
+
+export const ToggleMasterForm = (show: boolean, master: Master | undefined):ShowMasterForm => {
+    return({
+        type: SHOW_MASTER_FORM,
+        show,
+        master
+    });
 }
 
 export const ToggleJournal = (show: boolean, valid: boolean, id: number): ShowJournal => {

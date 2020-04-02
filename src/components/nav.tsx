@@ -4,8 +4,12 @@ import { AppState } from "../reducers";
 import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Modal, Button } from "antd";
-import Master from "../components/master";
-import { ToggleMaster, ToggleJournal } from "../actions/uiActions";
+import {
+  ToggleMaster,
+  ToggleJournal,
+  ToggleMasterForm
+} from "../actions/uiActions";
+import { Master } from "../types/master";
 
 const NavItem = styled.div`
   margin-left: 10px;
@@ -13,7 +17,7 @@ const NavItem = styled.div`
   justify-content: center;
   flex-direction: column;
   width: 100px;
-`
+`;
 
 const mapState = (state: AppState) => {
   return {
@@ -42,36 +46,34 @@ const Nav = (props: PropsFromRedux) => {
         marginBottom: 5
       }}
     >
-      <div style={{ width: "100%"}}>
-        <Link
-          style={{ fontWeight: "bold", }}
-          to="/menu"
-        >
+      <div style={{ width: "100%" }}>
+        <Link style={{ fontWeight: "bold" }} to="/menu">
           <h4 style={{ fontWeight: "bolder" }}>{selectedCompany?.name}</h4>
         </Link>
       </div>
       <NavItem>
         <a
           onClick={() => {
-            dispatch(ToggleMaster(true));
+            const master: Master = {
+              cust_id: { Int64: 0, Valid: false },
+              company_id: 2,
+              i_code: "GENERIC",
+              name: "",
+              beat_id: 1,
+              group_id: 1,
+              id: 0
+            };
+            dispatch(ToggleMasterForm(true, master));
           }}
         >
           Master
         </a>
       </NavItem>
       <NavItem>
-        <a
-          onClick={() => {
-            dispatch(ToggleJournal(true, false, 0));
-          }}
-        >
-          Journal
-        </a>
+        <a onClick={() => {dispatch(ToggleJournal(true,false,0))}}>Journal</a>
       </NavItem>
-      <NavItem >
-        <Link to="/">
-          logout
-        </Link>
+      <NavItem>
+        <Link to="/">logout</Link>
       </NavItem>
     </div>
   );

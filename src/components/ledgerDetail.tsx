@@ -19,7 +19,7 @@ import { useDispatch } from "react-redux";
 import {
   UpdateMaster,
   FetchJournal,
-  ToggleJournal
+  ToggleJournal, ToggleMasterForm
 } from "../actions/uiActions";
 import { Formik, Field, Form } from "formik";
 import { Select } from "./styledComp";
@@ -57,17 +57,17 @@ const LedgerDetail = (props: LedgerProps) => {
     }
   }, [propPostings]);
   const EditMaster = () => {
-    dispatch(UpdateMaster(props.cust));
+    dispatch(ToggleMasterForm(true, masters.normalized[props.cust]));
   };
   const InlineLedgerForm = () => {
     const [date, setDate] = useState(moment().format("YYYY-MM-DD"));
-    const [toFrom, setToFrom] = useState("From");
-    const [type, setType] = useState("Less");
+    const [toFrom, setToFrom] = useState("To");
+    const [type, setType] = useState("Billrr");
     const [amount, setAmount] = useState("0");
     const dispatch = useDispatch();
     const DateInput = (props: any) => <input type="date" {...props} />;
     return (
-      <div style={{ position: "absolute", bottom: 10, zIndex: 99999 }}>
+      <div style={{ position: "fixed", bottom: 10, zIndex: 99999 }}>
         <Formik
           initialValues={{ date, toFrom, type, amount }}
           onSubmit={async values => {
@@ -92,7 +92,7 @@ const LedgerDetail = (props: LedgerProps) => {
               console.log(err);
             } finally {
               // await fetchLedgers(props.cust)
-              await dispatch(FetchMasters(companyID));
+              await dispatch(FetchMasters());
               await dispatch(fetchPosting(props.cust));
             }
           }}
