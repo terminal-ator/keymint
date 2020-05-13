@@ -17,18 +17,20 @@ import { Beat } from "../actions/beatActions";
 import { Select } from "./styledComp";
 import { compareTwoStrings } from 'string-similarity';
 import {Input} from "antd";
+import {LongTd} from "./sttmntTR";
 
 interface MasterListProps {
   masters: NormalizedCache<Master>;
   handleEnter?(masterID: number): void;
   handleEscape?(_: number, __: string): void;
   companies?: NormalizedCache<Company>;
+  initFilter?: string;
 }
 
 type MProps = MasterListProps & RouteComponentProps;
 
 const MasterList: FC<MProps> = (props: MProps) => {
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState(props.initFilter || "");
   const [cursor, setCursor] = useState(0);
   const [masters, setMasters] = useState(props.masters);
   const [balanceFilter, setBalance] = useState(false);
@@ -68,20 +70,20 @@ const MasterList: FC<MProps> = (props: MProps) => {
   const handleKey = async (_: number, key: string) => {
     const newFilter = filter + key;
     // console.log("New filter:", newFilter);
-    const val = await filterBasedOnName(newFilter);
-    if (val == 0) setFilter(newFilter);
-    // setFilter(newFilter);
+    // const val = await filterBasedOnName(newFilter);
+    // if (val == 0) setFilter(newFilter);
+    setFilter(newFilter);
   };
   const handleBackSpace = async (_: number, key: string) => {
     const newFilter = filter.slice(0, -1);
-    await filterBasedOnName(newFilter);
+    // await filterBasedOnName(newFilter);
     setFilter(newFilter);
   };
   function renderItem(arg: RenderItemProps<Master>) {
     // console.log(arg);
     return (
       <SELTR key={arg.item.id.toString()}>
-        <td style={{ padding: 5, overflow: "hidden" }}>
+        <td colSpan={2} style={{ padding: 5, overflow: "hidden" }}>
           <span>
             {arg.item.chq_flg ? (
               <span style={{ backgroundColor: "#53c97c", width: 5 }}>
@@ -95,7 +97,10 @@ const MasterList: FC<MProps> = (props: MProps) => {
         <td>{bts?.normalized[arg.item.beat_id]?.short_name}</td>
         <td>
           {Math.abs(arg.item.balance || 0).toString()}&nbsp;
-          {arg.item.balance || 0  < 0 ? "CR" : "DR"}
+          {arg.item.balance && (arg.item.balance  <= 0) ? "DR" : "CR"}
+          <span style={{ backgroundColor:  (arg?.item?.balance) && (arg.item.balance) > 0 ?"red":"#53c97c", width: 5, float: "right" }}>
+                &nbsp;{" "}
+          </span>
         </td>
       </SELTR>
     );
@@ -130,9 +135,18 @@ const MasterList: FC<MProps> = (props: MProps) => {
   const filterFunc = (data: Master): boolean => {
     return (
       (!balanceFilter || data.balance !== 0)
+        &&( data.name.toLowerCase().startsWith(filter.toLowerCase()) )
       && (beatFilter===0 || data.beat_id == beatFilter)
     );
   };
+
+  const renderColumns = () =>(<thead>
+  <tr>
+    <th colSpan={2} >Name</th>
+    <th>Beat</th>
+    <th>Balance</th>
+  </tr>
+  </thead>)
 
   return (
     <div style={{ height: "100%" }}>
@@ -144,10 +158,12 @@ const MasterList: FC<MProps> = (props: MProps) => {
           justifyContent: "space-between"
         }}
       >
-        <Select
+        <select
           onChange={e => {
             filterByBeat(parseInt(e.target.value));
           }}
+          style={{ width: 200}}
+          className={"form-control"}
         >
           <option value={0}>All</option>
           {bts?.all.map(id => (
@@ -155,7 +171,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
               {bts.normalized[id].name}
             </option>
           ))}
-        </Select>
+        </select>
         <p className="filter-text" style={{ marginTop: 2, marginLeft: 2 }}>
           <Input value={filter} onChange={event => {setFilter(event.target.value)}} placeholder={"Search Here"} />
         </p>
@@ -176,7 +192,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
         cursor={cursor}
         rowHeight={20}
         numberOfRows={12}
-        maxHeight={700}
+        maxHeight={600}
         handleCharacter={handleKey}
         data={masters}
         renderItem={renderItem}
@@ -184,6 +200,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
         handleEnter={selectName}
         width={"100%"}
         filter={filterFunc}
+        renderColumn={renderColumns}
       />
     </div>
   );

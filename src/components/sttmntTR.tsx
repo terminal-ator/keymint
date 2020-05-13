@@ -5,7 +5,7 @@ import { SELTR } from "../pages";
 import styled from "styled-components";
 
 export const SimTd = styled.td`
-  min-width: 150px;
+  min-width: 50px;
   max-width: 150px;
   text-align: center;
   vertical-align: middle;
@@ -16,8 +16,8 @@ export const SimTd = styled.td`
 
 export const LongTd = styled(SimTd)`
   overflow: hidden;
-  max-width: 400px;
-  min-width: 400px;
+  max-width: 500px;
+  min-width: 500px;
   padding-left: 10px;
   padding-right: 10px;
   

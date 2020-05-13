@@ -9,7 +9,7 @@ import Nav from '../components/nav';
 import { Master } from "../types/master";
 import { DeNormalize } from "../types/generic";
 import { useHistory } from "react-router-dom";
-import {Result} from "antd";
+import {message, Result} from "antd";
 
 const mapState = (state: AppState) => {
   return {
@@ -50,17 +50,22 @@ const SalesImportPage = (props: TypeFromRedux) => {
         setCompany("");
         setScnt(data.data.success);
         setEcnt(data.data.error);
+        message.success(data.data.sucess)
+        message.error(data.data.error)
+      }
+      else{
+        message.error("Failed to post files")
       }
       //history.goBack()
     }
 
   };
 
-  const OnSubmit = () => {
+  const OnSubmit = async() => {
     let formData = new FormData();
     if (file) {
       formData.append("upload", file);
-      sendFile(formData);
+      await sendFile(formData);
     }
   };
 
@@ -86,13 +91,16 @@ const SalesImportPage = (props: TypeFromRedux) => {
   return (
     <PageDiv>
       <Nav />
-      <div style={{ display: 'flex', flexDirection: 'column', width: 400, padding: 10 }}>
-        <p>Import</p>
-        <p>Choose the sales account</p>
+      <div style={{ display: 'flex', flexDirection: 'column',
+        width: 400, padding: 10, backgroundColor:"rgb(33,33,33)",
+        margin:10,borderRadius: 4
+      }}>
+        <h4 className={'text-light'}>Import</h4>
         <Select onChange={e => {
           setSelSale(parseInt(e.target.value));
         }}
           value={selSale}
+                className={"form-control bg-dark text-light mt-4"}
         >
           <option value="" disabled selected>
             Select Sales
@@ -103,12 +111,12 @@ const SalesImportPage = (props: TypeFromRedux) => {
             })
           }
         </Select>
-        <p>Choose a software</p>
         <Select
           onChange={e => {
             setCompany(e.target.value);
           }}
           value={company}
+          className={"form-control bg-dark text-light mt-4"}
         >
           <option value="" disabled selected>
             Select Company
@@ -122,9 +130,9 @@ const SalesImportPage = (props: TypeFromRedux) => {
         </Select>
         <FileUpload onChange={fileChange} />
         <button
-
-          onClick={() => {
-            OnSubmit();
+          className={'btn btn-dark mt-4'}
+          onClick={async () => {
+            await OnSubmit();
           }}
           disabled={file == undefined}
         >

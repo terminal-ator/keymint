@@ -44,7 +44,7 @@ const ReceiptForm = (props: RecieptFormProps) => {
   useEffect(() => {
     setCustID(props.Receipt.cust_id);
     setCash(props.Receipt.cash);
-  }, [props.Receipt]);
+  }, [props.Receipt])
 
   // @ts-ignore
   // @ts-ignore

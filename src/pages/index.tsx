@@ -35,7 +35,7 @@ export const SELTR = styled.tr`
   td {
     padding: 5px;
     height: inherit;
-    
+    background-color: inherit; 
   }
 `;
 
@@ -81,8 +81,8 @@ const Index = (props: Props) => {
 
   return (
     <PageDiv>
-      <div style={{ width: 600, margin: '10px auto' }} >
-        <h1>Open Company </h1>
+      <div style={{ width: 600, color:"#FFCA28" }} >
+        <h1 style={{ color: "#FFCA28"}}>Companies</h1>
         {props.companies && (
           <KeyList
             columns={["ID", "Company"]}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { AppState } from "../reducers";
+import {AppState, stateSelector} from "../reducers";
 import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Modal, Button } from "antd";
@@ -33,23 +33,27 @@ const Nav = (props: PropsFromRedux) => {
   const selectedCompany = props.companies?.normalized[props.selected];
   const [mstr, setmst] = useState(false);
   const dispatch = useDispatch();
+  const year = stateSelector( stt => stt.years.year );
+  const years = stateSelector( stt => stt.years.years);
+
   return (
     <div
       style={{
-        backgroundColor: "white",
+        backgroundColor: "#212121",
         display: "flex",
         flexDirection: "row",
         alignContent: "center",
-        borderBottom: "1px solid #d9d9d9",
         paddingTop: 5,
         paddingLeft: 10,
-        marginBottom: 5
+        marginBottom: 5,
+        borderRadius: 2
       }}
     >
-      <div style={{ width: "100%" }}>
+      <div style={{ width: "100%", display:"flex", alignItems:"center" }}>
         <Link style={{ fontWeight: "bold" }} to="/menu">
-          <h4 style={{ fontWeight: "bolder" }}>{selectedCompany?.name}</h4>
+          <h4 style={{ fontWeight: "bolder", color:"#FFCA28" }}>{selectedCompany?.name}</h4>
         </Link>
+          <span>{year && years.normalized[year]?.year_string}</span>
       </div>
       <NavItem>
         <a

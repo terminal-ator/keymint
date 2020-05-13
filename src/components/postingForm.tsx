@@ -4,6 +4,7 @@ import { Select } from './styledComp';
 import { Master } from '../types/master';
 import { NormalizedCache } from '../types/generic';
 import { Select as RelSelect } from 'antd';
+import NameSelect from "./nameSelect";
 
 
 interface Props {
@@ -34,7 +35,7 @@ const PostingForm = (props: Props) => {
     }, [props.posting.amount])
 
     return (
-        <div>
+        <div style={{ display:"flex" }}>
             <Select
                 value={toBy}
                 onChange={(e) => { setToBy(e.target.value) }}
@@ -43,28 +44,7 @@ const PostingForm = (props: Props) => {
                 <option value={"0"}>By</option>
                 <option value={"1"}>To</option>
             </Select>
-            <RelSelect
-                showSearch
-                value={posting.master_id}
-                onChange={(e) => {
-                    const id = e;
-                    handleMasterChange(props.pKey, id);
-                }
-                }
-                style={{ width: 300 }}
-                filterOption={(input, option) =>
-                    option ? option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0 : false
-                }
-            >
-                <RelSelect.Option value={1} key={posting.id + 1} disabled>Choose a name</RelSelect.Option>
-                {
-                    masters.map((mstr, id) =>
-                        <RelSelect.Option key={`${posting.id}${id}`} value={mstr.cust_id.Int64}>
-                            {mstr.name}
-
-                        </RelSelect.Option>)
-                }
-            </RelSelect>
+          <div><NameSelect onSelect={ (e)=>{handleMasterChange(props.pKey,e)} } cursor={posting.master_id} /></div>
             <input
                 disabled={toBy == "1"}
                 value={toBy == "0" ? -posting.amount : ""}

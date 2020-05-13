@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { SaveSelectedYear } from "../actions/yearsActions";
 import { useHistory } from "react-router-dom";
 import {FetchMasters} from "../actions/masterActions";
+import {PageDiv} from "../components/styledComp";
 
 const YearPage = () => {
   const years = stateSelector(state => state.years.years);
@@ -28,7 +29,7 @@ const YearPage = () => {
   };
 
   return (
-    <div>
+    <PageDiv>
       <Nav />
       <KeyList
         handleEnter={handleSelect}
@@ -39,9 +40,10 @@ const YearPage = () => {
         rowHeight={20}
         numberOfRows={years.all.length}
         maxHeight={600}
+        width={"600px"}
         handleEscape={()=>{history.goBack();}}
       />
-    </div>
+    </PageDiv>
   );
 };
 

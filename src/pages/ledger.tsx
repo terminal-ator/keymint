@@ -15,7 +15,7 @@ import {
   RouteComponentProps
 } from "react-router-dom";
 import renderDetail from "../components/renderDetails";
-import { fetchPosting } from "../actions/postingActions";
+import {fetchCheques, fetchPosting} from "../actions/postingActions";
 
 const mapState = (state: AppState) => {
   return {
@@ -40,6 +40,7 @@ const LedgerPage = (props: PropType) => {
       await dispatch(
         fetchPosting(props.masters.normalized[masterID].cust_id.Int64)
       );
+      await dispatch(fetchCheques())
       setShow(true);
     }
   };
@@ -51,7 +52,7 @@ const LedgerPage = (props: PropType) => {
       <div style={{ display: "flex", marginTop: 5 }}>
         <div style={{ flex: 1 }}>
           <div
-            style={{padding: "5px", width: 600 }}
+            style={{padding: "5px", width: 700 }}
           >
             {props.masters && (
               <MasterList masters={props.masters} handleEnter={selectMaster} />

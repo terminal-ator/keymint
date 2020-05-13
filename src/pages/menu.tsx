@@ -24,14 +24,14 @@ const MenuRoutes = [
     route: "sales"
   },
   {
+    id: 7,
+    name: "Receipts",
+    route: "receipt"
+  },
+  {
     id: 6,
     name: 'Import Statement',
     route: 'imrstat',
-  },
-  {
-    id: 3,
-    name: "Receipts",
-    route: "receipt"
   },
   {
     id: 4,
@@ -42,6 +42,16 @@ const MenuRoutes = [
     id: 5,
     name: "Errors",
     route: "errors"
+  },
+  {
+    id:8,
+    name:"Day Book",
+    route: "daybook"
+  },
+  {
+    id:9,
+    name: "Pending Cheques",
+    route: "pending"
   }
 ];
 

@@ -9,6 +9,7 @@ import { postErrors } from "../api";
 import { Button, message } from "antd";
 import { ToggleMasterForm } from "../actions/uiActions";
 import { Master } from "../types/master";
+import Loading from "../components/loading";
 
 interface ErrorInterface {
   id: number;
@@ -46,8 +47,6 @@ const Errors = () => {
     variables: { input: companyID }
   });
 
-  if (error) return <div>Error</div>;
-  if (loading) return <div>Loading....</div>;
 
   // handle the error merging with current existing user
   const handleMerge = async (cust_id: number, error_id: number) => {
@@ -77,16 +76,20 @@ const Errors = () => {
       handleMerge(sel, err.id);
     };
     return (
-      <div className="card">
+      <div className="card bg-dark text-light">
         <div className="card-body">
-          <h5 className="card-title">{err.master_name}</h5>
-          <h6 className="card-subtitle">
+          <h5 className="card-title text-light">{err.master_name}</h5>
+          <h6 className="card-subtitle text-light">
             {err.interfacecode} - {err.to_customer}
           </h6>
           <div>
             <select
               onChange={e => {
                 setSel(parseInt(e.target.value));
+              }}
+              style={{
+                backgroundColor: "black",
+                color: "white"
               }}
             >
               {masters?.all.map(id => (
@@ -134,11 +137,11 @@ const Errors = () => {
   return (
     <PageDiv>
       <Nav />
-      <div className="container-fluid">
-        <h1>Errors</h1>
-        {data?.getErrors.map(err => (
+      <div className="container-fluid" style={{ overflowY: "scroll", maxHeight: "100%"}}>
+        <h1 style={{ color: "white"}}>Errors</h1>
+        { !loading? data?.getErrors.map(err => (
           <RenderError err={err} />
-        ))}
+        )):<Loading />}
       </div>
     </PageDiv>
   );

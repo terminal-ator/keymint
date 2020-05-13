@@ -5,5 +5,10 @@ export const Select = styled.select`
 `;
 
 export const PageDiv = styled.div`
+  background-color: #1b1f23;
+  width: 100%;
+  height: 100vh;
+  min-height: 100% !important;
+  color: white;
   
 `

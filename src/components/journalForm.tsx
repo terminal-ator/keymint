@@ -24,7 +24,7 @@ const JournalForm = () => {
   const dispatch = useDispatch();
 
   let journal: Journal = {
-    id: 1,
+    id:0,
     company_id: cmpnyID,
     date: moment().format("YYYY-MM-DD"),
     ref_no: "NAN",
@@ -95,12 +95,17 @@ const JournalForm = () => {
   };
 
   const handleRefChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const jrnls = dotProp.set(jrnl, `refno`, e.target.value);
+    const jrnls = dotProp.set(jrnl, `ref_no`, e.target.value);
     setJrnl(jrnls);
   };
 
   const handleSave = async () => {
+
     const postJournals = { ...jrnl, postings: psting };
+    // if(postJournals.id==1){
+    //   delete postJournals.id
+    // }
+    console.log({ postJournals })
     try {
       const resp = await postNewJournal(postJournals);
       if (resp.status == 200 && !ui.valid) {

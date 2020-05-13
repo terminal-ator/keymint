@@ -15,7 +15,7 @@ import { Statement } from "../types/statements";
 import {
   getBankWiseStatements,
   postStatementMaster,
-  newSetStatement
+  newSetStatement, getRecommended
 } from "../api";
 import StatementTR from "../components/sttmntTR";
 import withPop from "../components/popup";
@@ -24,6 +24,7 @@ import Loading from "../components/loading";
 import Nav from "../components/nav";
 import { Card } from "antd";
 import moment from "moment";
+import {PageDiv} from "../components/styledComp";
 
 const mapState = (state: AppState) => ({
   masters: state.master.masters,
@@ -55,6 +56,13 @@ export const DialogContent = styled.div`
   flex: 1;
 `;
 
+export interface Recommended {
+  id: number
+  name: string
+  date: string
+  amount: number
+}
+
 const connector = connect(mapState, {});
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -67,6 +75,7 @@ const STMT = (props: Props) => {
   const [filtered, setFiltered] = useState<NormalizedCache<Statement>>();
   const [selected, setSelected] = useState<number>();
   const [ hide, setHide ] = useState(false);
+  const [ recoms, setRecoms ] = useState<Array<Recommended>>();
 
   let { id } = useParams();
   let history = useHistory();
@@ -82,6 +91,18 @@ const STMT = (props: Props) => {
   useEffect(() => {
     fetchStatements();
   }, [id]);
+
+  useEffect(()=>{
+      if(selected && filtered?.normalized[selected]){
+        const amount = filtered?.normalized[selected].deposit.Valid? filtered?.normalized[selected].deposit.Float64:
+          filtered?.normalized[selected].withdrawl.Float64
+          getRecommended(amount).then((res)=>{
+            setRecoms(res.data)
+          })
+      }
+  },[selected])
+
+
 
   const goBack = () => {
     history.goBack();
@@ -151,12 +172,12 @@ const STMT = (props: Props) => {
     }
   };
   return (
-    <div>
+    <PageDiv>
       <Nav />
       <div
         style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
-        <h1>Statements</h1>
+        <h2 style={{ color: "#FFCA28"}} >Statements</h2>
         <label style={{ marginLeft: "10px" }}>
           <input
             onChange={handleFilter}
@@ -186,6 +207,8 @@ const STMT = (props: Props) => {
           handleEscape={goBack}
           handleEnter={handleStmtSelect}
           filter={filterOutstanding}
+
+          maxWidth={"100%"}
         />
       ) : (
         <Loading />
@@ -209,6 +232,28 @@ const STMT = (props: Props) => {
                         {filtered.normalized[selected] &&
                           filtered.normalized[selected].narration}
                       </div>
+                      <div style={{ padding:"5px", backgroundColor: "#36e392", color:"white"}} >
+                        { filtered?.normalized[selected] &&
+                          filtered?.normalized[selected].deposit .Float64
+                        }
+                      </div>
+                      <div style={{padding:"5px", backgroundColor: "red", color:"white"}}  >
+                        {
+                          filtered?.normalized[selected] &&
+                            filtered?.normalized[selected].withdrawl.Float64
+                        }
+                      </div>
+                      <div style={{ width: "100%"}}>
+                        <p>Recommended</p>
+                        <ul>{
+                          recoms && recoms.map((re) => <li key={re.name + re.date}
+                                                           style={{display: "flex", justifyContent: "space-between"}}>
+                            <span>{moment(re.date).format("MMM Do")}</span>
+                            <span>{re.name}</span>
+                            <span>Rs.{re.amount}</span>
+                          </li>)
+                        }</ul>
+                      </div>
                     </div>
                   )}
                 </Card>
@@ -231,7 +276,7 @@ const STMT = (props: Props) => {
       {/* {props.masters && (
         <MasterList masters={props.masters} companies={props.companies} />
       )} */}
-    </div>
+    </PageDiv>
   );
 };
 

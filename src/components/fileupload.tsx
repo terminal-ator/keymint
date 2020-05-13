@@ -13,7 +13,7 @@ const FileUpload = (props: FileUploadProps) => {
   };
   return (
     <div style={{ marginTop: 10 }}>
-      <input type="file" onChange={props.onChange} />
+      <input className={"form-control bg-dark text-light"} type="file" onChange={props.onChange} />
     </div>
   );
 };

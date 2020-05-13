@@ -5,8 +5,9 @@ import {NullInt, StatementMutation} from "../types/generic";
 import { FormValues } from "../components/master";
 import { Master } from "../types/master";
 import { Journal } from "../types/ledger";
+import {Cheque} from "../pages/cheque";
 
-const ax = axios.create({
+export const ax = axios.create({
   baseURL: 'http://unraidone.duckdns.org:8080',
 });
 
@@ -92,6 +93,17 @@ export const postLedger = async (
   });
 };
 
+export const postReceipt = async (
+  data: { id?:number, amount:number, master_id:number, date:string }[]
+) =>{
+  const company = await localStorage.getItem('company')
+  return ax.post(`/ledger/${company}`, data, {
+    headers: {
+      "authorization": company
+    }
+  });
+}
+
 export const fetchLedger = async (custID: number, companyID: number) => {
   return axios.get(
     `${SERVER_URL}/ledger?cust_id=${custID}&company=${companyID}`
@@ -148,4 +160,28 @@ export const fetchYears = async ( company: number )=>{
       "Authorization": companyID
     }
   })
+}
+
+
+export const addCheques = async ( cheques: Cheque[])=>{
+  return ax.post('/cheque/list', cheques);
+}
+
+export const getCheques = async (masterid: number)=>{
+  return ax.get(`/cheque/cheques/${masterid}`)
+}
+
+export const postToggleCheque = async (cid: number)=>{
+  return ax.post(`/cheque/toggle/${cid}`)
+}
+
+export const getRecommended = async ( amount: number )=>{
+  const token = await localStorage.getItem('company');
+  return ax.get(`/cheque/recommended/${amount}`, { headers: { "authorization" : token}});
+}
+
+
+export const getPendingCheques = async ()=>{
+  const token = await localStorage.getItem('company')
+  return ax.get(`/cheque/pending`, { headers: { "authorization": token }})
 }

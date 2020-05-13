@@ -20,6 +20,7 @@ import MasterForm from "./components/master";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import Errors from "./pages/errors";
+import './App.css';
 import Master from './components/master';
 
 import 'antd/dist/antd.css';
@@ -28,6 +29,9 @@ import Glob from "./Glob";
 import JournalPage from "./pages/journal";
 import ImportStatementPage from "./pages/importStatement";
 import YearPage from "./pages/year";
+import ChequePage from "./pages/cheque";
+import DayBook from "./pages/daybook";
+import PendingPage from "./pages/pending";
 
 const persistConfig = {
   key: "root",
@@ -61,15 +65,17 @@ const App: React.FC = () => {
             <Route path="/stmt/:id" component={STMT} />
             <Route path="/banks" component={Bank} />
             <Route path="/sales" component={SalesImportPage} />
-            <Route path="/receipt" component={receipt} />
             <Route path="/ledgers" component={LedgerPage} />
             <Route path="/master" component={MasterForm} />
             <Route path="/errors" component={Errors} />
             <Route path="/journal" component={JournalPage} />
             <Route path="/years" component={YearPage} />
             <Route path={'/imrstat'} component={ImportStatementPage} />
-          </Router>
+            <Route path={"/receipt"} component={ChequePage} />
+            <Route path={"/daybook"} component={DayBook} />
+            <Route path={"/pending"} component={PendingPage} />
           <Glob />
+          </Router>
         </ApolloProvider>
       </PersistGate>
     </Provider>

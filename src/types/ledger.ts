@@ -38,4 +38,5 @@ export interface Journal {
   type: string;
   sttmt_id: number | undefined;
   postings?: TPosting[]
+  amount?:number;
 }

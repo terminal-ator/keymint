@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useRef } from "react";
+import React, { FC, useState, useEffect, useRef, Component } from "react";
 import {
   RenderItemProps,
   NormalizedCache,
@@ -12,6 +12,7 @@ const KeyTable = styled.table`
   white-space: nowrap;
   border-collapse: collapse;
   width: 100%;
+  background: transparent;
 `;
 
 export interface SELTRPROPS {
@@ -28,10 +29,10 @@ const KeyBody = styled.tbody`
     props.selected
       ? props.bgColorOn
         ? props.bgColorOn
-        : "#EEEEEE"
+        : "#ff1744"
       : props.bgColorOff
       ? props.bgColorOff
-      : "white"};
+      : "#212121"};
   color: ${(props: SELTRPROPS) =>
     props.selected
       ? props.colorOn
@@ -39,7 +40,7 @@ const KeyBody = styled.tbody`
         : "black"
       : props.colorOff
       ? props.colorOff
-      : "black"};
+      : "white"};
   height: ${(props: SELTRPROPS) => {
     if (props.height) return props.height;
     return "40px";
@@ -60,6 +61,7 @@ interface KeyProps<T> {
   rowHeight: number;
   numberOfRows: number;
   maxHeight: number;
+  maxWidth?:string;
   handleCharacter?(cursor: number, val: string): void;
   handleEnter?(cursor: number): void;
   handleEscape?(): void;
@@ -69,6 +71,8 @@ interface KeyProps<T> {
   }[];
   width?: string;
   filter?(data: T): boolean;
+  renderColumn?(): any;
+  autoFocus?: boolean;
 }
 
 function GetDimensions() {
@@ -80,7 +84,7 @@ function useGetDimenstion() {
   const [dim, setDim] = useState(GetDimensions());
 }
 
-function  KeyList<T extends HasId>(props: KeyProps<T>) {
+function KeyList<T extends HasId>(props: KeyProps<T>) {
   const [cursor, setCursor] = useState(props.cursor);
   const prevCursor = usePrevious(cursor);
   const [lowerCursorBound, setLoweCursorBound] = useState(props.cursor);
@@ -88,7 +92,8 @@ function  KeyList<T extends HasId>(props: KeyProps<T>) {
   const [upperCursorBound, setUpperCursorBound] = useState(
     props.cursor + props.numberOfRows
   );
-  const [ scrollIndex, setScrollIndex] = useState(0);
+  const [scrollIndex, setScrollIndex] = useState(0);
+  const autofocus = props.autoFocus==false? props.autoFocus : true;
   const prevScrollIndex = usePrevious(scrollIndex);
   const { data } = props;
   let dataArray = DeNormalize(data);
@@ -101,7 +106,7 @@ function  KeyList<T extends HasId>(props: KeyProps<T>) {
     setCursor(props.cursor);
   }, [props.cursor]);
   useEffect(() => {
-    if(cursor> dataArray.length){
+    if (cursor > dataArray.length) {
       setCursor(1);
     }
     const jumpFactor = cursor - prevCursor > 1 ? props.numberOfRows / 2 - 3 : 0;
@@ -116,11 +121,11 @@ function  KeyList<T extends HasId>(props: KeyProps<T>) {
       return;
     }
   }, [cursor]);
-  useEffect(()=>{
-    if(dataArray.length<cursor){
+  useEffect(() => {
+    if (dataArray.length < cursor) {
       setCursor(0);
     }
-  },[dataArray.length])
+  }, [dataArray.length]);
   function usePrevious(value: number): number {
     const ref = useRef<number>(0);
 
@@ -132,29 +137,36 @@ function  KeyList<T extends HasId>(props: KeyProps<T>) {
   }
   const Focus = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (Focus && Focus.current) {
-      Focus.current.focus();
+    if (divRef && divRef.current && autofocus) {
+      divRef.current.focus();
     }
   });
   const styles = {
     wrapper: {
-      backgroundColor: "#fff",
+      backgroundColor: "#262a2d",
       zIndex: 999,
       position: "relative" as "relative",
       top: 0,
       bottom: 0,
-      overflowY: "scroll" as "scroll",
-      height: 2 * props.numberOfRows * props.rowHeight + 200,
-      width: props.width || "100%"
+      overflow: "hidden" as "hidden",
+      height: props.numberOfRows * props.rowHeight + 250,
+      width: props.width,
+      maxWidth: props.maxWidth,
+      margin: 10,
+      borderRadius: 2,
+      padding: 20,
+      outlineColor: "#ff1744",
+      outline:"none"
     },
     listWrapper: {
       top: 0,
       left: 0,
       outline: "hidden",
       position: "absolute" as "absolute",
-      backgroundColor: "#fff",
+      backgroundColor: "#262a2d",
       height: props.rowHeight * props.data.all.length,
-      minWidth: 200
+      minWidth: 200,
+      margin:5,
     },
     list: (height: number) => ({
       height,
@@ -277,13 +289,13 @@ function  KeyList<T extends HasId>(props: KeyProps<T>) {
     }
   };
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if(divRef.current){
+    if (divRef.current) {
       //console.log(`Logging scroll events with scrolltop: ${divRef.current.scrollTop}`);
       const scTop = divRef.current.scrollTop;
-      const updateIndex =  Math.round(scTop / props.rowHeight);
+      const updateIndex = Math.round(scTop / props.rowHeight);
       //console.log(updateIndex)
       const scroll = prevScrollIndex < updateIndex ? updateIndex : -updateIndex;
-      setCursor(cursor+scroll);
+      setCursor(cursor + scroll);
       setScrollIndex(updateIndex);
       //setLoweCursorBound(prevLower-1);
       //setUpperCursorBound(prevUpper + props.numberOfRows -1);
@@ -291,40 +303,41 @@ function  KeyList<T extends HasId>(props: KeyProps<T>) {
     console.log("Handling scroll");
   };
 
-
-
   return (
-    <div style={styles.wrapper} ref={divRef} onScroll={handleScroll} >
-      <div
-        onKeyDown={handleKeyDown}
-        ref={Focus}
-        tabIndex={1}
-        style={styles.listWrapper}
-      >
-        <KeyTable  className="">
-          <thead>
-            <tr style={{ height: props.rowHeight }}>
-              {props.columns.map(column_name => (
-                <th style={{ paddingLeft: 5 }} key={column_name}>
-                  {column_name}
-                </th>
-              ))}
-            </tr>
-          </thead>
+    <div
+      style={styles.wrapper}
+      ref={divRef}
+      onScroll={handleScroll}
+      onKeyDown={handleKeyDown}
+      tabIndex={1}
+    >
+      <div ref={Focus} style={styles.listWrapper}>
+        <KeyTable className="">
+          {props.renderColumn ? (
+            props.renderColumn()
+          ) : (
+            <thead>
+              <tr style={{ height: props.rowHeight }}>
+                {props.columns.map(column_name => (
+                  <th style={{ paddingLeft: 5 }} key={column_name}>
+                    {column_name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          )}
           {dataArray.map((item, i) => {
-            return checkIfVisible(i) ||
-              (false) ? (
+            return checkIfVisible(i) || false ? (
               <KeyBody
                 onMouseMove={() => {
                   handleHover(i);
                 }}
-                onMouseDown={() => {
-                  handleClick(i);
+                onClick={e => {
+                  if (e.nativeEvent.type === "click") handleClick(i);
                 }}
                 selected={cursor === i}
                 height={`${props.rowHeight}px`}
                 key={i}
-
               >
                 {props.renderItem({
                   item: item,
@@ -339,6 +352,21 @@ function  KeyList<T extends HasId>(props: KeyProps<T>) {
             ) : null;
           })}
         </KeyTable>
+        <div style={{ width: "100%" }}>
+          <div style={{ width: "100%" }}>
+            <p
+              style={{
+                float: "right",
+                paddingTop: 10,
+                paddingLeft: 5,
+                paddingRight: 5,
+                paddingBottom: 10
+              }}
+            >
+              {dataArray.length - cursor - 1} More
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
