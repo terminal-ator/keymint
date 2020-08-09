@@ -52,6 +52,11 @@ const MenuRoutes = [
     id:9,
     name: "Pending Cheques",
     route: "pending"
+  },
+  {
+    id: 10,
+    name: "Products",
+    route: "products"
   }
 ];
 

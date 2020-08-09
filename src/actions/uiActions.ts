@@ -11,6 +11,7 @@ export const SHOW_MASTER_FORM = `SHOW_MASTER_FORM`;
 
 export const TOGGLE_JOURNAL = `TOGGLE_JOURNAL`;
 export const FETCH_JOURNAL = `FETCH_JOURNAL`;
+export const TOGGLE_PRODUCT = `TOGGLE_PRODUCT`;
 export const UPDATE_JOURNAL = `UPDATE_JOURNAL`;
 
 interface journalPayload {
@@ -45,7 +46,13 @@ interface ShowMasterForm {
     master: Master | undefined;
 }
 
-export type UiActions = ShowCreateMaster | UpdateMaster | ShowJournal | FetchJouralAction | ShowMasterForm;
+interface ShowProduct {
+    type: typeof TOGGLE_PRODUCT;
+    payload: boolean;
+    product_id?: string | null
+}
+
+export type UiActions =  ShowProduct|ShowCreateMaster | UpdateMaster | ShowJournal | FetchJouralAction  | ShowMasterForm ;
 
 export const ToggleMaster = (show: boolean) => {
     return ({
@@ -81,6 +88,14 @@ export const ToggleJournal = (show: boolean, valid: boolean, id: number): ShowJo
         }
     })
 }
+
+export const ToggleProduct = (show: boolean, product_id?: string | null): ShowProduct =>{
+    return ({
+        type: TOGGLE_PRODUCT,
+        payload: show,
+        product_id
+    })
+};
 
 
 

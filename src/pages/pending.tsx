@@ -31,7 +31,7 @@ const PendingPage = ()=>{
   return(
     <PageDiv>
       <Nav />
-      <h2 className={"text-light"}>Pending Cheques</h2>
+      <h2 style={{ color: "white"}}>Pending Cheques</h2>
       <KeyList cursor={0} data={normalize(cheques)}
                renderItem={render} columns={['Date','Name','Amount']}
                rowHeight={20} numberOfRows={14} maxHeight={500} />

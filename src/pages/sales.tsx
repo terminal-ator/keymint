@@ -50,7 +50,7 @@ const SalesImportPage = (props: TypeFromRedux) => {
         setCompany("");
         setScnt(data.data.success);
         setEcnt(data.data.error);
-        message.success(data.data.sucess)
+        message.success(data.data.success)
         message.error(data.data.error)
       }
       else{

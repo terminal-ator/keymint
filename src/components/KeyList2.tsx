@@ -3,7 +3,7 @@ import {
   RenderItemProps,
   NormalizedCache,
   DeNormalize,
-  HasId
+  HasId, Has_id
 } from "../types/generic";
 import styled from "styled-components";
 
@@ -26,25 +26,25 @@ export interface SELTRPROPS {
 
 const KeyBody = styled.tbody`
   background: ${(props: SELTRPROPS) =>
-    props.selected
-      ? props.bgColorOn
-        ? props.bgColorOn
-        : "#3e3e3e"
-      : props.bgColorOff
-      ? props.bgColorOff
-      : ""};
+  props.selected
+    ? props.bgColorOn
+    ? props.bgColorOn
+    : "#3e3e3e"
+    : props.bgColorOff
+    ? props.bgColorOff
+    : ""};
   color: ${(props: SELTRPROPS) =>
-    props.selected
-      ? props.colorOn
-        ? props.colorOn
-        : "white"
-      : props.colorOff
-      ? props.colorOff
-      : "white"};
+  props.selected
+    ? props.colorOn
+    ? props.colorOn
+    : "white"
+    : props.colorOff
+    ? props.colorOff
+    : "white"};
   height: ${(props: SELTRPROPS) => {
-    if (props.height) return props.height;
-    return "40px";
-  }};
+  if (props.height) return props.height;
+  return "40px";
+}};
   :hover {
     cursor: pointer;
     background-color: #243d2b;
@@ -64,7 +64,7 @@ interface KeyProps<T> {
   maxHeight: number;
   maxWidth?:string;
   handleCharacter?(cursor: number, val: string): void;
-  handleEnter?(cursor: number): void;
+  handleEnter?(cursor: string): void;
   handleEscape?(): void;
   handleMisc?: {
     key: number;
@@ -85,7 +85,7 @@ function useGetDimenstion() {
   const [dim, setDim] = useState(GetDimensions());
 }
 
-function KeyList<T extends HasId>(props: KeyProps<T>) {
+function KeyList2<T extends Has_id>(props: KeyProps<T>) {
   const [cursor, setCursor] = useState(props.cursor);
   const prevCursor = usePrevious(cursor);
   const [lowerCursorBound, setLoweCursorBound] = useState(props.cursor);
@@ -237,18 +237,10 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
     // handle Enter
     if (e.keyCode === 13) {
       if (props.handleEnter) {
-        let id: number = 0;
+        let id: string = "";
         const selectedElement = dataArray[cursor];
         console.log(`Selected element`, { selectedElement });
-        if (selectedElement.id != 0) {
-          id = selectedElement.id;
-          console.log("Handling with ID: ", selectedElement.id);
-        } else if (selectedElement.cust_id?.Valid) {
-          id = selectedElement.cust_id.Int64;
-          console.log("Handling with cust_id:", selectedElement.cust_id.Int64);
-        } else {
-          id = selectedElement.id;
-        }
+        id = selectedElement._id;
         props.handleEnter(id);
       }
     }
@@ -275,18 +267,10 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
     if (props.handleEnter) {
       //props.handleEnter();
       await setCursor(newCursor);
-      let id: number = 0;
+      let id: string = "";
       const selectedElement = dataArray[newCursor];
       console.log(`Selected element`, { selectedElement });
-      if (selectedElement.id != 0) {
-        id = selectedElement.id;
-        console.log("Handling with ID: ", selectedElement.id);
-      } else if (selectedElement.cust_id?.Valid) {
-        id = selectedElement.cust_id.Int64;
-        console.log("Handling with cust_id:", selectedElement.cust_id.Int64);
-      } else {
-        id = selectedElement.id;
-      }
+      id = selectedElement._id;
       props.handleEnter(id);
     }
   };
@@ -319,13 +303,13 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
             props.renderColumn()
           ) : (
             <thead>
-              <tr style={{ height: props.rowHeight }}>
-                {props.columns.map(column_name => (
-                  <th style={{ paddingLeft: 5 }} key={column_name}>
-                    {column_name}
-                  </th>
-                ))}
-              </tr>
+            <tr style={{ height: props.rowHeight }}>
+              {props.columns.map(column_name => (
+                <th style={{ paddingLeft: 5 }} key={column_name}>
+                  {column_name}
+                </th>
+              ))}
+            </tr>
             </thead>
           )}
           {dataArray.map((item, i) => {
@@ -375,4 +359,4 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
   );
 }
 
-export default KeyList;
+export default KeyList2;

@@ -27,7 +27,7 @@ const StatementTR: FC<StatementLiProps> = ({ statement }) => {
   return (
     <SELTR>
       <SimTd>{moment(statement.date).format("LL")}</SimTd>
-      <LongTd className="narration-SimTd">{statement.narration}</LongTd>
+      <LongTd className="narration-SimTd">{statement.narration.substr(0,30)}</LongTd>
       <LongTd className="narration-SimTd">
         {(statement.master && statement.master.name) || "No ledger selected"}
       </LongTd>

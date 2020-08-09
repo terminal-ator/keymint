@@ -7,7 +7,7 @@ import { Modal, Button } from "antd";
 import {
   ToggleMaster,
   ToggleJournal,
-  ToggleMasterForm
+  ToggleMasterForm, ToggleProduct
 } from "../actions/uiActions";
 import { Master } from "../types/master";
 
@@ -39,7 +39,7 @@ const Nav = (props: PropsFromRedux) => {
   return (
     <div
       style={{
-        backgroundColor: "#212121",
+        backgroundColor: "#262a2d",
         display: "flex",
         flexDirection: "row",
         alignContent: "center",
@@ -70,11 +70,14 @@ const Nav = (props: PropsFromRedux) => {
             dispatch(ToggleMasterForm(true, master));
           }}
         >
-          Master
+          +Master
         </a>
       </NavItem>
       <NavItem>
-        <a onClick={() => {dispatch(ToggleJournal(true,false,0))}}>Journal</a>
+        <a onClick={() => {dispatch(ToggleJournal(true,false,0))}}>+Journal</a>
+      </NavItem>
+      <NavItem>
+        <a onClick={()=>{dispatch(ToggleProduct(true, null))}}>+Product</a>
       </NavItem>
       <NavItem>
         <Link to="/">logout</Link>

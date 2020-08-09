@@ -38,9 +38,9 @@ export const getBanks = async (companyID: number) => {
   return axios.get(`${SERVER_URL}/banks/${companyID}`);
 };
 
-export const getBankWiseStatements = async (bankID: number) => {
+export const getBankWiseStatements = async (bankID: number, startDate:string, endDate:string) => {
   const yearID = await localStorage.getItem('yearID');
-  return axios.get(`${SERVER_URL}/statements/${bankID}`,{
+  return axios.get(`${SERVER_URL}/statements/${bankID}?sd=${startDate}&ed=${endDate}`,{
     headers:{
       "yearID": yearID
     }

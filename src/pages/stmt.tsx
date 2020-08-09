@@ -22,7 +22,7 @@ import withPop from "../components/popup";
 import styled from "styled-components";
 import Loading from "../components/loading";
 import Nav from "../components/nav";
-import { Card } from "antd";
+import {Card, DatePicker} from "antd";
 import moment from "moment";
 import {PageDiv} from "../components/styledComp";
 
@@ -45,7 +45,7 @@ export const DialogWrapper = styled.div`
 `;
 
 export const DialogContent = styled.div`
-  background-color: #fff;
+  background-color: #3e3e3e;
   height: 100%;
   overflow: hidden;
   opacity: 1;
@@ -69,8 +69,10 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & RouteComponentProps;
 
+const { RangePicker } = DatePicker;
+
 const STMT = (props: Props) => {
-  const [cursor, _] = useState(0);
+  const [cursor, setCursor] = useState(0);
   const [statements, setStatements] = useState<NormalizedCache<Statement>>();
   const [filtered, setFiltered] = useState<NormalizedCache<Statement>>();
   const [selected, setSelected] = useState<number>();
@@ -80,17 +82,25 @@ const STMT = (props: Props) => {
   let { id } = useParams();
   let history = useHistory();
   let [showDialog, setDialog] = useState(false);
+  const [ sd, setSd ] = useState("");
+  const [ ed, setEd ] = useState("");
 
   const fetchStatements = async () => {
     if (id) {
-      const req = await getBankWiseStatements(parseInt(id));
+      const req = await getBankWiseStatements(parseInt(id),sd, ed);
       setStatements(normalize<Statement>(req.data.statements));
       setFiltered(normalize<Statement>(req.data.statements));
     }
   };
   useEffect(() => {
-    fetchStatements();
-  }, [id]);
+    if(id){
+      getBankWiseStatements(parseInt(id),sd,ed).then((res)=>{
+        setStatements(normalize<Statement>(res.data.statements));
+        setFiltered(normalize<Statement>(res.data.statements));
+        setCursor(0);
+      })
+    }
+  }, [id,sd,ed]);
 
   useEffect(()=>{
       if(selected && filtered?.normalized[selected]){
@@ -101,8 +111,6 @@ const STMT = (props: Props) => {
           })
       }
   },[selected])
-
-
 
   const goBack = () => {
     history.goBack();
@@ -162,7 +170,7 @@ const STMT = (props: Props) => {
   }
 
   const renderItem = (arg: RenderItemProps<Statement>) => {
-    if (statements) {
+    if (statements && statements.normalized[arg.item.id]) {
       return (
         <StatementTR
           key={arg.item.id.toString()}
@@ -177,7 +185,7 @@ const STMT = (props: Props) => {
       <div
         style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
-        <h2 style={{ color: "#FFCA28"}} >Statements</h2>
+        <h2 style={{ color: "#FFCA28"}} >{ id && props.masters.normalized[parseInt(id)].name}</h2>
         <label style={{ marginLeft: "10px" }}>
           <input
             onChange={handleFilter}
@@ -187,6 +195,9 @@ const STMT = (props: Props) => {
           Show Outstandings
         </label>
       </div>
+      <RangePicker onChange={(date,dateString)=>{
+        setSd(dateString[0]);setEd(dateString[1]);
+      }}  />
       {filtered ? (
         <KeyList
           key={"stats"}
@@ -218,9 +229,9 @@ const STMT = (props: Props) => {
             <DialogWrapper>
               <div style={{ flex: 1 }}>
                 <Card
-                  style={{ margin: "0px auto", width: "80%", marginTop: 40 }}
+                  style={{ backgroundColor:"#3e3e3e", color:"white", margin: "0px auto", width: "80%", marginTop: 40 }}
                 >
-                  <h4>Statement Detail</h4>
+                  <h4 style={{ color: "white"}}>Statement Detail</h4>
                   {selected && filtered && (
                     <div>
                       <p>

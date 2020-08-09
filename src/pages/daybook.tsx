@@ -57,7 +57,7 @@ const DayBook = ()=>{
     <PageDiv>
       <Nav/>
       <div>
-        <h2 className={"text-light"}>Day Book</h2>
+        <h2 style={{color:"white"}}>Day Book</h2>
         <RangePicker  onChange={(date,dateString)=>{
           console.log("Datestrings: ", { dateString })
           setSd(dateString[0]); setEd(dateString[1]) }} />

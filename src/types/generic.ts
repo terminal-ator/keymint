@@ -30,13 +30,33 @@ export interface StatementMutation{
 
 
 export interface NormalizedCache<T> {
-  all: Array<number>;
-  normalized: { [key: number]: T };
+  all: Array<number | string>;
+  normalized: { [ key in number|string ]: T };
 }
 
 export interface HasId {
   id: number;
   cust_id?: NullInt;
+}
+
+export interface Has_id {
+  _id: string;
+}
+
+export function normalize_id<T extends Has_id>(array: Array<T>) {
+  let normal : NormalizedCache<T> ={
+    all: [],
+    normalized: {}
+  };
+  if (array === null ) return normal;
+  if( array.length < 1) return normal;
+  array.forEach( element => {
+    normal.all.push(element._id);
+    normal.normalized[element._id] = element
+  });
+
+  return normal
+
 }
 
 export function normalize<T extends HasId>(array: Array<T>, useCustID = false) {

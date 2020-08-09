@@ -52,8 +52,8 @@ const Errors = () => {
   const handleMerge = async (cust_id: number, error_id: number) => {
     const resp = await postErrors(cust_id, error_id);
     if (resp.status == 200) {
-      message.success("Successfully merged the masters");
       await refetch({ input: companyID });
+      message.success("Successfully merged the masters");
     } else {
       message.error("Unable to reach the server, please try again");
     }

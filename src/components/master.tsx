@@ -31,7 +31,6 @@ const FETCH_FIELDS = gql`
       beats {
         id
         name
-        addn1
       }
       groups {
         id
@@ -102,18 +101,25 @@ const MasterForm = (props: Props) => {
   const masterID = stateSelector(state => state.ui.masterCustID);
   const master = stateSelector(state => state.ui.master);
   const dispatch = useDispatch();
-  let initialValues: Master = {
-    name: "",
-    beat_id: 1,
-    group_id: 1,
-    i_code: "GENERIC",
-    cust_id: { Int64: 0, Valid: false },
-    company_id: props.companyID,
-    id: 0
-  };
+  let initialValues: Master;
+    initialValues = {
+      name: "",
+      beat_id:1,
+      group_id: 1,
+      i_code: "MARG",
+      cust_id: {Int64: 0, Valid: false},
+      company_id: props.companyID,
+      id: 0
+    }
 
   const [formValues, setValues] = useState(master || initialValues);
-
+    useEffect(()=>{
+      if(data) {
+        const n = dotPropImmutable.set(formValues, "beat_id", data.getCompany.beats[0].id)
+        const g = dotPropImmutable.set(n,"group_id", data.getCompany.groups[0].id)
+        setValues(g);
+      }
+    },[data])
   return (
     <form>
       <Input
@@ -134,7 +140,9 @@ const MasterForm = (props: Props) => {
         }}
         placeholder={"Interface"}
       />
-      <Select value={formValues.beat_id} style={{ width: 200, marginTop: 10 }} onChange={(e)=>{
+      <Select value={formValues.beat_id}
+
+              style={{ width: 200, marginTop: 10 }} onChange={(e)=>{
         const n = dotPropImmutable.set(formValues,'beat_id', e);
         setValues(n);
       }} >
