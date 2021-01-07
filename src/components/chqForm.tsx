@@ -47,7 +47,7 @@ const ChequeForm = (props: ChequeFormProps) => {
       >
         <NameSelect onSelect={onSelect} />
         <input
-          className={"form-control bg-dark text-light"}
+          className={"form-control"}
           style={{ width: 300, flex: 1, marginLeft:10 }}
           onBlur={async e => {
             const val = parseInt(e.target.value);

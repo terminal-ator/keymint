@@ -81,8 +81,8 @@ const Index = (props: Props) => {
 
   return (
     <PageDiv>
-      <div style={{ width: 600, color:"#FFCA28" }} >
-        <h1 style={{ color: "#FFCA28"}}>Companies</h1>
+      <div style={{ width: 600}} >
+        <h1>Companies</h1>
         {props.companies && (
           <KeyList
             columns={["ID", "Company"]}

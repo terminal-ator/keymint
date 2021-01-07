@@ -7,7 +7,7 @@ import {
 } from "../types/generic";
 import styled from "styled-components";
 
-const KeyTable = styled.table`
+const   KeyTable = styled.table`
   table-layout: fixed;
   white-space: nowrap;
   border-collapse: collapse;
@@ -29,7 +29,7 @@ const KeyBody = styled.tbody`
     props.selected
       ? props.bgColorOn
         ? props.bgColorOn
-        : "#3e3e3e"
+        : "#005cbf"
       : props.bgColorOff
       ? props.bgColorOff
       : ""};
@@ -40,14 +40,14 @@ const KeyBody = styled.tbody`
         : "white"
       : props.colorOff
       ? props.colorOff
-      : "white"};
+      : "black"};
   height: ${(props: SELTRPROPS) => {
     if (props.height) return props.height;
     return "40px";
   }};
   :hover {
     cursor: pointer;
-    background-color: #243d2b;
+    background-color: #f8d7da;
   }
   td {
     padding: 10px;
@@ -144,7 +144,7 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
   });
   const styles = {
     wrapper: {
-      backgroundColor: "#262a2d",
+      backgroundColor: "rgb(244,245,247)",
       zIndex: 999,
       position: "relative" as "relative",
       top: 0,
@@ -164,7 +164,7 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
       left: 0,
       outline: "hidden",
       position: "absolute" as "absolute",
-      backgroundColor: "#262a2d",
+      backgroundColor: "rgb(244,245,247)",
       height: props.rowHeight * props.data.all.length,
       minWidth: 200,
       margin:5,
@@ -363,7 +363,7 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
                 paddingLeft: 5,
                 paddingRight: 5,
                 paddingBottom: 10,
-                color:'#c2c1be',
+                color:'black',
               }}
             >
               {dataArray.length - cursor - 1} More

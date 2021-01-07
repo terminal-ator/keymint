@@ -68,7 +68,7 @@ export const postFileUpload = async (
   formdata: FormData
 ) => {
   return axios.post(
-    `${SERVER_URL}/upload?company=${companyName}&id=${companyID}&sales=${saleId}`,
+    `${SERVER_URL}/upl?company=${companyName}&id=${companyID}&sales=${saleId}`,
     formdata
   );
 };

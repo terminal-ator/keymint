@@ -14,7 +14,7 @@ import withPop from "./popup";
 import { DialogWrapper, DialogContent } from "../pages/stmt";
 import KeyList from "./keylist";
 import { stateSelector } from "../reducers";
-import {Card, Button, message, Input, Checkbox} from "antd";
+import {Card, Button, message, Input, Checkbox, DatePicker} from "antd";
 import { useDispatch } from "react-redux";
 import {
   UpdateMaster,
@@ -41,15 +41,19 @@ export interface QuickForm {
   amount: number;
 }
 
+const { RangePicker } = DatePicker;
+
 const LedgerDetail = (props: LedgerProps) => {
   const [ledgers, setLedgers] = useState<Array<Posting>>();
   const propPostings = stateSelector(state => state.posts.postings);
   const [total, setTotal] = useState(0);
-  const [postings, setPosting] = useState<NormalizedCache<Posting>>();
+  const [postings, setPosting] = useState(propPostings);
   const [show, setShow] = useState(false);
   const masters = stateSelector(state => state.master.masters);
   const companyID = stateSelector(state => state.sys.SelectedCompany);
   const chqs = stateSelector(state => state.posts.cheques);
+
+
   console.log({ chqs });
   const dispatch = useDispatch();
   useEffect(() => {
@@ -200,8 +204,8 @@ const LedgerDetail = (props: LedgerProps) => {
   };
 
   const handleEnter = (cursor: number) => {
-    if (propPostings) {
-      const post = propPostings?.normalized[cursor];
+    if (postings) {
+      const post = postings?.normalized[cursor];
       dispatch(FetchJournal(post.journal_id));
     }
   };
@@ -212,7 +216,7 @@ const LedgerDetail = (props: LedgerProps) => {
   };
 
   return (
-    <div style={{ backgroundColor: "black", color:"white", height:"100%"}}>
+    <div style={{ backgroundColor: "white", color:"black", height:"100%"}}>
       <Button
         type="danger"
         size="small"
@@ -231,16 +235,19 @@ const LedgerDetail = (props: LedgerProps) => {
       </Button>
       &nbsp;
       {masterItem(masters?.normalized[props.cust], total)}
+      <div style={{ marginLeft: 5 }}>
+        <RangePicker />
+      </div>
       <div style={{ overflow: "hidden", overflowY: "scroll" }}>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           <div style={{ flex: 2 }}>
-            {propPostings && (
+            {postings && (
               <KeyList
                 columns={["Date", "Narration", "Reference", "Payments", "Bills"]}
                 cursor={0}
-                data={propPostings}
-                maxHeight={400}
-                rowHeight={20}
+                data={postings}
+                maxHeight={700}
+                rowHeight={50}
                 numberOfRows={7}
                 handleEnter={handleEnter}
                 renderItem={renderItem}
@@ -252,7 +259,7 @@ const LedgerDetail = (props: LedgerProps) => {
           <div style={{ flex: 1, paddingLeft: 5 }}>
             <div>
               <p>Cheques</p>
-              <ul style={{ listStyle: "none" }}>
+              <ul style={{ listStyle: "none", color: "white", height: 500, overflow: "scroll" }}>
                 {chqs?.map(chq => (
                   <li
                     style={{

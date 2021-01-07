@@ -138,7 +138,7 @@ const Errors = () => {
     <PageDiv>
       <Nav />
       <div className="container-fluid" style={{ overflowY: "scroll", maxHeight: "100%"}}>
-        <h1 style={{ color: "white"}}>Errors</h1>
+        <h1 >Errors</h1>
         { !loading? data?.getErrors.map(err => (
           <RenderError err={err} />
         )):<Loading />}

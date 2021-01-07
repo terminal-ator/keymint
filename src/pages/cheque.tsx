@@ -102,7 +102,8 @@ const ChequePage = (props: PropType) => {
       // dispatch(FetchMasters);
       alert(JSON.stringify(postCheques));
       setCheques([genChq()]);
-      setCurrentDate(moment().format("YYYY-MM-DD"));
+      //
+      // setCurrentDate(moment().format("YYYY-MM-DD"));
       dispatch(FetchMasters());
     } catch (err) {
       message.error("Failed to save, please try again.");
@@ -167,7 +168,6 @@ const ChequePage = (props: PropType) => {
               alignItems: "center",
               width: "100%",
               justifyContent: "space-between",
-              color:"white"
             }}
           >
             <div>
@@ -190,7 +190,7 @@ const ChequePage = (props: PropType) => {
             </div>
             <input
               type="date"
-              style={{ float: "right", backgroundColor:"rgb(33, 33, 33)", outline: "none", border:"none" }}
+              style={{ float: "right",  outline: "none", border:"none" }}
               onChange={e => {
                 setCurrentDate(e.target.value);
               }}

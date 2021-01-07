@@ -35,16 +35,17 @@ const PostingForm = (props: Props) => {
     }, [props.posting.amount])
 
     return (
-        <div style={{ display:"flex" }}>
+        <div style={{ display:"flex", marginTop: 5 }}>
             <Select
                 value={toBy}
                 onChange={(e) => { setToBy(e.target.value) }}
                 ref={selectRef}
+                style={{ marginRight: 5}}
             >
                 <option value={"0"}>By</option>
                 <option value={"1"}>To</option>
             </Select>
-          <div><NameSelect onSelect={ (e)=>{handleMasterChange(props.pKey,e)} } cursor={posting.master_id} /></div>
+          <div style={{ minWidth:"40%"}}><NameSelect onSelect={ (e)=>{handleMasterChange(props.pKey,e)} } cursor={posting.master_id} /></div>
             <input
                 disabled={toBy == "1"}
                 value={toBy == "0" ? -posting.amount : ""}
@@ -54,6 +55,7 @@ const PostingForm = (props: Props) => {
                     handleAmount(props.pKey, -amnt)
                 }
                 }
+                style={{ marginLeft: 5}}
             />
             <input
                 disabled={toBy == "0"}

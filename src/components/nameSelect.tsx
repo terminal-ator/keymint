@@ -43,14 +43,13 @@ const NameSelect:FC<Props> = (props)=>{
   }
 
   return(
-    <div style={{ display: "inline", flex:10}}>
+    <div style={{ display: "inline", width:"100%"}}>
       <input
-        className={"form-control bg-dark text-light"}
         onKeyPress={(e)=>{ setCurKey(e.key); toggleList()}}
         value = {selectedMaster}
         placeholder={"Press any key to enter"}
         ref={inputRef}
-        style={{ display: "inline"}}
+        style={{ display: "inline", width:"100%", padding: 2}}
       />
       <Modal
         title={"Select Master"}
@@ -59,7 +58,6 @@ const NameSelect:FC<Props> = (props)=>{
         footer={null}
         destroyOnClose
         style={{ minWidth: 800, top: 5, animationDuration:"0s !important", backgroundColor:"black",color:"white"}}
-        bodyStyle={{ backgroundColor: "#303030", color:"white"}}
         transitionName="none"
         maskTransitionName="none"
       >

@@ -45,7 +45,6 @@ export const DialogWrapper = styled.div`
 `;
 
 export const DialogContent = styled.div`
-  background-color: #3e3e3e;
   height: 100%;
   overflow: hidden;
   opacity: 1;
@@ -61,6 +60,8 @@ export interface Recommended {
   name: string
   date: string
   amount: number
+  master_id: number
+  [key :string]: any
 }
 
 const connector = connect(mapState, {});
@@ -185,7 +186,7 @@ const STMT = (props: Props) => {
       <div
         style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
-        <h2 style={{ color: "#FFCA28"}} >{ id && props.masters.normalized[parseInt(id)].name}</h2>
+        <h2 style={{ color: "#0074D9"}} >{ id && props.masters.normalized[parseInt(id)].name}</h2>
         <label style={{ marginLeft: "10px" }}>
           <input
             onChange={handleFilter}

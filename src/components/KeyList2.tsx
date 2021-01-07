@@ -25,11 +25,12 @@ export interface SELTRPROPS {
 }
 
 const KeyBody = styled.tbody`
+  padding: 10px;
   background: ${(props: SELTRPROPS) =>
   props.selected
     ? props.bgColorOn
     ? props.bgColorOn
-    : "#3e3e3e"
+    : "#0005cb"
     : props.bgColorOff
     ? props.bgColorOff
     : ""};
@@ -40,17 +41,18 @@ const KeyBody = styled.tbody`
     : "white"
     : props.colorOff
     ? props.colorOff
-    : "white"};
+    : "black"};
   height: ${(props: SELTRPROPS) => {
   if (props.height) return props.height;
   return "40px";
 }};
   :hover {
     cursor: pointer;
-    background-color: #243d2b;
+    background-color: #f8d7da;
   }
   td {
     padding: 10px;
+    i
   }
 `;
 
@@ -144,7 +146,7 @@ function KeyList2<T extends Has_id>(props: KeyProps<T>) {
   });
   const styles = {
     wrapper: {
-      backgroundColor: "#262a2d",
+      backgroundColor: "white",
       zIndex: 999,
       position: "relative" as "relative",
       top: 0,
@@ -164,7 +166,7 @@ function KeyList2<T extends Has_id>(props: KeyProps<T>) {
       left: 0,
       outline: "hidden",
       position: "absolute" as "absolute",
-      backgroundColor: "#262a2d",
+      backgroundColor: "white",
       height: props.rowHeight * props.data.all.length,
       minWidth: 200,
       margin:5,

@@ -33,6 +33,7 @@ import ChequePage from "./pages/cheque";
 import DayBook from "./pages/daybook";
 import PendingPage from "./pages/pending";
 import ProductPage from "./pages/products";
+import OrderPage from "./pages/orders";
 
 const persistConfig = {
   key: "root",
@@ -76,6 +77,7 @@ const App: React.FC = () => {
             <Route path={"/daybook"} component={DayBook} />
             <Route path={"/pending"} component={PendingPage} />
             <Route path={"/products"} component={ProductPage} />
+            <Route path={"/orders"} component={OrderPage} />
           <Glob />
           </Router>
         </ApolloProvider>

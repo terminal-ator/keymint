@@ -105,7 +105,7 @@ const Receipt = (props: PropType) => {
             <button
               className="btn"
               disabled={receipt.length === 1}
-              style={{ height: 20, background: "white" }}
+              style={{ height: 20}}
               onClick={() => {
                 clear();
               }}

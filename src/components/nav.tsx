@@ -39,7 +39,7 @@ const Nav = (props: PropsFromRedux) => {
   return (
     <div
       style={{
-        backgroundColor: "#262a2d",
+        backgroundColor: "rgba(244,245,247)",
         display: "flex",
         flexDirection: "row",
         alignContent: "center",
@@ -51,7 +51,7 @@ const Nav = (props: PropsFromRedux) => {
     >
       <div style={{ width: "100%", display:"flex", alignItems:"center" }}>
         <Link style={{ fontWeight: "bold" }} to="/menu">
-          <h4 style={{ fontWeight: "bolder", color:"#FFCA28" }}>{selectedCompany?.name}</h4>
+          <h4 style={{ fontWeight: "bolder", color:"#0074D9" }}>{selectedCompany?.name}</h4>
         </Link>
           <span>{year && years.normalized[year]?.year_string}</span>
       </div>

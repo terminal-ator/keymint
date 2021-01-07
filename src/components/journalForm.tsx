@@ -89,7 +89,7 @@ const JournalForm = () => {
     setJrnl(jrnls);
   };
 
-  const handleNarrationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNarrationChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const jrnls = dotProp.set(jrnl, `narration`, e.target.value);
     setJrnl(jrnls);
   };
@@ -128,20 +128,14 @@ const JournalForm = () => {
 
   return (
     <div style={{}}>
-      <div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
+      <div style={{ width: "50%"}}>
         Ref No:
-        <Input value={jrnl.ref_no} onChange={handleRefChange} />
+        <Input value={jrnl.ref_no} onChange={handleRefChange}   />
       </div>
-      <div>
         <DatePicker onChange={handleDateChange} value={moment(jrnl.date)} />
       </div>
-      <div>
-        <Input
-          onChange={handleNarrationChange}
-          placeholder="Narration"
-          value={jrnl.narration}
-        />
-      </div>
+
 
       {psting.map((pID, idx) => (
         <PostingForm
@@ -163,6 +157,14 @@ const JournalForm = () => {
       >
         Add
       </Button>
+      <div>
+        <textarea
+          onChange={handleNarrationChange}
+          placeholder="Narration"
+          value={jrnl.narration}
+          style={{ marginTop: 5, width: "40%"}}
+        />
+      </div>
       <Button
         onClick={async () => {
           await handleSave();

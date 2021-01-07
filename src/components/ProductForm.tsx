@@ -6,6 +6,8 @@ import {Button, TextField , Select, MenuItem } from "@material-ui/core";
 import dotPropImmutable from "dot-prop-immutable";
 import {gql} from "apollo-boost";
 import {useMutation, useQuery} from "@apollo/react-hooks";
+import _ from 'lodash';
+import OmitDeep from 'omit-deep-lodash';
 
 
 export interface Product {
@@ -35,6 +37,7 @@ export interface Sku {
   purRate?:number;
   mrp?: number;
   saleRates: number[];
+  quantity?: number;
 }
 
 interface skuProps {
@@ -89,6 +92,7 @@ const FETCH_PRODUCT = gql`
       igstRate
       cessRate
       unit
+      assoc_company
       company
       skus{
         code
@@ -232,8 +236,10 @@ const ProductForm = ()=>{
 
   useEffect(()=>{
     if(productData){
-      setProduct(productData?.getProduct);
-      console.log(productData?.getProduct);
+
+      const fetchedProduct = OmitDeep(productData.getProduct, "__typename");
+      setProduct(fetchedProduct);
+      console.log({ fetchedProduct });
     }
   }, [ productData ]);
 
@@ -313,7 +319,7 @@ const ProductForm = ()=>{
       <h4>Skus</h4>
       {
         product.skus.map((sku, index)=>
-          <SkuForm sku={sku} key={sku.code}
+          <SkuForm sku={sku} key={index.toString()}
                    idx={index} handleUpdate={updateSku}
                    cgstRate={product.cgstRate}
                    sgstRate={product.sgstRate}
@@ -327,8 +333,15 @@ const ProductForm = ()=>{
         <Button variant={"outlined"} color={"default"} onClick={async ()=>{
           // console.log( JSON.stringify(product));
           localStorage.setItem("product", JSON.stringify(product));
+          const filteredSkus = product.skus.filter((sku)=>{
+            if(sku.name!="" && sku.mrp && sku.code){
+              return sku;
+            }
+          });
+          const newProduct = product;
+          newProduct.skus = filteredSkus;
           try{
-            const res = await postProduct({ variables: { input : product  }});
+            const res = await postProduct({ variables: { input : newProduct  }});
             message.success("Successful");
             setProduct(defaultProduct);
           }catch (e) {
