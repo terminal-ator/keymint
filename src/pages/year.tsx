@@ -30,7 +30,6 @@ const YearPage = () => {
 
   return (
     <PageDiv>
-      <Nav />
       <KeyList
         handleEnter={handleSelect}
         cursor={0}

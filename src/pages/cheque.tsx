@@ -9,11 +9,12 @@ import ChequeForm from "../components/chqForm";
 import numWords from "num-words";
 import { PageDiv } from "../components/styledComp";
 import Nav from "../components/nav";
-import {addCheques, postLedger, postReceipt} from "../api";
+import {addCheques, newPostReceipt, postLedger, postReceipt, ReceiptRequest} from "../api";
 import { FetchMasters } from "../actions/masterActions";
-import {Button, Checkbox, message} from "antd";
+import {Button, Checkbox, message, Select} from "antd";
 import LedgerDetail from "../components/ledgerDetail";
 import {fetchCheques, fetchPosting} from "../actions/postingActions";
+import {Master} from "../types/master";
 
 export interface Cheque {
   id: number;
@@ -21,6 +22,20 @@ export interface Cheque {
   amount: number;
   date?: string;
   passed?: boolean;
+  name?: string;
+  number?: string;
+  type?: string
+}
+
+export interface NewCheque{
+  date: string
+  id: number;
+  master_id: number;
+  passed: boolean;
+  type: string,
+  amount: number;
+  name: string;
+  number: string;
 }
 
 const mapState = (state: AppState) => {
@@ -40,30 +55,34 @@ var ID = function() {
   return Math.random() * 1000;
 };
 
-const genChq = (): Cheque => {
+export const genChq = (): NewCheque=> {
   return {
     id: ID(),
     master_id: 0,
-    amount: 0
+    amount: 0,
+    name: "",
+    passed: false,
+    number: "",
+    type: "CHQ",
+    date:""
   };
 };
 
 const ChequePage = (props: PropType) => {
   const [total, setTotal] = useState(0);
-  const cheque: Cheque[] = [genChq()];
-  const [cheques, setCheques] = useState<Array<Cheque>>(cheque);
+  const cheque: NewCheque[] = [genChq()];
+  const [cheques, setCheques] = useState<Array<NewCheque>>(cheque);
+  const [ areCheques, setAreCheques ] = useState(true);
   const [currentDate, setCurrentDate] = useState(moment().format("YYYY-MM-DD"));
-  const [ areCheques, setAreCheques ] = useState(false);
   const [ selectedCust, setSelectedCust ] = useState(0);
   const dispatch = useDispatch();
-
-  let saveReceipts = async (rec: Cheque) => {
-    let newR = [...cheques.slice(0, cheques.length - 1), rec];
-    newR.push(genChq());
-    await setCheques(newR);
-    await localStorage.setItem("chqs", JSON.stringify(newR));
-    console.log({ newR });
-  };
+  // let saveReceipts = async (rec: Cheque) => {
+  //   let newR = [...cheques.slice(0, cheques.length - 1), rec];
+  //   newR.push(genChq());
+  //   await setCheques(newR);
+  //   await localStorage.setItem("chqs", JSON.stringify(newR));
+  //   console.log({ newR });
+  // };
 
   useEffect(() => {
     let nTotal = 0;
@@ -76,29 +95,25 @@ const ChequePage = (props: PropType) => {
   }, [cheques]);
 
   const saveReceipt = async () => {
-
     const confirm = window.confirm("Save?");
     if(!confirm) return ;
-
     try {
       const postCheques = cheques.reduce((result, temp) => {
         if (temp.amount != 0 && temp.master_id != 0) {
-          const nChq = {
+          const nChq: NewCheque = {
             ...temp,
             id: 0,
-            date: currentDate
+            date: currentDate,
+            type: areCheques?"CHQ":"NEFT"
           };
           // @ts-ignore
           result.push(nChq);
         }
         return result;
       }, []);
-      if(areCheques){
-        await addCheques(postCheques);
-      }else{
-        await postReceipt(postCheques);
-      }
-      // const res = await addCheques(postCheques);
+      // const data: ReceiptRequest = { date : currentDate, receipt_entry: postCheques, receipt_id: cashAccount};
+      //   await newPostReceipt(data);
+      const res = await addCheques(postCheques);
       // dispatch(FetchMasters);
       alert(JSON.stringify(postCheques));
       setCheques([genChq()]);
@@ -116,19 +131,11 @@ const ChequePage = (props: PropType) => {
     await setCheques(chqs);
   };
 
-  const handleUpdate = async (
-    id: number,
-    master_id: number,
-    amount: number
-  ) => {
-    console.log(`Updating the cheques: ${master_id} // ${amount}`);
+  const handleUpdate = async (chqUpdate: NewCheque) => {
+    console.log(`Updating the cheques: ${chqUpdate.master_id} // ${chqUpdate.amount}`);
     const chqs = cheques.map(chq => {
-      if (chq.id == id) {
-        return {
-          id,
-          master_id,
-          amount
-        };
+      if (chq.id == chqUpdate.id) {
+        return chqUpdate;
       } else return chq;
     });
     await setCheques(chqs);
@@ -141,9 +148,9 @@ const ChequePage = (props: PropType) => {
     }
   };
 
-  const fetchDetails = (id: number)=>{
-    dispatch(fetchPosting(id));
-    dispatch(fetchCheques());
+  const fetchDetails =async (id: number)=>{
+    await dispatch(fetchPosting(id));
+    await dispatch(fetchCheques());
     setSelectedCust(id);
   }
 
@@ -160,7 +167,7 @@ const ChequePage = (props: PropType) => {
               backgroundColor: areCheques ?"#0ffaa8":"#FFDE03",
               marginBottom: 5,
             }}
-          ><h4 style={{ fontWeight:900}}>Receipts</h4></div>
+          ><h4 style={{ fontWeight:900}}>{ areCheques? "Cheques":"NEFTs or UPI"}</h4></div>
           <div
             style={{
               display: "flex",
@@ -197,7 +204,6 @@ const ChequePage = (props: PropType) => {
               defaultValue={currentDate}
             />
           </div>
-
           {cheques.map((chq, idx) => {
             if (props.masters) {
               return (
@@ -209,12 +215,11 @@ const ChequePage = (props: PropType) => {
                   Chq={chq}
                   showAdd={idx === cheques.length - 1}
                   fetchDetails={fetchDetails}
-
                 />
               );
             }
           })}
-
+          <Button style={{ marginTop: 5  }} onClick={()=>{add()}}>Add</Button>
           <Button
             onClick={() => {
               saveReceipt();

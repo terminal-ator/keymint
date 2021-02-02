@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, FC} from "react";
 import { Formik, FieldArray, Form, Field } from "formik";
 import { Journal, TPosting } from "../types/ledger";
 import moment from "moment";
@@ -14,7 +14,12 @@ import {ToggleJournal} from "../actions/uiActions";
 import {fetchPosting} from "../actions/postingActions";
 import {FetchMasters} from "../actions/masterActions";
 
-const JournalForm = () => {
+
+interface JournalProps {
+  onComplete?: ()=>void
+}
+
+const JournalForm:FC<JournalProps> = (props) => {
   const cmpnyID = stateSelector(stt => stt.sys.SelectedCompany);
   const masters = stateSelector(stt => stt.master.masters);
   const selectedID = stateSelector(stt => stt.posts.postId);
@@ -27,7 +32,7 @@ const JournalForm = () => {
     id:0,
     company_id: cmpnyID,
     date: moment().format("YYYY-MM-DD"),
-    ref_no: "NAN",
+    ref_no: "",
     sttmt_id: undefined,
     type: "Journal",
     narration: "",
@@ -115,8 +120,11 @@ const JournalForm = () => {
       } else if (resp.status == 200 && ui.valid) {
         message.success("Update Success");
         await dispatch(fetchPosting(selectedID));
+        if(props.onComplete){
+          await props.onComplete();
+        }
         await dispatch(FetchMasters());
-        await dispatch(ToggleJournal(false,false, 0));
+        await dispatch(ToggleJournal(false, false, 0, ()=>{}));
 
       } else {
         message.error("Some error occurred, please try again");

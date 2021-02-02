@@ -29,7 +29,7 @@ export const DialogContent = styled.div`
     const id = parseInt(props.match.params.id)
     if(id)
     return <DialogWrapper>
-        <div style={{ position: "absolute", top:0, right:0, width: "70%", height:"100%"}}>
+        <div style={{ position: "absolute", top:0, right:0, width: "99%", height:"100%"}}>
         <LedgerDetail handleEsc={()=>{props.history.goBack()}} cust={id} />
         </div>
         </DialogWrapper>

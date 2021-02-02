@@ -14,4 +14,5 @@ export interface Master {
   balance?: number;
   beat_id: number;
   i_code: string;
+  opening_balance: number;
 }

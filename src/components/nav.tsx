@@ -30,6 +30,7 @@ const connector = connect(mapState, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 const Nav = (props: PropsFromRedux) => {
+
   const selectedCompany = props.companies?.normalized[props.selected];
   const [mstr, setmst] = useState(false);
   const dispatch = useDispatch();
@@ -46,42 +47,37 @@ const Nav = (props: PropsFromRedux) => {
         paddingTop: 5,
         paddingLeft: 10,
         marginBottom: 5,
-        borderRadius: 2
+        borderRadius: 2,
+          width: "100%",
+          justifyContent: "space-between"
       }}
     >
-      <div style={{ width: "100%", display:"flex", alignItems:"center" }}>
+      <div style={{ display:"flex", alignItems:"center" }}>
         <Link style={{ fontWeight: "bold" }} to="/menu">
           <h4 style={{ fontWeight: "bolder", color:"#0074D9" }}>{selectedCompany?.name}</h4>
         </Link>
           <span>{year && years.normalized[year]?.year_string}</span>
       </div>
+        <div style={{ display:"flex"}}>
       <NavItem>
         <a
           onClick={() => {
-            const master: Master = {
-              cust_id: { Int64: 0, Valid: false },
-              company_id: 2,
-              i_code: "GENERIC",
-              name: "",
-              beat_id: 1,
-              group_id: 1,
-              id: 0
-            };
-            dispatch(ToggleMasterForm(true, master));
+            dispatch(ToggleMasterForm(true, undefined));
           }}
         >
           +Master
         </a>
       </NavItem>
       <NavItem>
-        <a onClick={() => {dispatch(ToggleJournal(true,false,0))}}>+Journal</a>
+        <a onClick={() => {dispatch(ToggleJournal(true, false, 0, ()=>{}))}}>+Journal</a>
       </NavItem>
       <NavItem>
         <a onClick={()=>{dispatch(ToggleProduct(true, null))}}>+Product</a>
       </NavItem>
       <NavItem>
-        <Link to="/">logout</Link>
+        <Link to="/">Quit</Link>
       </NavItem>
+        </div>
     </div>
   );
 };

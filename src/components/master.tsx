@@ -1,16 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
 import { AppState, stateSelector } from "../reducers";
 import {ConnectedProps, connect, useDispatch} from "react-redux";
-import { useQuery, useLazyQuery } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
+
 import styled from "styled-components";
 import { FetchMasters } from "../actions/masterActions";
 import {Button, Input, message, Select} from "antd";
-import { postCreateMaster, putUpdateMaster } from "../api";
+import {GetGroupsAndBeats, PostCreateBeats, postCreateMaster, putUpdateMaster} from "../api";
 import { Master } from "../types/master";
 import dotPropImmutable from "dot-prop-immutable";
-import {ToggleMasterForm} from "../actions/uiActions";
+import {FetchJournal, ToggleMasterForm} from "../actions/uiActions";
+import {Beat} from "../actions/beatActions";
+import {Group} from "../types/group";
+import {AxiosResponse} from "axios";
+import {fetchPosting} from "../actions/postingActions";
+import QuickCreate from "./QuickCreate";
+
+
+interface fetchResult {
+  beats: Beat[]
+  groups: Group[]
+}
 
 const mapState = (state: AppState) => {
   return {
@@ -23,42 +32,6 @@ interface XProps {
 const connector = connect(mapState, { FetchMasters });
 
 type Props = ConnectedProps<typeof connector> & XProps;
-
-const FETCH_FIELDS = gql`
-  query fetchCompany($id: Int) {
-    getCompany(id: $id) {
-      id
-      beats {
-        id
-        name
-      }
-      groups {
-        id
-        name
-      }
-    }
-  }
-`;
-
-interface FetchCompany {
-  getCompany: {
-    id: number;
-    beats: {
-      id: number;
-      name: string;
-      addn1: string;
-    }[];
-    groups: {
-      id: number;
-      name: string;
-    }[];
-  };
-}
-
-interface Errors {
-  name?: string | undefined;
-  [key: string]: string | undefined;
-}
 
 export interface FormValues {
   name: string;
@@ -75,15 +48,22 @@ const MasterContent = styled.div`
 `;
 
 const MasterForm = (props: Props) => {
-  const [fetchFields, { data, loading, error }] = useLazyQuery<FetchCompany>(
-    FETCH_FIELDS
-  );
+
+  const [ data, setData ] = useState<fetchResult>();
+  const [ drCr, setDrCr ] = useState(-1);
+
   const inputR = useRef<Input>(null);
 
   useEffect(() => {
     console.log(`Got company id : ${props.companyID}`);
     if (props.companyID) {
-      fetchFields({ variables: { id: props.companyID } });
+      GetGroupsAndBeats(props.companyID).then((res:AxiosResponse<fetchResult>)=>{
+        setData(res.data);
+        if(!master && data){
+            const n = dotPropImmutable.set(formValues, "beat_id", data.beats[0]?.id);
+            setValues(n);
+        }
+      })
     }
   }, [props.companyID]);
 
@@ -96,10 +76,9 @@ const MasterForm = (props: Props) => {
   console.log(data);
 
   // get type from state
-  const updateMaster = stateSelector(state => state.ui.masterToUpdate);
-  const masters = stateSelector(state => state.master.masters);
-  const masterID = stateSelector(state => state.ui.masterCustID);
+
   const master = stateSelector(state => state.ui.master);
+  const ledgerID = stateSelector( state => state.posts.postId);
   const dispatch = useDispatch();
   let initialValues: Master;
     initialValues = {
@@ -109,19 +88,50 @@ const MasterForm = (props: Props) => {
       i_code: "MARG",
       cust_id: {Int64: 0, Valid: false},
       company_id: props.companyID,
-      id: 0
+      id: 0,
+      opening_balance: 0
     }
 
   const [formValues, setValues] = useState(master || initialValues);
     useEffect(()=>{
-      if(data) {
-        const n = dotPropImmutable.set(formValues, "beat_id", data.getCompany.beats[0].id)
-        const g = dotPropImmutable.set(n,"group_id", data.getCompany.groups[0].id)
+      if(data && !master) {
+        const n = dotPropImmutable.set(formValues, "beat_id", data.beats[0]?.id)
+        const g = dotPropImmutable.set(n,"group_id", data.groups[0]?.id)
         setValues(g);
       }
     },[data])
+
+    useEffect(()=>{
+        if(master){
+            const n = dotPropImmutable.set(formValues, "opening_balance", Math.abs(master.opening_balance));
+            setValues(n);
+            if(master.opening_balance <=0){
+                setDrCr(-1);
+            }else{
+                setDrCr(1);
+            }
+        }
+    }, [master])
+
+   const createrBeat = ( name: string )=>{
+        PostCreateBeats(name).then((res: AxiosResponse<fetchResult>)=>{
+            setData(res.data);
+        })
+   }
+
   return (
     <form>
+      <Select value={formValues.group_id} style={{ width: 200, marginBottom: 10}} onChange={(e)=>{
+        const n = dotPropImmutable.set(formValues,'group_id', e);
+        setValues(n);
+      }} >
+        {data &&
+        data.groups.map(b => (
+            <Select.Option key={b.id} value={b.id}>
+              {b.name}
+            </Select.Option>
+        ))}
+      </Select>
       <Input
         value={formValues.name}
         onChange={e => {
@@ -131,48 +141,42 @@ const MasterForm = (props: Props) => {
         placeholder={"Name"}
         ref={inputR}
       />
-      <Input
-        style={{ marginTop: 10 }}
-        value={formValues.i_code}
-        onChange={e => {
-          const n = dotPropImmutable.set(formValues, "i_code", e.target.value);
-          setValues(n);
-        }}
-        placeholder={"Interface"}
-      />
+      <div style={{ display: "flex", alignItems: "center" }}>
       <Select value={formValues.beat_id}
-
               style={{ width: 200, marginTop: 10 }} onChange={(e)=>{
         const n = dotPropImmutable.set(formValues,'beat_id', e);
         setValues(n);
       }} >
         {data &&
-          data.getCompany.beats.map(b => (
+          data.beats.map(b => (
             <Select.Option key={b.id} value={b.id}>
               {b.name}
             </Select.Option>
           ))}
       </Select>
-      <Select value={formValues.group_id} style={{ width: 200, marginTop: 10, marginLeft:5 }} onChange={(e)=>{
-        const n = dotPropImmutable.set(formValues,'group_id', e);
-        setValues(n);
-      }} >
-        {data &&
-        data.getCompany.groups.map(b => (
-          <Select.Option key={b.id} value={b.id}>
-            {b.name}
-          </Select.Option>
-        ))}
+          <QuickCreate onCreate={createrBeat} placeholder={"Enter beat name"} />
+      </div>
+      <div style={{ display: "flex", marginTop: 10}}>
+      <Select value={drCr} onChange={(e)=>{setDrCr(e)}} >
+        <Select.Option value={-1}>Dr.</Select.Option>
+        <Select.Option value={1}>Cr.</Select.Option>
       </Select>
+      <Input value={formValues.opening_balance} onChange={(e)=>{
+        const n = dotPropImmutable.set(formValues, 'opening_balance', parseFloat(e.target.value))
+        setValues(n)
+      }} placeholder={"Opening Balance"} type={"number"} />
+      </div>
       <Button value={"Save"} style={{ display: "block", marginTop: 10}} type={"primary"}  onClick={async (e)=>{
         try {
           console.log("Outputting form values",formValues)
-          const resp = await putUpdateMaster(formValues, props.companyID);
+          const n = dotPropImmutable.set(formValues, 'opening_balance', drCr * formValues.opening_balance)
+          const resp = await putUpdateMaster(n, props.companyID);
           if(resp.status===200){
             message.success("Saved Successfully");
-            dispatch(FetchMasters())
+            await dispatch(FetchMasters());
+            await dispatch(fetchPosting(ledgerID));
             if(formValues.cust_id.Int64!=0){
-              dispatch(ToggleMasterForm(false, undefined));
+              await dispatch(ToggleMasterForm(false, undefined));
               return;
             }
             setValues(initialValues);

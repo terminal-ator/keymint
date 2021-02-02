@@ -5,46 +5,29 @@ import {NullInt, StatementMutation} from "../types/generic";
 import { FormValues } from "../components/master";
 import { Master } from "../types/master";
 import { Journal } from "../types/ledger";
-import {Cheque} from "../pages/cheque";
+import {Cheque, NewCheque} from "../pages/cheque";
+import { CreateCompanyType } from "../types/company";
+import {ax} from "./base";
+import {createCompany, GetCompanies} from "./companies";
+import {AuthHeader} from "./auth";
+import {GetMasters} from "./masters";
 
-export const ax = axios.create({
-  baseURL: 'http://unraidone.duckdns.org:8080',
-});
-
-const SERVER_URL = `http://unraidone.duckdns.org:8080`;
-
-export const getCompanies = async () => {
-  const req = await axios.get(`${SERVER_URL}/companies`);
-  return req.data.companies;
-};
-
-export const getMasters = async (companyID: number) => {
-  const yearID = await localStorage.getItem('yearID');
-  const req = await ax.get(`/accounts`, {
-    headers:{
-      "Authorization": companyID,
-      "yearID": yearID
-    }
-  });
-  return req.data;
-};
+export let getCompanies = GetCompanies;
+export const getMasters = GetMasters;
 
 export const getStatements = async (companyID: number) => {
-  const req = await axios.get(`${SERVER_URL}/cstatements/${companyID}`);
+  const req = await ax.get(`/cstatements/${companyID}`);
   return req.data.statements;
 };
 
 export const getBanks = async (companyID: number) => {
-  return axios.get(`${SERVER_URL}/banks/${companyID}`);
+  return ax.get(`/banks/${companyID}`);
 };
 
 export const getBankWiseStatements = async (bankID: number, startDate:string, endDate:string) => {
   const yearID = await localStorage.getItem('yearID');
-  return axios.get(`${SERVER_URL}/statements/${bankID}?sd=${startDate}&ed=${endDate}`,{
-    headers:{
-      "yearID": yearID
-    }
-  });
+  return ax.get(`/statements/${bankID}?sd=${startDate}&ed=${endDate}`,{
+    headers: AuthHeader() });
 };
 
 interface StatementMaster {
@@ -54,11 +37,11 @@ interface StatementMaster {
 }
 
 export const postStatementMaster = async (arg: StatementMaster) => {
-  return axios.post(SERVER_URL + "/statements", arg);
+  return ax.post("/statements", arg);
 };
 
 export const getUploadCompanies = async (companyID: number) => {
-  return axios.get(`${SERVER_URL}/uplcompany/${companyID}`);
+  return ax.get(`/uplcompany/${companyID}`);
 };
 
 export const postFileUpload = async (
@@ -67,8 +50,8 @@ export const postFileUpload = async (
   saleId: number,
   formdata: FormData
 ) => {
-  return axios.post(
-    `${SERVER_URL}/upl?company=${companyName}&id=${companyID}&sales=${saleId}`,
+  return ax.post(
+    `/upl?company=${companyName}&id=${companyID}&sales=${saleId}`,
     formdata
   );
 };
@@ -78,7 +61,7 @@ export  const postStatementUpload = async (
   bankID: number,
   formData: FormData
 ) =>{
-  return ax.post(`/statement/import?bank=${bankID}&company=${companyID}`, formData)
+  return ax.post(`/statements/import/${bankID}`, formData, { headers: AuthHeader() })
 }
 
 export const postLedger = async (
@@ -87,14 +70,14 @@ export const postLedger = async (
   companyID: number
 ) => {
   console.log({ recArray });
-  return axios.post(`${SERVER_URL}/ledger/${companyID}`, {
+  return ax.post(`/ledger/${companyID}`, {
     date,
     ledger_entry: recArray
   });
 };
 
 export const postReceipt = async (
-  data: { id?:number, amount:number, master_id:number, date:string }[]
+  data: { id?:number, amount:number, master_id:number, date:string }[],
 ) =>{
   const company = await localStorage.getItem('company')
   return ax.post(`/ledger/${company}`, data, {
@@ -104,19 +87,36 @@ export const postReceipt = async (
   });
 }
 
+export interface ReceiptRequest {
+  date: string;
+  receipt_id: number;
+  receipt_entry: { id?:number, amount:number, master_id:number, date:string }[]
+}
+
+export const newPostReceipt = async (
+    data: ReceiptRequest
+)=>{
+  const company = await localStorage.getItem('company')
+  return ax.post(`/ledger/${company}`, data, {
+    headers: {
+      "authorization": company
+    }
+  });
+}
+
 export const fetchLedger = async (custID: number, companyID: number) => {
-  return axios.get(
-    `${SERVER_URL}/ledger?cust_id=${custID}&company=${companyID}`
+  return ax.get(
+    `/ledger?cust_id=${custID}&company=${companyID}`
   );
 };
 
 export const putLedger = async (qck: QuickForm, companyID: number) => {
-  return axios.put(`${SERVER_URL}/ledger/${companyID}`, qck);
+  return ax.put(`/ledger/${companyID}`, qck);
 };
 
 export const getPostings = async (accountID: number) => {
   const yearID = await localStorage.getItem("yearID");
-  return axios.get(`${SERVER_URL}/postings/${accountID}`,
+  return ax.get(`/postings/${accountID}`,
     {
       headers:{
         "yearID" : yearID
@@ -124,25 +124,29 @@ export const getPostings = async (accountID: number) => {
     });
 };
 
+export const getPostingsWithDate = async (accountID:number, startDate: string, endDate: string)=>{
+  return ax.get(`/postings/${accountID}?start=${startDate}&end=${endDate}`)
+}
+
 export const newSetStatement = async (packet: StatementMutation) => {
-  return axios.post(`${SERVER_URL}/statement/`, packet);
+  return ax.post(`/statements/`, packet, { headers: AuthHeader()});
 };
 
 export const postErrors = async (cust_id: number, error_id: number) => {
-  return axios.post(`${SERVER_URL}/errors`, { cust_id, error_id })
+  return ax.post(`/errors`, { cust_id, error_id })
 }
 
 
 export const postCreateMaster = async (value: any, companyID: number) => {
-  return axios.post(`${SERVER_URL}/master/${companyID}`, value);
+  return ax.post(`/master/${companyID}`, value);
 }
 
 export const fetchBeats = async (companyID: number) => {
   return ax.get(`/beat/${companyID}`)
 }
 
-export const putUpdateMaster = async (master: { name: string, beat_id: number, group_id: number, cust_id: NullInt }, companyID:number) => {
-  return ax.put(`/master/${companyID}`, master)
+export const putUpdateMaster = async (master: { name: string, beat_id: number, group_id: number, cust_id: NullInt, opening_balance: number }, companyID:number) => {
+  return ax.put(`/master/`, master, { headers: AuthHeader() })
 }
 
 export const postNewJournal = async (journal: Journal) => {
@@ -163,7 +167,7 @@ export const fetchYears = async ( company: number )=>{
 }
 
 
-export const addCheques = async ( cheques: Cheque[])=>{
+export const addCheques = async ( cheques: NewCheque[])=>{
   return ax.post('/cheque/list', cheques);
 }
 
@@ -184,4 +188,19 @@ export const getRecommended = async ( amount: number )=>{
 export const getPendingCheques = async ()=>{
   const token = await localStorage.getItem('company')
   return ax.get(`/cheque/pending`, { headers: { "authorization": token }})
+}
+
+export const CreateCompany = createCompany;
+
+export const GetGroupsAndBeats = async (companyID: number)=>{
+  return ax.get(`/beats/${companyID}`)
+}
+
+export const PostCreateBeats = async (beatName: string) => {
+  const token = await localStorage.getItem("company");
+  return ax.post(`/beats/make/${beatName}`,{} , { headers: { "authorization": token}})
+}
+
+export const DeleteVoucherById = async (journalID: number) => {
+  return ax.delete(`/postings/${journalID}`)
 }

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ax} from "../api";
+import {ax} from "../api/base";
 import {Journal} from "../types/ledger";
 import {stateSelector} from "../reducers";
 import {PageDiv} from "../components/styledComp";

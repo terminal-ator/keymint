@@ -10,6 +10,8 @@ import { PageDiv } from "../components/styledComp";
 import Nav from "../components/nav";
 import { postLedger } from "../api";
 import { FetchMasters } from "../actions/masterActions";
+import {Select} from "antd";
+import {Master} from "../types/master";
 
 export interface Receipt {
   id: number;
@@ -34,6 +36,10 @@ const Receipt = (props: PropType) => {
   const [receipt, setReceipt] = useState<Array<Receipt>>(newReciept);
   const [currentDate, setCurrentDate] = useState(moment().format("YYYY-MM-DD"));
   const dispatch = useDispatch();
+
+  const normalizedMaster = DeNormalize<Master>(props.masters);
+
+  const filteredMaster = normalizedMaster.filter((mstr)=> mstr.group_id == 6 );
 
   let saveReceipts = async (rec: Receipt) => {
     let newR = [...receipt.slice(0, receipt.length - 1), rec];
@@ -112,6 +118,14 @@ const Receipt = (props: PropType) => {
             >
               Clear
             </button>
+            <div>
+              select will be here
+            <Select style={{ width: "200px"}}>
+              {
+                filteredMaster.map((master)=><Select.Option key={master.id} value={master.id} >{master.name}</Select.Option>)
+              }
+            </Select>
+            </div>
           </div>
           <input
             type="date"
@@ -120,6 +134,8 @@ const Receipt = (props: PropType) => {
             }}
             defaultValue={currentDate}
           />
+
+
 
           {receipt.map(receipt => {
             if (props.masters) {

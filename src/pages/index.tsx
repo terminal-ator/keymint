@@ -1,16 +1,21 @@
 import React, { FC, useEffect, useState } from "react";
-import { connect, ConnectedProps } from "react-redux";
+import {connect, ConnectedProps, useDispatch} from "react-redux";
 import { GetCompanies, SelectCompany } from "../actions/systemActions";
 import { FetchMasters } from "../actions/masterActions";
 import { FetchBeat } from '../actions/beatActions';
 import { AppState } from "../reducers";
 import { RouteComponentProps } from "react-router";
 import KeyList from "../components/keylist";
-import { RenderItemProps, DeNormalize } from "../types/generic";
+import {RenderItemProps, DeNormalize, normalize_id, normalize} from "../types/generic";
 import { Company } from "../types/company";
 import styled from "styled-components";
 import { PageDiv } from "../components/styledComp";
 import {FetchYears} from "../actions/yearsActions";
+import PoppableCreateCompany from "../components/PoppableButton";
+import {Button} from "antd";
+import {  useHistory } from 'react-router-dom';
+import {LogOut} from "../actions/userActions";
+import {useCompanies} from "../Hooks/Companies";
 
 const mapState = (state: AppState) => ({
   companies: state.sys.Companies,
@@ -46,6 +51,11 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & RouteComponentProps;
 
 const Index = (props: Props) => {
+
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const [ companies, loading, error  ] = useCompanies();
+  const [cursor, setCursor] = useState(0);
   if (!props.companies) console.log("No companies now");
   if (props.companies)
     console.log("companies are here:", props.companies.all.length);
@@ -56,8 +66,16 @@ const Index = (props: Props) => {
     console.log(props.masters);
   }
 
+  if(loading){
+    return <PageDiv>Loading...</PageDiv>
+  }
+  if(error){
+    return <PageDiv>Error while loading, please refresh</PageDiv>
+  }
+
+  const normalizedCompanies = normalize(companies?.companies)
   const selectCompany = async (cursor: number) => {
-    if (props.companies) {
+    if (normalizedCompanies) {
       // const denorm = DeNormalize<Company>(props.companies);
       // const companyID = denorm[cursor].id;
       await props.SelectCompany(cursor);
@@ -68,6 +86,11 @@ const Index = (props: Props) => {
     }
   };
 
+  const LogoutClick = ()=>{
+    dispatch(LogOut())
+    history.push("/login")
+  }
+
   const renderItems = (arg: RenderItemProps<Company>) => {
     return (
       <SELTR key={arg.item.id.toString()}>
@@ -77,17 +100,21 @@ const Index = (props: Props) => {
     );
   };
 
-  const [cursor, setCursor] = useState(0);
+
 
   return (
     <PageDiv>
-      <div style={{ width: 600}} >
-        <h1>Companies</h1>
-        {props.companies && (
+      <div style={{ width: "700px", marginLeft: 10 }} >
+        <div style={{ display: "flex", flexDirection: "row", alignItems:"center" }}>
+          <h1>Select a company</h1>
+          <Button onClick={LogoutClick} style={{ marginLeft: 10 }} type={"danger"} >Logout</Button>
+        </div>
+        <PoppableCreateCompany />
+        {normalizedCompanies && (
           <KeyList
             columns={["ID", "Company"]}
             cursor={cursor}
-            data={props.companies}
+            data={normalizedCompanies}
             maxHeight={500}
             numberOfRows={10}
             rowHeight={30}

@@ -13,11 +13,14 @@ export const TOGGLE_JOURNAL = `TOGGLE_JOURNAL`;
 export const FETCH_JOURNAL = `FETCH_JOURNAL`;
 export const TOGGLE_PRODUCT = `TOGGLE_PRODUCT`;
 export const UPDATE_JOURNAL = `UPDATE_JOURNAL`;
+export const LOADING_START = `LOADING_START`;
+export const LOADING_END = `LOADING_END`;
 
 interface journalPayload {
     show: boolean
     valid: boolean
     id: number;
+    onComplete?: ()=>void;
 }
 
 interface ShowCreateMaster {
@@ -52,7 +55,16 @@ interface ShowProduct {
     product_id?: string | null
 }
 
-export type UiActions =  ShowProduct|ShowCreateMaster | UpdateMaster | ShowJournal | FetchJouralAction  | ShowMasterForm ;
+interface LoadingStart{
+    type: typeof LOADING_START;
+}
+
+interface LoadingEnd {
+    type: typeof LOADING_END;
+}
+
+export type UiActions =  ShowProduct|ShowCreateMaster | UpdateMaster
+    | ShowJournal | FetchJouralAction  | ShowMasterForm | LoadingStart | LoadingEnd ;
 
 export const ToggleMaster = (show: boolean) => {
     return ({
@@ -78,13 +90,14 @@ export const ToggleMasterForm = (show: boolean, master: Master | undefined):Show
     });
 }
 
-export const ToggleJournal = (show: boolean, valid: boolean, id: number): ShowJournal => {
+export const ToggleJournal = (show: boolean, valid: boolean, id: number, onComplete: (() => void) | undefined): ShowJournal => {
     return ({
         type: TOGGLE_JOURNAL,
         payload: {
             show: show,
             valid: valid,
-            id: id
+            id: id,
+            onComplete: onComplete
         }
     })
 }
@@ -100,13 +113,22 @@ export const ToggleProduct = (show: boolean, product_id?: string | null): ShowPr
 
 
 export const FetchJournal = (
-    journalID: number
+    journalID: number,
+    onComplete?: ()=>void
 ): ThunkAction<void, AppState, null, Action<String>> => async dispatch => {
+
+    dispatch({
+        type: LOADING_START
+    });
+
     const journal = await getJournal(journalID);
     console.log(journal);
     dispatch({
         type: FETCH_JOURNAL,
         payload: journal.data
     })
-    dispatch(ToggleJournal(true, true, journalID));
+    dispatch({
+        type:LOADING_END
+    })
+    dispatch(ToggleJournal(true, true, journalID, onComplete ));
 }

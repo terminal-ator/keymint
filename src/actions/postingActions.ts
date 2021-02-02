@@ -3,8 +3,11 @@ import { normalize, NormalizedCache } from "../types/generic";
 import { ThunkAction } from "redux-thunk";
 import { AppState } from "../reducers";
 import { Action } from "redux";
-import {getCheques, getPostings} from "../api";
+import {getCheques, getPostings, getPostingsWithDate} from "../api";
 import {Cheque} from "../pages/cheque";
+import {PostingResponse} from "../reducers/postingReducer";
+import {AxiosResponse} from "axios";
+import {LOADING_END, LOADING_START} from "./uiActions";
 
 export const FETCH_POSTINGS = `FETCH_POSTING`;
 export const SET_POSTING_PARENT_ID = `SET_POSTING_PARENT_ID`;
@@ -12,7 +15,8 @@ export const SET_CHEQUES = `SET_CHEQUES`;
 
 interface FetchPosting {
   type: typeof FETCH_POSTINGS;
-  payload: NormalizedCache<Posting>;
+  payload: PostingResponse;
+
 }
 
 interface FetchCheques {
@@ -35,14 +39,29 @@ export const fetchPosting = (
     type: SET_POSTING_PARENT_ID,
     payload: id,
   });
-  const postings = await getPostings(id);
-  const postingsState = normalize<Posting>(postings.data);
+  const postings:AxiosResponse<PostingResponse> = await getPostings(id);
   dispatch({
     type: FETCH_POSTINGS,
-    payload: postingsState,
+    payload: postings.data,
   });
   //dispatch(fetchCheques);
 };
+
+
+export const fetchPostingWithDate = (
+    id: number,
+    startDate: string,
+    endDate: string
+): ThunkAction<void,AppState, null, Action<String>> => async (dispatch)=>{
+  dispatch({type:LOADING_START});
+  const postings: AxiosResponse<PostingResponse> = await getPostingsWithDate(id, startDate, endDate);
+  dispatch({
+    type: FETCH_POSTINGS,
+    payload: postings.data,
+  });
+  dispatch({ type: LOADING_END });
+}
+
 
 export const fetchCheques = (): ThunkAction<void, AppState, null, Action<String>> => async (dispatch, getState) => {
   const postingID = getState().posts.postId;

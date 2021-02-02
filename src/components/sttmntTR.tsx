@@ -14,13 +14,24 @@ export const SimTd = styled.td`
   overflow: hidden;
 `;
 
+export const DetailTd = styled.td`
+    min-width: 50px;
+    max-width: 150px;
+    text-align: left
+    padding-left: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    border-collapse: collapse;
+    padding: 10px;
+    overflow: hidden
+`
+
 export const LongTd = styled(SimTd)`
   overflow: hidden;
   max-width: 500px;
   min-width: 500px;
   padding-left: 10px;
   padding-right: 10px;
-  
+  padding: 10px;
 `;
 const StatementTR: FC<StatementLiProps> = ({ statement }) => {
   // console.log(`Displaying masters ${masters}`);

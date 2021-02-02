@@ -7,7 +7,7 @@ import {
 } from "../types/generic";
 import styled from "styled-components";
 
-const   KeyTable = styled.table`
+export const   KeyTable = styled.table`
   table-layout: fixed;
   white-space: nowrap;
   border-collapse: collapse;
@@ -24,7 +24,7 @@ export interface SELTRPROPS {
   height?: string;
 }
 
-const KeyBody = styled.tbody`
+export const KeyBody = styled.tbody`
   background: ${(props: SELTRPROPS) =>
     props.selected
       ? props.bgColorOn
@@ -74,6 +74,8 @@ interface KeyProps<T> {
   filter?(data: T): boolean;
   renderColumn?(): any;
   autoFocus?: boolean;
+  headers?: FC[];
+  footers?: FC[];
 }
 
 function GetDimensions() {
@@ -150,10 +152,11 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
       top: 0,
       bottom: 0,
       overflow: "hidden" as "hidden",
-      height: props.numberOfRows * props.rowHeight + 250,
+      height: props.numberOfRows * props.rowHeight + 400,
       width: props.width,
       maxWidth: props.maxWidth,
       margin: 10,
+      marginLeft:0,
       borderRadius: 2,
       padding: 20,
       outlineColor: "#ff1744",
@@ -328,6 +331,9 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
               </tr>
             </thead>
           )}
+          {
+            props.headers && props.headers.map((Headed)=> <Headed />)
+          }
           {dataArray.map((item, i) => {
             return checkIfVisible(i) || false ? (
               <KeyBody
@@ -339,7 +345,7 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
                 }}
                 selected={cursor === i}
                 height={`${props.rowHeight}px`}
-                key={i}
+                key={item.id + (item.cust_id ? item.cust_id?.Int64.toString():"0") + i}
               >
                 {props.renderItem({
                   item: item,
@@ -353,6 +359,11 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
               </KeyBody>
             ) : null;
           })}
+          <tfoot style={{ borderTop: "2px solid #3e3e3e", marginTop: "10px"}}>
+          {
+            props.footers && props.footers.map((Footer)=>{return <Footer />})
+          }
+          </tfoot>
         </KeyTable>
         <div style={{ width: "100%" }}>
           <div style={{ width: "100%" }}>

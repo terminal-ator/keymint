@@ -33,11 +33,11 @@ const NameSelect:FC<Props> = (props)=>{
     focus();
   },[]);
 
-  const setMaster = (cursor: number)=>{
+  const setMaster = async (cursor: number)=>{
     if(masters){
       const name = masters.normalized[cursor].name;
-      setSelectedMaster(name);
-      onSelect(cursor)
+      await setSelectedMaster(name);
+      await onSelect(cursor)
       toggleList();
     }
   }
@@ -57,7 +57,7 @@ const NameSelect:FC<Props> = (props)=>{
         onCancel={toggleList}
         footer={null}
         destroyOnClose
-        style={{ minWidth: 800, top: 5, animationDuration:"0s !important", backgroundColor:"black",color:"white"}}
+        style={{ zIndex: 99, minWidth: 800, top: 5, animationDuration:"0s !important"}}
         transitionName="none"
         maskTransitionName="none"
       >

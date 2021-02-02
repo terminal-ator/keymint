@@ -5,12 +5,13 @@ import {Button, Card, message, Select} from "antd";
 import Nav from "./nav";
 import FileUpload from "./fileupload";
 import {postStatementUpload} from "../api";
+import {Master} from "../types/master";
 
 const ImportStatement = () => {
   const companyID = stateSelector( (state) => state.sys.SelectedCompany)
   const masters = stateSelector(state => state.master.masters);
   const masterArray = DeNormalize(masters);
-  const banks = masterArray.filter(mstr => mstr.group_id === 5);
+  const banks = masterArray.filter( mstr=> mstr.group_id === 5);
   const [ file, setFile  ] = useState<File>();
   const [ bank, setBank ] = useState<number>();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

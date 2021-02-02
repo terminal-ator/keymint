@@ -7,6 +7,7 @@ import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { UIReducer } from "./uiReducer";
 import { PostingReducer } from "./postingReducer";
 import {YearReducer} from "./yearReducer";
+import {UserReducer} from "./userReducer";
 
 const rootReducer = combineReducers({
   sys: SystemReducer,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   beats: BeatReducer,
   ui: UIReducer,
   posts: PostingReducer,
-  years: YearReducer
+  years: YearReducer,
+  user: UserReducer
 });
 
 export type AppState = ReturnType<typeof rootReducer>;

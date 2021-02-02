@@ -237,7 +237,9 @@ const ProductForm = ()=>{
   useEffect(()=>{
     if(productData){
 
+
       const fetchedProduct = OmitDeep(productData.getProduct, "__typename");
+      // @ts-ignore
       setProduct(fetchedProduct);
       console.log({ fetchedProduct });
     }

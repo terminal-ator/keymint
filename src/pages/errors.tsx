@@ -120,7 +120,8 @@ const Errors = () => {
                   beat_id: 1,
                   group_id: 1,
                   name: err.master_name,
-                  company_id: companyID
+                  company_id: companyID,
+                  opening_balance: 0
                 };
                 dispatch(ToggleMasterForm(true, master));
               }}

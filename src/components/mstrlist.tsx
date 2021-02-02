@@ -11,13 +11,14 @@ import { Company } from "../types/company";
 import KeyList from "./keylist";
 import { SELTR } from "../pages";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { stateSelector } from "../reducers";
 import { Beat } from "../actions/beatActions";
 import { Select } from "./styledComp";
 import { compareTwoStrings } from 'string-similarity';
-import {Input} from "antd";
+import {Button, Input} from "antd";
 import {LongTd} from "./sttmntTR";
+import {ToggleMaster, ToggleMasterForm} from "../actions/uiActions";
 
 interface MasterListProps {
   masters: NormalizedCache<Master>;
@@ -35,13 +36,14 @@ const MasterList: FC<MProps> = (props: MProps) => {
   const [masters, setMasters] = useState(props.masters);
   const [balanceFilter, setBalance] = useState(false);
   const [beatFilter, setBeatFilter] = useState(0);
+  const dispatch = useDispatch();
   const bts = stateSelector(state => state.beats.beats);
   useEffect(() => {
     setMasters(props.masters);
   }, [props.masters]);
   const columns = ["Name", "Beat", "Balance"];
-  const selectName = (cursor: number) => {
-    if (props.handleEnter) props.handleEnter(cursor);
+  const selectName = async (cursor: number) => {
+    if (props.handleEnter) await props.handleEnter(cursor);
   };
   const filterBasedOnBalance = (selected: boolean) => {
     setBalance(selected);
@@ -140,6 +142,9 @@ const MasterList: FC<MProps> = (props: MProps) => {
     );
   };
 
+  const CreateMaster = async ()=>{
+    await dispatch(ToggleMasterForm(true,undefined ));
+  }
   const renderColumns = () =>(<thead>
   <tr>
     <th colSpan={2} >Name</th>
@@ -163,7 +168,6 @@ const MasterList: FC<MProps> = (props: MProps) => {
             filterByBeat(parseInt(e.target.value));
           }}
           style={{ width: 200}}
-          className={"form-control"}
         >
           <option value={0}>All</option>
           {bts?.all.map(id => (
@@ -172,7 +176,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
             </option>
           ))}
         </select>
-        <p className="filter-text" style={{ marginTop: 2, marginLeft: 2 }}>
+        <p style={{ marginTop: 2, marginLeft: 2 }}>
           <Input value={filter} onChange={event => {setFilter(event.target.value)}} placeholder={"Search Here"} />
         </p>
         <span style={{ float: "right", alignSelf: "center" }}>
@@ -184,7 +188,9 @@ const MasterList: FC<MProps> = (props: MProps) => {
             }}
           />
           <label htmlFor="handle">&nbsp; Hide Balanced</label>
+
         </span>
+        <Button onClick={CreateMaster} > Add Master </Button>
       </div>
       <KeyList
         key={"master-list"}

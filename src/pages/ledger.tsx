@@ -35,13 +35,14 @@ const LedgerPage = (props: PropType) => {
 
   const selectMaster = async (masterID: number) => {
     if (props.masters) {
-      props.history.push(`/ledgers/${masterID}`);
+
       setCust(props.masters.normalized[masterID]);
       await dispatch(
         fetchPosting(props.masters.normalized[masterID].cust_id.Int64)
       );
       await dispatch(fetchCheques())
       setShow(true);
+      props.history.push(`/ledgers/${masterID}`);
     }
   };
 
@@ -52,7 +53,7 @@ const LedgerPage = (props: PropType) => {
       <div style={{ display: "flex", marginTop: 5 }}>
         <div style={{ flex: 1 }}>
           <div
-            style={{padding: "5px", width: 700 }}
+            style={{padding: "5px", maxWidth: "700px", minWidth:"50%" }}
           >
             {props.masters && (
               <MasterList masters={props.masters} handleEnter={selectMaster} />

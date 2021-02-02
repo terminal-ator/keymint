@@ -21,7 +21,8 @@ interface UIState {
     masterFormToggle: boolean,
     master: Master | undefined,
     productToggle: boolean
-    product_id?: string | null
+    product_id?: string | null,
+    loading: boolean
 }
 
 const initialState: UIState = {
@@ -37,6 +38,8 @@ const initialState: UIState = {
     masterFormToggle: false,
     master: undefined,
     productToggle: false,
+    loading:false
+
 };
 
 export const UIReducer = (state = initialState, action: UiActions): UIState => {
@@ -53,6 +56,10 @@ export const UIReducer = (state = initialState, action: UiActions): UIState => {
             return { ...state, productToggle: action.payload,product_id: action.product_id};
         case "SHOW_MASTER_FORM":
             return { ...state, masterFormToggle: action.show, master: action.master }
+        case "LOADING_START":
+            return { ...state, loading:true}
+        case "LOADING_END":
+            return {...state, loading:false}
         default:
             return state
     }

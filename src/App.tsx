@@ -34,6 +34,8 @@ import DayBook from "./pages/daybook";
 import PendingPage from "./pages/pending";
 import ProductPage from "./pages/products";
 import OrderPage from "./pages/orders";
+import LoginPage from "./pages/login";
+import AuthRoute from "./components/AuthRoute";
 
 const persistConfig = {
   key: "root",
@@ -49,35 +51,34 @@ const store = createStore(
 let persistor = persistStore(store);
 
 const client = new ApolloClient({
-  uri: "http://unraidone.duckdns.org:4000"
+  uri: "http://localhost:4000",
 });
 
 /* eslint-enable */
 const App: React.FC = () => {
-
-  // 
 
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ApolloProvider client={client}>
           <Router>
-            <Route exact path="/" component={Index} />
-            <Route path="/menu" component={menu} />
-            <Route path="/stmt/:id" component={STMT} />
-            <Route path="/banks" component={Bank} />
-            <Route path="/sales" component={SalesImportPage} />
-            <Route path="/ledgers" component={LedgerPage} />
-            <Route path="/master" component={MasterForm} />
-            <Route path="/errors" component={Errors} />
-            <Route path="/journal" component={JournalPage} />
-            <Route path="/years" component={YearPage} />
-            <Route path={'/imrstat'} component={ImportStatementPage} />
-            <Route path={"/receipt"} component={ChequePage} />
-            <Route path={"/daybook"} component={DayBook} />
-            <Route path={"/pending"} component={PendingPage} />
-            <Route path={"/products"} component={ProductPage} />
-            <Route path={"/orders"} component={OrderPage} />
+            <AuthRoute exact path="/" component={Index} />
+            <AuthRoute path="/menu" component={menu} />
+            <AuthRoute path="/stmt/:id" component={STMT} />
+            <AuthRoute path="/banks" component={Bank} />
+            <AuthRoute path="/sales" component={SalesImportPage} />
+            <AuthRoute path="/ledgers" component={LedgerPage} />
+            <AuthRoute path="/master" component={MasterForm} />
+            <AuthRoute path="/errors" component={Errors} />
+            <AuthRoute path="/journal" component={JournalPage} />
+            <AuthRoute path="/years" component={YearPage} />
+            <AuthRoute path={'/imrstat'} component={ImportStatementPage} />
+            <AuthRoute path={"/receipt"} component={ChequePage} />
+            <AuthRoute path={"/daybook"} component={DayBook} />
+            <AuthRoute path={"/pending"} component={PendingPage} />
+            <AuthRoute path={"/products"} component={ProductPage} />
+            <AuthRoute path={"/orders"} component={OrderPage} />
+            <Route path={"/login"} component={LoginPage} />
           <Glob />
           </Router>
         </ApolloProvider>

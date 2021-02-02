@@ -25,7 +25,7 @@ const MenuRoutes = [
   },
   {
     id: 7,
-    name: "Receipts",
+    name: "Add Cheques",
     route: "receipt"
   },
   {
