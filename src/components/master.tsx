@@ -12,7 +12,7 @@ import {FetchJournal, ToggleMasterForm} from "../actions/uiActions";
 import {Beat} from "../actions/beatActions";
 import {Group} from "../types/group";
 import {AxiosResponse} from "axios";
-import {fetchPosting} from "../actions/postingActions";
+import {fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
 import QuickCreate from "./QuickCreate";
 
 
@@ -174,7 +174,7 @@ const MasterForm = (props: Props) => {
           if(resp.status===200){
             message.success("Saved Successfully");
             await dispatch(FetchMasters());
-            await dispatch(fetchPosting(ledgerID));
+            await dispatch(fetchPostingWithDate(ledgerID,"",""));
             if(formValues.cust_id.Int64!=0){
               await dispatch(ToggleMasterForm(false, undefined));
               return;

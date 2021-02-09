@@ -9,7 +9,7 @@ export const AuthHeader = ()=>{
 
 export const IsLoggedIn = ():boolean=>{
     const token = localStorage.getItem("token")
-    return token!==""
+    return token!=="" && token != null
 }
 
 export const SignInUserApi = async (username: string, password: string)=>{

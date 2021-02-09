@@ -9,7 +9,7 @@ import ChequeForm from "../components/chqForm";
 import numWords from "num-words";
 import { PageDiv } from "../components/styledComp";
 import Nav from "../components/nav";
-import {addCheques, newPostReceipt, postLedger, postReceipt, ReceiptRequest} from "../api";
+import {addCheques, newPostReceipt, ReceiptRequest} from "../api";
 import { FetchMasters } from "../actions/masterActions";
 import {Button, Checkbox, message, Select} from "antd";
 import LedgerDetail from "../components/ledgerDetail";

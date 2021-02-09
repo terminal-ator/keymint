@@ -2,60 +2,21 @@ import axios from "axios";
 import { Receipt } from "../pages/receipt";
 import { QuickForm } from "../components/ledgerDetail";
 import {NullInt, StatementMutation} from "../types/generic";
-import { FormValues } from "../components/master";
-import { Master } from "../types/master";
 import { Journal } from "../types/ledger";
 import {Cheque, NewCheque} from "../pages/cheque";
-import { CreateCompanyType } from "../types/company";
 import {ax} from "./base";
 import {createCompany, GetCompanies} from "./companies";
 import {AuthHeader} from "./auth";
-import {GetMasters} from "./masters";
+import {GetMasters, GetUploadCompanies} from "./masters";
+import {GetBankWiseStatements, PostStatementMaster} from "./statements";
+import {PostFileUpload} from "./uploads";
 
 export let getCompanies = GetCompanies;
 export const getMasters = GetMasters;
-
-export const getStatements = async (companyID: number) => {
-  const req = await ax.get(`/cstatements/${companyID}`);
-  return req.data.statements;
-};
-
-export const getBanks = async (companyID: number) => {
-  return ax.get(`/banks/${companyID}`);
-};
-
-export const getBankWiseStatements = async (bankID: number, startDate:string, endDate:string) => {
-  const yearID = await localStorage.getItem('yearID');
-  return ax.get(`/statements/${bankID}?sd=${startDate}&ed=${endDate}`,{
-    headers: AuthHeader() });
-};
-
-interface StatementMaster {
-  statement_id: number;
-  cust_id: number;
-  company_id: number;
-}
-
-export const postStatementMaster = async (arg: StatementMaster) => {
-  return ax.post("/statements", arg);
-};
-
-export const getUploadCompanies = async (companyID: number) => {
-  return ax.get(`/uplcompany/${companyID}`);
-};
-
-export const postFileUpload = async (
-  companyID: number,
-  companyName: string,
-  saleId: number,
-  formdata: FormData
-) => {
-  return ax.post(
-    `/upl?company=${companyName}&id=${companyID}&sales=${saleId}`,
-    formdata
-  );
-};
-
+export const getBankWiseStatements = GetBankWiseStatements;
+export const postStatementMaster = PostStatementMaster;
+export const getUploadCompanies = GetUploadCompanies;
+export const postFileUpload = PostFileUpload;
 export  const postStatementUpload = async (
   companyID: number,
   bankID: number,
@@ -104,28 +65,21 @@ export const newPostReceipt = async (
   });
 }
 
-export const fetchLedger = async (custID: number, companyID: number) => {
-  return ax.get(
-    `/ledger?cust_id=${custID}&company=${companyID}`
-  );
-};
-
 export const putLedger = async (qck: QuickForm, companyID: number) => {
-  return ax.put(`/ledger/${companyID}`, qck);
+  return ax.put(`/postings/${companyID}`, qck);
 };
 
 export const getPostings = async (accountID: number) => {
-  const yearID = await localStorage.getItem("yearID");
   return ax.get(`/postings/${accountID}`,
     {
-      headers:{
-        "yearID" : yearID
-      }
+      headers: AuthHeader()
     });
 };
 
 export const getPostingsWithDate = async (accountID:number, startDate: string, endDate: string)=>{
-  return ax.get(`/postings/${accountID}?start=${startDate}&end=${endDate}`)
+  return ax.get(`/postings/${accountID}?start=${startDate}&end=${endDate}`, {
+    headers: AuthHeader()
+  })
 }
 
 export const newSetStatement = async (packet: StatementMutation) => {
@@ -150,7 +104,9 @@ export const putUpdateMaster = async (master: { name: string, beat_id: number, g
 }
 
 export const postNewJournal = async (journal: Journal) => {
-  return ax.post('/journal', journal)
+  return ax.post('/postings', journal, {
+    headers: AuthHeader()
+  })
 }
 
 export const getJournal = async (journalID: number) => {
@@ -202,5 +158,5 @@ export const PostCreateBeats = async (beatName: string) => {
 }
 
 export const DeleteVoucherById = async (journalID: number) => {
-  return ax.delete(`/postings/${journalID}`)
+  return ax.delete(`/postings/${journalID}`, { headers: AuthHeader() });
 }

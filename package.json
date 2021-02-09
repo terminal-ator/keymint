@@ -45,6 +45,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
+    "serve": "^11.3.2",
     "string-similarity": "^4.0.1",
     "styled-components": "^4.4.1",
     "styled-jsx": "^3.2.5",

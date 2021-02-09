@@ -7,3 +7,7 @@ export const GetMasters = async ()=> {
         headers: AuthHeader() } );
     return req.data;
 };
+
+export const GetUploadCompanies = async (companyID: number) => {
+    return ax.get(`/uplcompany/${companyID}`);
+};

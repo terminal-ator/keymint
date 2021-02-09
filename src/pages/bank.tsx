@@ -6,7 +6,6 @@ import { useHistory } from "react-router";
 import { Bank } from "../types/bank";
 import { AppState } from "../reducers";
 import Axios from "axios";
-import { getBanks } from "../api";
 import { connect, ConnectedProps } from "react-redux";
 import { PageDiv } from "../components/styledComp";
 import Nav from '../components/nav';

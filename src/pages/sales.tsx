@@ -9,7 +9,7 @@ import Nav from '../components/nav';
 import { Master } from "../types/master";
 import { DeNormalize } from "../types/generic";
 import { useHistory } from "react-router-dom";
-import {message, Result} from "antd";
+import {Input, message, Result} from "antd";
 
 const mapState = (state: AppState) => {
   return {
@@ -43,7 +43,7 @@ const SalesImportPage = (props: TypeFromRedux) => {
     console.log("sending file 1")
     if (selSale) {
       console.log("Sending file")
-      const data = await postFileUpload(props.companyID, company, selSale, formdata);
+      const data = await postFileUpload(company, selSale, formdata);
       if(data.status==200){
         setFile(undefined);
         setSelSale(undefined);
@@ -65,7 +65,7 @@ const SalesImportPage = (props: TypeFromRedux) => {
     let formData = new FormData();
     if (file) {
       formData.append("upload", file);
-      await sendFile(formData);
+        await sendFile(formData);
     }
   };
 
@@ -92,18 +92,17 @@ const SalesImportPage = (props: TypeFromRedux) => {
     <PageDiv>
       <Nav />
       <div style={{ display: 'flex', flexDirection: 'column',
-        width: 400, padding: 10, backgroundColor:"rgb(33,33,33)",
+        width: 400, padding: 10, border: "1px solid #0e0e0e",
         margin:10,borderRadius: 4
       }}>
-        <h4 className={'text-light'}>Import</h4>
+        <h4 >Import</h4>
         <Select onChange={e => {
           setSelSale(parseInt(e.target.value));
         }}
           value={selSale}
-                className={"form-control bg-dark text-light mt-4"}
         >
           <option value="" disabled selected>
-            Select Sales
+            Select Sales Account
         </option>
           {
             salesAccount?.map((sa) => {
@@ -111,30 +110,16 @@ const SalesImportPage = (props: TypeFromRedux) => {
             })
           }
         </Select>
-        <Select
-          onChange={e => {
-            setCompany(e.target.value);
-          }}
-          value={company}
-          className={"form-control bg-dark text-light mt-4"}
-        >
-          <option value="" disabled selected>
-            Select Company
-        </option>
-          {companies &&
-            companies.map(company => (
-              <option key={company.name} value={company.name}>
-                {company.name}
-              </option>
-            ))}
-        </Select>
-        <FileUpload onChange={fileChange} />
+        <Input  style={{ marginTop: 10 }} value={company} onChange={(e)=>{setCompany(e.target.value)}} placeholder={"Add Identifying remarks"} />
+        <input style={{ marginTop: 10 }}  type="file" onChange={fileChange}  />
         <button
-          className={'btn btn-dark mt-4'}
           onClick={async () => {
             await OnSubmit();
           }}
           disabled={file == undefined}
+          style={{
+            marginTop: 10
+          }}
         >
           Import
       </button>

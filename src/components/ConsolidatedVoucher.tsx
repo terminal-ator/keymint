@@ -12,7 +12,7 @@ import {DeleteVoucherById} from "../api";
 import {useDispatch} from "react-redux";
 import {ToggleJournal} from "../actions/uiActions";
 import {FetchMasters} from "../actions/masterActions";
-import {fetchPosting} from "../actions/postingActions";
+import {fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
 
 enum Voucher {
     Receipt,
@@ -65,7 +65,7 @@ const ConsolidatedVoucher = ()=>{
                 await dispatch(ToggleJournal(false, false, 0, () => {
                 }));
                 await dispatch(FetchMasters());
-                await dispatch(fetchPosting(postingID));
+                await dispatch(fetchPostingWithDate(postingID,"",""));
 
             } catch (e) {
                 message.error("Failed to delete the voucher");

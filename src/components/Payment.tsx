@@ -7,7 +7,7 @@ import {Master} from "../types/master";
 import {Button, Checkbox, Input, message, Select} from "antd";
 import ChequeForm from "./chqForm";
 import {postNewJournal} from "../api";
-import {fetchPosting} from "../actions/postingActions";
+import {fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
 import {FetchMasters} from "../actions/masterActions";
 import {ToggleJournal} from "../actions/uiActions";
 import {useDispatch} from "react-redux";
@@ -142,7 +142,7 @@ const Payment = () => {
                 message.success("Successfully added journal entry");
                 setPostings([generateRandomPosting()]);
                 setJrnl(journal);
-                await dispatch(fetchPosting(selectedID));
+                await dispatch(fetchPostingWithDate(selectedID,"",""));
                 await dispatch(FetchMasters());
                 // await dispatch(ToggleJournal(false, false, 0, ()=>{}));
             } else {

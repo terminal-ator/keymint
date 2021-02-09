@@ -11,7 +11,7 @@ import dotProp from "dot-prop-immutable";
 import { postNewJournal } from "../api";
 import { useDispatch } from "react-redux";
 import {ToggleJournal} from "../actions/uiActions";
-import {fetchPosting} from "../actions/postingActions";
+import {fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
 import {FetchMasters} from "../actions/masterActions";
 
 
@@ -119,7 +119,7 @@ const JournalForm:FC<JournalProps> = (props) => {
         setJrnl(journal);
       } else if (resp.status == 200 && ui.valid) {
         message.success("Update Success");
-        await dispatch(fetchPosting(selectedID));
+        await dispatch(fetchPostingWithDate(selectedID,"",""));
         if(props.onComplete){
           await props.onComplete();
         }
