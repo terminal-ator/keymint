@@ -50,7 +50,7 @@ const VoucherRow = (props: ChequeFormProps) => {
                 <input
                     style={{ width: 300, flex: 1, marginLeft:10, padding:2, borderRadius: 2, border: "1px solid #3e3e3e"}}
                     onBlur={async e => {
-                        const val = Math.abs(parseInt(e.target.value));
+                        const val = Math.abs(parseFloat(e.target.value));
                         await handleModify(Chq.id, Chq.master_id, val );
                         // setTimeout(()=>{}, 200);
                     }}

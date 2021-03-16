@@ -51,7 +51,7 @@ const PostingForm = (props: Props) => {
                 value={toBy == "0" ? -posting.amount : ""}
                 type="number"
                 onChange={(e) => {
-                    const amnt = parseInt(e.target.value);
+                    const amnt = parseFloat(e.target.value);
                     handleAmount(props.pKey, -amnt)
                 }
                 }
@@ -62,7 +62,7 @@ const PostingForm = (props: Props) => {
                 value={toBy == "1" ? posting.amount : ""}
                 type="number"
                 onChange={(e) => {
-                    const amnt = parseInt(e.target.value);
+                    const amnt = parseFloat(e.target.value);
                     handleAmount(props.pKey, amnt)
                 }
                 }

@@ -42,6 +42,7 @@ const Errors = () => {
   const companyID = companySelector(state => state.sys.SelectedCompany);
   const masters = companySelector(state => state.master.masters);
   // fetch data
+  console.log("Fetching errors for,", { companyID  })
 
   const { data, loading, error, refetch } = useQuery<Query>(FETCH_ERRORS, {
     variables: { input: companyID }
