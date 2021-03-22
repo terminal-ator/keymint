@@ -49,7 +49,7 @@
     "string-similarity": "^4.0.1",
     "styled-components": "^4.4.1",
     "styled-jsx": "^3.2.5",
-    "swr": "^0.4.1",
+    "swr": "^0.5.3",
     "typescript": "~3.7.2",
     "typescript-eslint-parser": "^22.0.0",
     "yarn": "^1.21.1"

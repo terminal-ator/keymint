@@ -196,7 +196,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
         key={"master-list"}
         columns={columns}
         cursor={cursor}
-        rowHeight={20}
+        rowHeight={10}
         numberOfRows={12}
         maxHeight={600}
         handleCharacter={handleKey}

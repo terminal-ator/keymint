@@ -23,7 +23,7 @@ const Glob = () => {
                 visible={masterToggle}
                 title={'Create User'}
                 footer={null}
-                style={{ zIndex: 1000}}
+                zIndex={1001}
                 onCancel={() => { dispatch(ToggleMasterForm(false, undefined)) }}
                 destroyOnClose={true}
                 transitionName="none"
@@ -42,7 +42,8 @@ const Glob = () => {
               }}
               footer={null}
               style={{ minWidth: "95%" ,width:"100%",minHeight: "100%", top: 0 }}
-              bodyStyle={{ minHeight: "100vh", width:"100%"}}
+              bodyStyle={{ maxHeight: "100vh", width:"100%"}}
+              zIndex={1000}
             >
                 <ConsolidatedVoucher />
             </Modal>

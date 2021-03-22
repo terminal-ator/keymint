@@ -39,4 +39,5 @@ export interface Journal {
   sttmt_id: number | undefined;
   postings?: TPosting[]
   amount?:number;
+  approval?: boolean;
 }

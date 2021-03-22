@@ -260,7 +260,7 @@ const Receipt = () => {
                     </span>
                 </p>
             </div>
-            <div style={{ flex: 1, overflow:"hidden", maxWidth: "100vh"}} >
+            <div style={{ flex: 1, overflow:"hidden", maxHeight:"600px"}} >
                 <LedgerDetail  cust={selectedCust} hasFocus={false}  />
             </div>
         </div>

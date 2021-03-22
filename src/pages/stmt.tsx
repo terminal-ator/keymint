@@ -61,6 +61,7 @@ export interface Recommended {
   date: string
   amount: number
   master_id: number
+  master_name:string
   [key :string]: any
 }
 
@@ -212,7 +213,7 @@ const STMT = (props: Props) => {
           ]}
           cursor={cursor}
           maxHeight={700}
-          rowHeight={30}
+          rowHeight={10}
           numberOfRows={10}
           data={filtered}
           renderItem={renderItem}
@@ -230,9 +231,9 @@ const STMT = (props: Props) => {
             <DialogWrapper>
               <div style={{ flex: 1 }}>
                 <Card
-                  style={{ backgroundColor:"#3e3e3e", color:"white", margin: "0px auto", width: "80%", marginTop: 40 }}
+                  style={{  margin: "0px auto", width: "80%", marginTop: 40, backgroundColor:"white" }}
                 >
-                  <h4 style={{ color: "white"}}>Statement Detail</h4>
+                  <h4>Statement Detail</h4>
                   {selected && filtered && (
                     <div>
                       <p>
@@ -244,16 +245,20 @@ const STMT = (props: Props) => {
                         {filtered.normalized[selected] &&
                           filtered.normalized[selected].narration}
                       </div>
-                      <div style={{ padding:"5px", backgroundColor: "#36e392", color:"white"}} >
+                      <div style={{ display: "flex", flexDirection:"row", width:"100%"}}>
+                      <div style={{ padding:"5px", flex:1, backgroundColor: "#36e392", color:"white"}} >
+                      ₹
                         { filtered?.normalized[selected] &&
                           filtered?.normalized[selected].deposit .Float64
                         }
                       </div>
-                      <div style={{padding:"5px", backgroundColor: "red", color:"white"}}  >
+                      <div style={{padding:"5px", flex:1, backgroundColor: "red", color:"white"}}  >
+                      ₹
                         {
                           filtered?.normalized[selected] &&
                             filtered?.normalized[selected].withdrawl.Float64
                         }
+                      </div>
                       </div>
                       <div style={{ width: "100%"}}>
                         <p>Recommended</p>
@@ -270,7 +275,7 @@ const STMT = (props: Props) => {
                   )}
                 </Card>
               </div>
-              <DialogContent>
+              <DialogContent style={{ backgroundColor:"white"}}>
                 <MasterList
                   masters={props.masters}
                   companies={props.companies}

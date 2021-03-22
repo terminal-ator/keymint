@@ -47,6 +47,17 @@ const MasterContent = styled.div`
   position: relative;
 `;
 
+const BeautifyName = (txt: string): string=>{
+  var splitStr = txt.toLowerCase().split(' ');
+  for (var i = 0; i < splitStr.length; i++) {
+    // You do not need to check if i is larger than splitStr length, as your for does that for you
+    // Assign it back to the array
+    splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+  }
+  // Directly return the joined string
+  return splitStr.join(' '); 
+}
+
 const MasterForm = (props: Props) => {
 
   const [ data, setData ] = useState<fetchResult>();
@@ -135,7 +146,8 @@ const MasterForm = (props: Props) => {
       <Input
         value={formValues.name}
         onChange={e => {
-          const n = dotPropImmutable.set(formValues, "name", e.target.value);
+          let str = e.target.value;
+          const n = dotPropImmutable.set(formValues, "name", BeautifyName(str));
           setValues(n);
         }}
         placeholder={"Name"}
@@ -179,7 +191,8 @@ const MasterForm = (props: Props) => {
               await dispatch(ToggleMasterForm(false, undefined));
               return;
             }
-            setValues(initialValues);
+            const n = dotPropImmutable.set(formValues, "name", "");
+            setValues(n);
             if(inputR.current) inputR.current.focus();
           }else{
             message.error("Saving failed. Please try again.")

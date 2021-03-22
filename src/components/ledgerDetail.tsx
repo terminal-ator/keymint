@@ -311,7 +311,7 @@ const LedgerDetail = (props: LedgerProps) => {
                                 cursor={0}
                                 data={postings}
                                 maxHeight={800}
-                                rowHeight={50}
+                                rowHeight={10}
                                 numberOfRows={7}
                                 handleEnter={handleEnter}
                                 renderItem={renderItem}

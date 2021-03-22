@@ -1,11 +1,16 @@
-import {useState} from "react";
+import {FC, useState} from "react";
 import {Button, DatePicker} from "antd";
 import React from "react";
 import {useDispatch} from "react-redux";
 import {CreateCompany} from "../api";
 import {GetCompanies} from "../actions/systemActions";
 
-const PoppableCreateCompany = ()=>{
+interface Props{
+    callback?():void
+   
+}
+
+const PoppableCreateCompany:FC<Props> = (props)=>{
 
     const dispatch = useDispatch();
     const [ show, setShow ] = useState(false)
@@ -23,8 +28,12 @@ const PoppableCreateCompany = ()=>{
                 enddate: endDate,
                 year: yearString
             });
-            dispatch(GetCompanies());
+            await dispatch(GetCompanies());
+            if(props.callback){
+                await props.callback()
+            }
             setShow(false);
+            
         }catch (e) {
             if (e.req){
 

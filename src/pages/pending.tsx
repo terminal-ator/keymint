@@ -16,14 +16,11 @@ import {fetchCheques, fetchPosting} from "../actions/postingActions";
 
 const PendingPage = ()=>{
   const [ cheques, setCheques ] = useState<Array<Recommended>>([]);
-
   const [ custid, setCustID ] = useState(0);
+  const [cursor, setCursor] = useState(0);
   const [ modalVisible, setModalVisible ] = useState(false);
-
   const masters = stateSelector(stt=>stt.master.masters);
-
   const dispatch = useDispatch();
-
 
   const handleCursor = async ( c_id: number)=>{
     console.log({ c_id });
@@ -45,17 +42,30 @@ const PendingPage = ()=>{
     setModalVisible(false);
   };
 
+  const refetchPending = ()=>{
+    getPendingCheques().then(res =>{
+      console.log("The pending cheques:", res.data)
+      setCheques(res.data)
+    });
+    setCursor(0);
+  }
+
   useEffect(()=>{
     getPendingCheques().then(res =>{
+      console.log("The pending cheques:", res.data)
       setCheques(res.data)
     })
   }, [])
+
+  useEffect(()=>{
+    refetchPending()
+  }, [modalVisible])
 
   const render = (args: RenderItemProps<Recommended>) =>{
     return(
       <SELTR>
         <SimTd>{moment(args.item.date).format("MMM Do")}</SimTd>
-        <SimTd>{args.item.name}</SimTd>
+        <SimTd>{args.item.master_name}</SimTd>
         <SimTd>{args.item.amount}</SimTd>
       </SELTR>
     )
@@ -65,7 +75,7 @@ const PendingPage = ()=>{
     <PageDiv>
       <Nav />
       <h2>Pending Cheques</h2>
-      <KeyList cursor={0} data={normalize(cheques)}
+      <KeyList cursor={cursor} data={normalize(cheques)}
                handleEnter={handleCursor}
                renderItem={render} columns={['Date','Name','Amount']}
                rowHeight={20} numberOfRows={14} maxHeight={500} />

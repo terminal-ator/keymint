@@ -36,6 +36,8 @@ import ProductPage from "./pages/products";
 import OrderPage from "./pages/orders";
 import LoginPage from "./pages/login";
 import AuthRoute from "./components/AuthRoute";
+import SignUpPage from "./pages/signup";
+import ApprovalPage from "./pages/approval";
 
 const persistConfig = {
   key: "root",
@@ -79,6 +81,8 @@ const App: React.FC = () => {
             <AuthRoute path={"/products"} component={ProductPage} />
             <AuthRoute path={"/orders"} component={OrderPage} />
             <Route path={"/login"} component={LoginPage} />
+            <Route path={"/signup"} component={SignUpPage} />
+            <Route path={"/approvals"} component={ApprovalPage} />
           <Glob />
           </Router>
         </ApolloProvider>

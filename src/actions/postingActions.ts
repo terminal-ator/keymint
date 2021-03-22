@@ -8,6 +8,7 @@ import {Cheque} from "../pages/cheque";
 import {PostingResponse} from "../reducers/postingReducer";
 import {AxiosResponse} from "axios";
 import {LOADING_END, LOADING_START} from "./uiActions";
+import {message} from "antd";
 
 export const FETCH_POSTINGS = `FETCH_POSTING`;
 export const SET_POSTING_PARENT_ID = `SET_POSTING_PARENT_ID`;
@@ -54,12 +55,18 @@ export const fetchPostingWithDate = (
     endDate: string
 ): ThunkAction<void,AppState, null, Action<String>> => async (dispatch)=>{
   dispatch({type:LOADING_START});
-  const postings: AxiosResponse<PostingResponse> = await getPostingsWithDate(id, startDate, endDate);
-  dispatch({
-    type: FETCH_POSTINGS,
-    payload: postings.data,
-  });
-  dispatch({ type: LOADING_END });
+  try{
+    const postings: AxiosResponse<PostingResponse> = await getPostingsWithDate(id, startDate, endDate);
+    dispatch({
+      type: FETCH_POSTINGS,
+      payload: postings.data,
+    });
+  }catch (e) {
+    message.error("Failed to connect to server, please retry")
+  }finally {
+    dispatch({ type: LOADING_END });
+  }
+
 }
 
 

@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 import {ax} from "./base";
 
 export const AuthHeader = ()=>{
@@ -15,3 +16,9 @@ export const IsLoggedIn = ():boolean=>{
 export const SignInUserApi = async (username: string, password: string)=>{
     return ax.post("/user/signin", { email: username, password })
 }
+
+export const SignUpUserApi = async (username: string, password: string)=>{
+    return ax.post("/user/signup",{ email: username, password });
+}
+
+export const AuthenticatedGet = <T>(url:string)=> ax.get<T>(url, { headers: AuthHeader()}).then((res)=>res.data);

@@ -62,6 +62,11 @@ const MenuRoutes = [
     id:11,
     name: "Orders",
     route: "orders"
+  },
+  {
+    id: 12,
+    name: "Approvals",
+    route: "approvals"
   }
 ];
 
@@ -102,7 +107,7 @@ export default () => {
           cursor={cursor}
           data={menuItems}
           maxHeight={400}
-          numberOfRows={9}
+          numberOfRows={12}
           width={"250px"}
           rowHeight={20}
           renderItem={renderItem}

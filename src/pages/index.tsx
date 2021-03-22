@@ -109,7 +109,7 @@ const Index = (props: Props) => {
           <h1>Select a company</h1>
           <Button onClick={LogoutClick} style={{ marginLeft: 10 }} type={"danger"} >Logout</Button>
         </div>
-        <PoppableCreateCompany />
+        <PoppableCreateCompany callback={props.GetCompanies} />
         {normalizedCompanies && (
           <KeyList
             columns={["ID", "Company"]}
@@ -117,7 +117,7 @@ const Index = (props: Props) => {
             data={normalizedCompanies}
             maxHeight={500}
             numberOfRows={10}
-            rowHeight={30}
+            rowHeight={20}
             width={"400px"}
             renderItem={renderItems}
             handleEnter={selectCompany}

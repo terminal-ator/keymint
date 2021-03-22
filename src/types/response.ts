@@ -1,3 +1,4 @@
+
 export interface GeneralResponse<T> {
     code: string;
     message: string;

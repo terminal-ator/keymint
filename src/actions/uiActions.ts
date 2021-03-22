@@ -4,6 +4,7 @@ import { getJournal } from "../api";
 import { AppState } from "../reducers";
 import { Action } from "redux";
 import {Master} from "../types/master";
+import {message} from "antd";
 
 export const TOGGLE_MASTER = `TOGGLE_MASTER`;
 export const UPDATE_MASTER = `UPDATE_MASTER`;
@@ -120,15 +121,19 @@ export const FetchJournal = (
     dispatch({
         type: LOADING_START
     });
-
-    const journal = await getJournal(journalID);
-    console.log(journal);
-    dispatch({
-        type: FETCH_JOURNAL,
-        payload: journal.data
-    })
-    dispatch({
-        type:LOADING_END
-    })
-    dispatch(ToggleJournal(true, true, journalID, onComplete ));
+    try{
+        const journal = await getJournal(journalID);
+        console.log(journal);
+        dispatch({
+            type: FETCH_JOURNAL,
+            payload: journal.data
+        });
+    }catch (e) {
+        message.error("Failed to connect, please retry")
+    }finally {
+        dispatch({
+            type: LOADING_END
+        })
+        dispatch(ToggleJournal(true, true, journalID, onComplete));
+    }
 }
