@@ -5,11 +5,11 @@ import {ConnectedProps, connect, useDispatch} from "react-redux";
 import styled from "styled-components";
 import { FetchMasters } from "../actions/masterActions";
 import {Button, Input, message, Select} from "antd";
-import {GetGroupsAndBeats, PostCreateBeats, postCreateMaster, putUpdateMaster} from "../api";
+import {fetchBeats, GetGroupsAndBeats, PostCreateBeats, postCreateMaster, putUpdateMaster} from "../api";
 import { Master } from "../types/master";
 import dotPropImmutable from "dot-prop-immutable";
 import {FetchJournal, ToggleMasterForm} from "../actions/uiActions";
-import {Beat} from "../actions/beatActions";
+import {Beat, FetchBeat} from "../actions/beatActions";
 import {Group} from "../types/group";
 import {AxiosResponse} from "axios";
 import {fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
@@ -62,11 +62,12 @@ const MasterForm = (props: Props) => {
 
   const [ data, setData ] = useState<fetchResult>();
   const [ drCr, setDrCr ] = useState(-1);
+  const [ loading, setLoading ] = useState(false);
 
   const inputR = useRef<Input>(null);
 
   useEffect(() => {
-    console.log(`Got company id : ${props.companyID}`);
+    // console.log(`Got company id : ${props.companyID}`);
     if (props.companyID) {
       GetGroupsAndBeats(props.companyID).then((res:AxiosResponse<fetchResult>)=>{
         setData(res.data);
@@ -84,12 +85,13 @@ const MasterForm = (props: Props) => {
 
   // if (loading) return <div>Loading.......</div>
   // if (error) return <div>{error.message}</div>
-  console.log(data);
+  // console.log(data);
 
   // get type from state
 
   const master = stateSelector(state => state.ui.master);
   const ledgerID = stateSelector( state => state.posts.postId);
+  const companyID = stateSelector(state => state.sys.SelectedCompany);
   const dispatch = useDispatch();
   let initialValues: Master;
     initialValues = {
@@ -124,10 +126,12 @@ const MasterForm = (props: Props) => {
         }
     }, [master])
 
-   const createrBeat = ( name: string )=>{
+   const createrBeat = async ( name: string )=>{
         PostCreateBeats(name).then((res: AxiosResponse<fetchResult>)=>{
             setData(res.data);
+            dispatch(FetchBeat(companyID));
         })
+
    }
 
   return (
@@ -178,9 +182,10 @@ const MasterForm = (props: Props) => {
         setValues(n)
       }} placeholder={"Opening Balance"} type={"number"} />
       </div>
-      <Button value={"Save"} style={{ display: "block", marginTop: 10}} type={"primary"}  onClick={async (e)=>{
-        try {
-          console.log("Outputting form values",formValues)
+      <Button value={"Save"} disabled={loading} style={{ display: "block", marginTop: 10}} type={"primary"}  onClick={async (e)=>{
+        setLoading(true);
+          try {
+          // console.log("Outputting form values",formValues)
           const n = dotPropImmutable.set(formValues, 'opening_balance', drCr * formValues.opening_balance)
           const resp = await putUpdateMaster(n, props.companyID);
           if(resp.status===200){
@@ -192,14 +197,17 @@ const MasterForm = (props: Props) => {
               return;
             }
             const n = dotPropImmutable.set(formValues, "name", "");
-            setValues(n);
+            const c = dotPropImmutable.set(n, "opening_balance", 0);
+            setValues(c);
             if(inputR.current) inputR.current.focus();
           }else{
             message.error("Saving failed. Please try again.")
           }
         }catch (e) {
           message.error("Failed to save")
-        }
+        }finally {
+              setLoading(false);
+          }
       }}>Save</Button>
     </form>
   );

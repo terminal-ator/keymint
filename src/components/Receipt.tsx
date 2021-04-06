@@ -163,7 +163,7 @@ const Receipt = () => {
             padding: 10, display: "flex",
             justifyContent: "center", overflow: "hidden", maxHeight: "100%", height: "100%", backgroundColor: "inherit"
         }}>
-            <div style={{flex: 1, maxHeight: "100%", overflowY: "scroll"}}>
+            <div style={{flex: 1, maxHeight: "100%", overflow:"hidden"}}>
                 <div
                     style={{
                         width: "100%",
@@ -216,7 +216,7 @@ const Receipt = () => {
                         }
                     </Select>
                 }
-
+                <div style={{ maxHeight:"350px", height:"350px", overflowY:"scroll"}}>
                 {postings.map((chq, idx) => {
                     if (masters) {
                         return (
@@ -234,6 +234,7 @@ const Receipt = () => {
                     }
                 })}
                 <Button style={{ marginTop: 5  }} onClick={()=>{add()}}>Add</Button>
+                </div>
                 <Input.TextArea style={{ display: "block", marginTop: 10 }} value={jrnl.narration}
                                 onChange={(e)=>{
                                     const n = dotPropImmutable.set(jrnl, 'narration',e.target.value)

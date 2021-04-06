@@ -54,7 +54,6 @@ const Index = (props: Props) => {
 
   const dispatch = useDispatch();
   const history = useHistory();
-  const [ companies, loading, error  ] = useCompanies();
   const [cursor, setCursor] = useState(0);
   if (!props.companies) console.log("No companies now");
   if (props.companies)
@@ -66,14 +65,7 @@ const Index = (props: Props) => {
     console.log(props.masters);
   }
 
-  if(loading){
-    return <PageDiv>Loading...</PageDiv>
-  }
-  if(error){
-    return <PageDiv>Error while loading, please refresh</PageDiv>
-  }
-
-  const normalizedCompanies = normalize(companies?.companies)
+  const normalizedCompanies = props.companies
   const selectCompany = async (cursor: number) => {
     if (normalizedCompanies) {
       // const denorm = DeNormalize<Company>(props.companies);

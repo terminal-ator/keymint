@@ -44,6 +44,7 @@ const ApprovalPage  = ()=>{
     type  G = GeneralResponse<Array<Journal>>
     const { data, error, revalidate } = useSWR<G>('/journals/unapproved', AuthenticatedGet)
     const [ approved, setApproved ] = useState<Map>({});
+    const [ all, setAll ] = useState(false);
     const [ buttonActive, setButtonActive] = useState(false);
 
     useEffect(()=>{
@@ -80,6 +81,9 @@ const ApprovalPage  = ()=>{
             message.error("There was an error processing your request.")
         }finally {
             await revalidate()
+            if(all){
+                setAll(false);
+            }
         }
     }
 
@@ -91,6 +95,7 @@ const ApprovalPage  = ()=>{
         }
         console.log({ copymap })
         setApproved(copymap);
+        setAll(e.target.checked);
 
     }
 
@@ -107,7 +112,7 @@ const ApprovalPage  = ()=>{
     return <PageDiv>
         <Nav />
         <div style={{ display: "flex", flexDirection:"row"}}>
-            <div style={{display:"flex", padding: 5}}><Checkbox onChange={selecAll}/> &nbsp; Select all</div>
+            <div style={{display:"flex", padding: 5}}><Checkbox checked={all} onChange={selecAll}/> &nbsp; Select all</div>
             <div><Button type={"primary"} onClick={Approve}>Approve</Button></div>
         </div>
         <div style={{ display: "block", maxHeight:"100%", overflowY:"scroll" }}>

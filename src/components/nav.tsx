@@ -69,7 +69,7 @@ const Nav = (props: PropsFromRedux) => {
         </a>
       </NavItem>
       <NavItem>
-        <a onClick={() => {dispatch(ToggleJournal(true, false, 0, ()=>{}))}}>+Journal</a>
+        <a onClick={() => {dispatch(ToggleJournal(true, false, 0, ()=>{}))}}>+Voucher</a>
       </NavItem>
       <NavItem>
         <a onClick={()=>{dispatch(ToggleProduct(true, null))}}>+Product</a>

@@ -25,7 +25,7 @@ export const PageDiv = styled.div`
   height: 100vh;
   min-height: 100% !important;
   color: black;
-  overflow-y: hidden;
+  overflow-y: scroll;
   h1 {
     color: black;
   }

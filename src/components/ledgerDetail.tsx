@@ -6,7 +6,7 @@ import {
     NullInt,
     NormalizedCache,
     normalize,
-    RenderItemProps
+    RenderItemProps, DeNormalize
 } from "../types/generic";
 import moment from "moment";
 import EditStatement from "./editStatement";
@@ -29,6 +29,9 @@ import {fetchCheques, fetchPosting, fetchPostingWithDate} from "../actions/posti
 import {DetailTd} from "./sttmntTR";
 import TouchList from "./TouchList";
 import {NewCheque} from "../pages/cheque";
+import ImKeyList from "./ImprovedKeyList";
+import {DownloadLedgerVouchers} from "../api/downloads";
+import FileDownload from 'js-file-download';
 
 interface LedgerProps {
     cust: number;
@@ -87,6 +90,12 @@ const LedgerDetail = (props: LedgerProps) => {
 
     const refetch = async () => {
         await dispatch(fetchPosting(props.cust));
+    }
+
+    const downloadVouchers = ()=>{
+        DownloadLedgerVouchers(props.cust, startDate, endDate).then((res)=>{
+            FileDownload(res.data, "ledger.xlsx");
+        })
     }
 
     const InlineLedgerForm = () => {
@@ -291,14 +300,17 @@ const LedgerDetail = (props: LedgerProps) => {
             </Button>
             &nbsp;
             {masterItem(masters?.normalized[props.cust], postingDetail.closing_balance, total)}
-            <div style={{marginLeft: 5, display: "flex", flexDirection: "row", alignItems: "center"}}>
+            <div style={{marginLeft: 5, display: "flex", maxWidth:"100%" ,flexDirection: "row", alignItems: "center"}}>
                 Start date <DatePicker value={moment(startDate)} onChange={(e) => {
                 if (e) setStartDate(e.format("YYYY-MM-DD"))
             }}/>
                 End date <DatePicker value={moment(endDate)} onChange={(e) => {
                 if (e) setEndDate(e.format('YYYY-MM-DD'))
             }}/>
+                <div style={{ marginLeft: "10px"}}>
                 <Button type={"primary"} onClick={getLedgersForDates}>Get</Button>
+                <Button style={{ marginLeft: "10px"}} type={"ghost"} onClick={downloadVouchers}>Download</Button>
+                </div>
             </div>
             <div style={{overflow: "hidden", overflowY: "scroll"}}>
                 <div style={{display: "flex", flexWrap: "wrap"}}>
@@ -318,6 +330,15 @@ const LedgerDetail = (props: LedgerProps) => {
                                 handleEscape={props.handleEsc}
                                 autoFocus={props.hasFocus}
                             />
+                            // <ImKeyList
+                            //     cursor={0}
+                            //     data={DeNormalize(postings)}
+                            //     renderItem={renderItem}
+                            //     columns={["Date", "Narration", "", "Debit", "Credit"]}
+                            //     rowHeight={20}
+                            //     numberOfRows={7}
+                            //     maxHeight={400}
+                            //     scrollMode={false} />
                         )}
 
                         {/*{*/}

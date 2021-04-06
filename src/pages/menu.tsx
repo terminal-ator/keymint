@@ -5,6 +5,7 @@ import { SELTR } from ".";
 import { useHistory } from "react-router";
 import { PageDiv } from "../components/styledComp";
 import Nav from "../components/nav";
+import ImKeyList from "../components/ImprovedKeyList";
 
 interface MenuItem {
   id: number;
@@ -101,19 +102,25 @@ export default () => {
   return (
     <PageDiv>
       <Nav />
-      <div>
-        <KeyList
+      <div style={{ maxWidth: "400px"}}>
+        <ImKeyList
           columns={["Menu"]}
           cursor={cursor}
-          data={menuItems}
+          data={MenuRoutes}
           maxHeight={400}
           numberOfRows={12}
           width={"250px"}
-          rowHeight={20}
+          rowHeight={30}
           renderItem={renderItem}
           handleEnter={handleEnter}
           handleMisc={keyMap}
+          autoFocus={true}
         />
+        {/*<ImKeyList cursor={cursor} data={MenuRoutes}*/}
+        {/*           renderItem={renderItem}*/}
+        {/*           autoFocus={true}*/}
+        {/*           scrollMode={true}*/}
+        {/*           columns={["menu"]} rowHeight={40} numberOfRows={2} maxHeight={400} />*/}
       </div>
     </PageDiv>
   );

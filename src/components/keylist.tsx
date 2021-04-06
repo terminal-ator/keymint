@@ -151,7 +151,7 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
       position: "relative" as "relative",
       top: 0,
       bottom: 0,
-      overflow: "hidden" as "hidden",
+      overflow: "scroll" as "scroll",
       height: props.numberOfRows * props.rowHeight + 400,
       width: props.width,
       maxWidth: props.maxWidth,
@@ -293,26 +293,25 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
       props.handleEnter(id);
     }
   };
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (divRef.current) {
-      //console.log(`Logging scroll events with scrolltop: ${divRef.current.scrollTop}`);
-      const scTop = divRef.current.scrollTop;
-      const updateIndex = Math.round(scTop / props.rowHeight);
-      //console.log(updateIndex)
-      const scroll = prevScrollIndex < updateIndex ? updateIndex : -updateIndex;
-      setCursor(cursor + scroll);
-      setScrollIndex(updateIndex);
-      //setLoweCursorBound(prevLower-1);
-      //setUpperCursorBound(prevUpper + props.numberOfRows -1);
-    }
-    console.log("Handling scroll");
-  };
+  // const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  //   if (divRef.current) {
+  //     //console.log(`Logging scroll events with scrolltop: ${divRef.current.scrollTop}`);
+  //     const scTop = divRef.current.scrollTop;
+  //     const updateIndex = Math.round(scTop / props.rowHeight);
+  //     //console.log(updateIndex)
+  //     const scroll = prevScrollIndex < updateIndex ? updateIndex : -updateIndex;
+  //     setCursor(cursor + scroll);
+  //     setScrollIndex(updateIndex);
+  //     //setLoweCursorBound(prevLower-1);
+  //     //setUpperCursorBound(prevUpper + props.numberOfRows -1);
+  //   }
+  //   console.log("Handling scroll");
+  // };
 
   return (
     <div
       style={styles.wrapper}
       ref={divRef}
-      onScroll={handleScroll}
       onKeyDown={handleKeyDown}
       tabIndex={1}
     >
@@ -335,7 +334,7 @@ function KeyList<T extends HasId>(props: KeyProps<T>) {
             props.headers && props.headers.map((Headed)=> <Headed />)
           }
           {dataArray.map((item, i) => {
-            return checkIfVisible(i) || false ? (
+            return checkIfVisible(i)  ? (
               <KeyBody
                 onMouseMove={() => {
                   handleHover(i);

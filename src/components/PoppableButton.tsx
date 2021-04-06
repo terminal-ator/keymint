@@ -30,7 +30,7 @@ const PoppableCreateCompany:FC<Props> = (props)=>{
             });
             await dispatch(GetCompanies());
             if(props.callback){
-                await props.callback()
+                await props.callback();
             }
             setShow(false);
             

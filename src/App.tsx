@@ -53,7 +53,7 @@ const store = createStore(
 let persistor = persistStore(store);
 
 const client = new ApolloClient({
-  uri: "http://localhost:4000",
+  uri: "/gql",
 });
 
 /* eslint-enable */

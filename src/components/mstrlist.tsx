@@ -19,6 +19,8 @@ import { compareTwoStrings } from 'string-similarity';
 import {Button, Input} from "antd";
 import {LongTd} from "./sttmntTR";
 import {ToggleMaster, ToggleMasterForm} from "../actions/uiActions";
+import ImKeyList from "./ImprovedKeyList";
+import {useWindowSize} from "../Hooks/misc";
 
 interface MasterListProps {
   masters: NormalizedCache<Master>;
@@ -38,6 +40,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
   const [beatFilter, setBeatFilter] = useState(0);
   const dispatch = useDispatch();
   const bts = stateSelector(state => state.beats.beats);
+  const { height } = useWindowSize();
   useEffect(() => {
     setMasters(props.masters);
   }, [props.masters]);
@@ -84,8 +87,9 @@ const MasterList: FC<MProps> = (props: MProps) => {
   function renderItem(arg: RenderItemProps<Master>) {
     // console.log(arg);
     return (
-      <SELTR key={arg.item.id.toString()}>
-        <td colSpan={2} style={{ padding: 5, overflow: "hidden" }}>
+      <div style={{ display: "flex", flexDirection: "row", alignItems:"center" , justifyContent:"space-between"}}
+           key={arg.item.id.toString()}>
+        <div style={{ padding: 5, maxWidth:"300px", width:"300px", overflow: "hidden" , flexBasis:"60%",}}>
           <span>
             {arg.item.chq_flg ? (
               <span style={{ backgroundColor: "#53c97c", width: 5 }}>
@@ -95,16 +99,16 @@ const MasterList: FC<MProps> = (props: MProps) => {
             &nbsp;
             <span>{arg.item.name}</span>
           </span>
-        </td>
-        <td>{bts?.normalized[arg.item.beat_id]?.short_name}</td>
-        <td>
+        </div>
+        <div style={{  flexBasis: "10%"}}>{bts?.normalized[arg.item.beat_id]?.short_name}</div>
+        <div style={{ flexBasis:"30%"}}>
           {Math.abs(arg.item.balance || 0).toString()}&nbsp;
           {arg.item.balance && (arg.item.balance  <= 0) ? "DR" : "CR"}
-          <span style={{ backgroundColor:  (arg?.item?.balance) && (arg.item.balance) > 0 ?"red":"#53c97c", width: 5, float: "right" }}>
-                &nbsp;{" "}
-          </span>
-        </td>
-      </SELTR>
+          {/*<span style={{ backgroundColor:  (arg?.item?.balance) && (arg.item.balance) > 0 ?"red":"#53c97c", width: 5, float: "right" }}>*/}
+          {/*      &nbsp;{" "}*/}
+          {/*</span>*/}
+        </div>
+      </div>
     );
   }
 
@@ -192,22 +196,27 @@ const MasterList: FC<MProps> = (props: MProps) => {
         </span>
         <Button onClick={CreateMaster} > Add Master </Button>
       </div>
-      <KeyList
+      <div style={{ marginTop: 10 }}>
+      <ImKeyList
         key={"master-list"}
         columns={columns}
         cursor={cursor}
-        rowHeight={10}
+        rowHeight={40}
         numberOfRows={12}
-        maxHeight={600}
+        maxHeight={400}
         handleCharacter={handleKey}
-        data={masters}
+        data={DeNormalize(masters)}
         renderItem={renderItem}
         handleMisc={handleMisc}
         handleEnter={selectName}
         width={"100%"}
         filter={filterFunc}
+        autoFocus
         renderColumn={renderColumns}
+        scrollMode
+
       />
+      </div>
     </div>
   );
 };

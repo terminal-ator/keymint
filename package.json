@@ -29,6 +29,7 @@
     "eslint-loader": "^3.0.3",
     "formik": "^2.1.2",
     "graphql": "^14.5.8",
+    "js-file-download": "^0.4.12",
     "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "num-words": "^1.0.1",

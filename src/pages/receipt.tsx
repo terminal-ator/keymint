@@ -134,9 +134,7 @@ const Receipt = (props: PropType) => {
             }}
             defaultValue={currentDate}
           />
-
-
-
+          <div style={{ maxHeight: "500px", height:"500px", overflowY: "scroll"}}>
           {receipt.map(receipt => {
             if (props.masters) {
               return (
@@ -150,6 +148,7 @@ const Receipt = (props: PropType) => {
               );
             }
           })}
+          </div>
 
           <button
             onClick={() => {

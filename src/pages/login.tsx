@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {PageDiv} from "../components/styledComp";
 import {useDispatch} from "react-redux";
 import {stateSelector} from "../reducers";
-import { useHistory } from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import {SignInUser} from "../actions/userActions";
 import {Button, Input} from "antd";
 import {IsLoggedIn} from "../api/auth";
@@ -31,6 +31,7 @@ const LoginPage = ()=>{
         <PageDiv>
             <div style={{ width: 600, position: "relative", top: 200, margin: "0px auto", boxShadow:"0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)", padding: 50}}>
                 <h2>Login</h2>
+                <p>Not a user? Get Started by <Link to={"/signup"}><a>Signing Up!</a></Link></p>
                 <form onSubmit={signIn}>
                     <Input style={{ marginTop: 10 }} placeholder={"Email"} value={usr} type={"email"} onChange={(e)=>{setUsr(e.target.value)}} />
                     <Input style={{ marginTop: 10 }}  placeholder={"Password"} value={pwd} type={"password"} onChange={(e)=>{setPwd(e.target.value)}} />
