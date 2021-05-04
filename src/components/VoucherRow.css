@@ -1,0 +1,12 @@
+.covert-input{
+    border: none;
+    border-radius: 2px;
+    outline: none;
+    padding: 5px;
+}
+
+.covert-input:focus{
+    background-color: #e0e0e0;
+    border: none;
+    outline: none;
+}

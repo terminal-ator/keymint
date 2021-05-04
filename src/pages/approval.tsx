@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { AuthenticatedGet } from '../api/auth';
 import { PageDiv } from '../components/styledComp';
-import { Journal } from '../types/ledger';
+import {Account, Journal} from '../types/ledger';
 import { GeneralResponse } from '../types/response';
 import Nav from '../components/nav';
 import moment from 'moment';
@@ -42,6 +42,7 @@ const ApprovalRow:FC<Props> = (props)=>{
 
 const ApprovalPage  = ()=>{
     type  G = GeneralResponse<Array<Journal>>
+
     const { data, error, revalidate } = useSWR<G>('/journals/unapproved', AuthenticatedGet)
     const [ approved, setApproved ] = useState<Map>({});
     const [ all, setAll ] = useState(false);

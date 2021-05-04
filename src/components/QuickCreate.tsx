@@ -11,7 +11,7 @@ const QuickCreate:FC<QuickCreateProps> = (props)=> {
     const [ show, setShow ] = useState(false);
     const [ name, setName ] = useState("");
     if(!show) return <div style={{ marginLeft: 10}}><Button onClick={()=>{ setShow(true)}}>+</Button></div>;
-    return <div style={{ marginLeft: 10 , display: "flex", flexDirection:"row", alignContent:"center"} }>
+    return <div style={{ marginLeft: 10 , width:"100%",display: "flex", flexDirection:"row", alignContent:"center"} }>
         <TextField label={placeholder} value={name} onChange={e=>{ setName(e.target.value) }} />
         <Button onClick={()=> { setShow(false);  setName(""); onCreate(name);  }}>OK</Button>
     </div>;

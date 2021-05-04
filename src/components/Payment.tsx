@@ -157,7 +157,8 @@ const Payment = () => {
     return (
         <div style={{
             padding: 10, display: "flex",
-            justifyContent: "center", overflow: "hidden", maxHeight: "100%", height: "100%", backgroundColor: "inherit"
+            justifyContent: "center", overflow: "hidden", maxHeight: "100%", height: "100%", backgroundColor: "inherit",
+            maxWidth: "700px"
         }}>
             <div style={{flex: 1, maxHeight: "100%", overflowY: "scroll"}}>
                 <div
@@ -211,7 +212,7 @@ const Payment = () => {
                         }
                     </Select>
                 }
-
+                <div style={{ maxHeight:"300px", height:"300px", overflowY:"scroll"}}>
                 {postings.map((chq, idx) => {
                     if (masters) {
                         return (
@@ -228,6 +229,7 @@ const Payment = () => {
                         );
                     }
                 })}
+                </div>
                 <Button style={{ marginTop: 5  }} onClick={()=>{add()}}>Add</Button>
 
                 <Input.TextArea style={{ display: "block", marginTop: 10 }} value={jrnl.narration}

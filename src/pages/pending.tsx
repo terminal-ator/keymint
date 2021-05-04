@@ -29,7 +29,7 @@ const PendingPage = ()=>{
     console.log({ cheques });
     const cheque = cheques.filter((chq)=> chq.id == c_id);
     console.log({ cheque });
-    setCustID(c_id);
+    setCustID(cheque[0].master_id);
       await dispatch(
         fetchPosting(cheque[0].master_id
         )

@@ -203,7 +203,7 @@ const MasterList: FC<MProps> = (props: MProps) => {
         cursor={cursor}
         rowHeight={40}
         numberOfRows={12}
-        maxHeight={400}
+        maxHeight={500}
         handleCharacter={handleKey}
         data={DeNormalize(masters)}
         renderItem={renderItem}

@@ -7,6 +7,7 @@ import {ToggleMaster, ToggleJournal, ToggleMasterForm, ToggleProduct} from './ac
 import JournalForm from './components/journalForm';
 import ProductForm from "./components/ProductForm";
 import ConsolidatedVoucher from "./components/ConsolidatedVoucher";
+import ProductFormV2 from "./components/ProductFormV2";
 
 
 const Glob = () => {
@@ -21,28 +22,29 @@ const Glob = () => {
         <div>
             <Modal
                 visible={masterToggle}
-                title={'Create User'}
+                title={'Create/Edit master'}
                 footer={null}
                 zIndex={1001}
                 onCancel={() => { dispatch(ToggleMasterForm(false, undefined)) }}
                 destroyOnClose={true}
-                transitionName="none"
-                maskTransitionName="none"
+
+                style={{ minWidth: "100%" ,width:"100%", height:"100%",minHeight: "100vh", top: 0 }}
+                bodyStyle={{ maxHeight: "100%", width:"100%", minHeight:"100vh"}}
             >
                 <Master />
             </Modal>
             <Modal
               visible={journalToggle}
               destroyOnClose
-
+              title={"Add/Edit Voucher"}
               onCancel={() => {
                   const confirm = window.confirm("Do you want to exit without saving?")
                   if(!confirm) return;
                   dispatch(ToggleJournal(false, false, 0, ()=>{}))
               }}
               footer={null}
-              style={{ minWidth: "95%" ,width:"100%",minHeight: "100%", top: 0 }}
-              bodyStyle={{ maxHeight: "100vh", width:"100%"}}
+              style={{ minWidth: "100%" ,width:"100%", height:"100%",minHeight: "100vh", top: 0 }}
+              bodyStyle={{ maxHeight: "100%", width:"100%", minHeight:"100vh"}}
               zIndex={1000}
             >
                 <ConsolidatedVoucher />
@@ -51,12 +53,13 @@ const Glob = () => {
             visible={productToggle}
             destroyOnClose
             onCancel={() => { dispatch(ToggleProduct(false)) }}
-            footer={null} style={{ minWidth: '100%', minHeight:"100%", top: 0 }}
-            bodyStyle={{ minHeight: "100%", minWidth: "100%" }}
-            transitionName="none"
-            maskTransitionName="none"
+            title={"Create/Edit Product"}
+            footer={null}
+            style={{ minWidth: "100%" ,width:"100%", height:"100%",minHeight: "100vh", top: 0 }}
+            bodyStyle={{ maxHeight: "100%", width:"100%", minHeight:"100vh"}}
+
             >
-            <ProductForm/>
+            <ProductFormV2 />
           </Modal>
         </div>
         <div style={{ zIndex: 999999, position:"fixed",top:0, left:0, bottom:0,right:0, display: loading?"flex":"none",

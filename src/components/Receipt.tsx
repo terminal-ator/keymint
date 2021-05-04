@@ -14,6 +14,7 @@ import {useDispatch} from "react-redux";
 import dotPropImmutable from "dot-prop-immutable";
 import LedgerDetail from "./ledgerDetail";
 import VoucherRow from "./VoucherRow";
+import './Receipt.css';
 
 const ID = (): number => {
     return Math.random() * 1000;
@@ -70,8 +71,9 @@ const Receipt = () => {
             if (filterdState) {
                 setPostings(filterdState);
             }
-            const cashMaster = stateJournal.postings.filter((po) => masters.normalized[po.master_id].group_id === 6 || masters.normalized[po.master_id].group_id=== 5);
-            if (cashMaster && cashMaster.length > 0) {
+            const cashMaster = stateJournal.postings.filter((po) =>
+                (masters.normalized[po.master_id].group_id === 6 || masters.normalized[po.master_id].group_id=== 5) && po.amount<0) ;
+            if (cashMaster && cashMaster.length > 0 ) {
                 setCashAccount(cashMaster[0].master_id);
             }
         }
@@ -160,10 +162,12 @@ const Receipt = () => {
 
     return (
         <div style={{
-            padding: 10, display: "flex",
-            justifyContent: "center", overflow: "hidden", maxHeight: "100%", height: "100%", backgroundColor: "inherit"
-        }}>
-            <div style={{flex: 1, maxHeight: "100%", overflow:"hidden"}}>
+            padding: 10,
+            justifyContent: "center", overflow: "hidden", maxHeight: "100%", height: "100%", backgroundColor: "inherit",
+
+        }} className={"voucherGrid"}>
+            <div style={{maxHeight: "100%", overflow:"hidden", padding:20, borderRadius: 10,
+                border:"1px solid #e0e0e0" }}>
                 <div
                     style={{
                         width: "100%",
@@ -262,7 +266,7 @@ const Receipt = () => {
                 </p>
             </div>
             <div style={{ flex: 1, overflow:"hidden", maxHeight:"600px"}} >
-                <LedgerDetail  cust={selectedCust} hasFocus={false}  />
+                <LedgerDetail hideTopBar cust={selectedCust} hasFocus={false}  />
             </div>
         </div>
     );

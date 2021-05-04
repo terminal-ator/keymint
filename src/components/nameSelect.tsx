@@ -2,6 +2,7 @@ import React, {useState, useRef, useEffect, FC} from 'react'
 import {stateSelector} from "../reducers";
 import {Modal} from "antd";
 import MasterList from "./mstrlist";
+import './VoucherRow.css';
 
 interface Props {
   onSelect(cursor:number):void;
@@ -45,11 +46,12 @@ const NameSelect:FC<Props> = (props)=>{
   return(
     <div style={{ display: "inline", width:"100%"}}>
       <input
-        onKeyPress={(e)=>{ setCurKey(e.key); toggleList()}}
+        onKeyPress={(e)=>{ if(e.keyCode!==13){setCurKey(e.key);} toggleList()}}
         value = {selectedMaster}
         placeholder={"Press any key to enter"}
         ref={inputRef}
-        style={{ display: "inline", width:"100%", padding: 2}}
+        style={{ "width": "100%"}}
+        className={"covert-input"}
       />
       <Modal
         title={"Select Master"}

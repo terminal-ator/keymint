@@ -41,3 +41,9 @@ export interface Journal {
   amount?:number;
   approval?: boolean;
 }
+
+export interface Account {
+  id: number;
+  name: string;
+  i_code: string;
+}

@@ -9,6 +9,7 @@ import "./rForm.css";
 import {Cheque, genChq, NewCheque} from "../pages/cheque";
 import NameSelect from "./nameSelect";
 import './chqForm.css';
+import './VoucherRow.css';
 interface ChequeFormProps {
     MasterList: NormalizedCache<Master>;
     Chq: Cheque;
@@ -43,12 +44,15 @@ const VoucherRow = (props: ChequeFormProps) => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignContent: "center",
-                    width:"100%"
+                    width:"100%",
+                    paddingBottom: 5,
+                    "borderBottom": "2px solid #e0e0e0"
                 }}
             >
                 <NameSelect cursor={props.Chq.master_id} onSelect={onSelect} />
                 <input
-                    style={{ width: 300, flex: 1, marginLeft:10, padding:2, borderRadius: 2, border: "1px solid #3e3e3e"}}
+                    style={{ width: 300, flex: 1, marginLeft: 10}}
+                    className={"covert-input"}
                     onBlur={async e => {
                         const val = Math.abs(parseFloat(e.target.value));
                         await handleModify(Chq.id, Chq.master_id, val );

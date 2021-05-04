@@ -35,10 +35,9 @@ import FileDownload from 'js-file-download';
 
 interface LedgerProps {
     cust: number;
-
     handleEsc?(): void;
-
     hasFocus?: boolean;
+    hideTopBar?:boolean;
 }
 
 export interface QuickForm {
@@ -89,7 +88,7 @@ const LedgerDetail = (props: LedgerProps) => {
     };
 
     const refetch = async () => {
-        await dispatch(fetchPosting(props.cust));
+        await dispatch(fetchPostingWithDate(props.cust, startDate, endDate));
     }
 
     const downloadVouchers = ()=>{
@@ -97,81 +96,6 @@ const LedgerDetail = (props: LedgerProps) => {
             FileDownload(res.data, "ledger.xlsx");
         })
     }
-
-    const InlineLedgerForm = () => {
-        const [date, setDate] = useState(moment().format("YYYY-MM-DD"));
-        const [toFrom, setToFrom] = useState("To");
-        const [type, setType] = useState("Bill");
-        const [amount, setAmount] = useState("");
-        const dispatch = useDispatch();
-        const DateInput = (props: any) => <input type="date" {...props} />;
-        return (
-            <div
-                style={{
-                    position: "fixed",
-                    bottom: 0,
-                    zIndex: 99999,
-                    width: "100%",
-                    backgroundColor: "#4d4848",
-                    color: "black",
-                }}
-            >
-                <Formik
-                    initialValues={{date, toFrom, type, amount}}
-                    onSubmit={async values => {
-                        try {
-                            const {date, toFrom, type, amount} = values;
-                            const resp = await putLedger(
-                                {
-                                    date,
-                                    toFrom,
-                                    type,
-                                    amount: parseFloat(amount),
-                                    cust_id: props.cust
-                                },
-                                companyID
-                            );
-                            if (resp.status == 200) {
-                                message.success("Successfully added ledger");
-                            } else {
-                                message.error("Failed! Try Again.");
-                            }
-                        } catch (err) {
-                            console.log(err);
-                        } finally {
-                            // await fetchLedgers(props.cust)
-                            await dispatch(FetchMasters());
-                            await dispatch(fetchPosting(props.cust));
-                        }
-                    }}
-                >
-                    <Form
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            width: 550,
-                            padding: 10
-                        }}
-                    >
-                        <Field name="date" as={DateInput}/>
-                        <Field name="toFrom" as="select">
-                            <option value="From">From</option>
-                            <option value="To">To</option>
-                        </Field>
-                        <Field name="type" as="select">
-                            <option value={"Less"}>Less</option>
-                            <option value={"Cash"}>Cash</option>
-                            <option value={"Bill"}>Bill</option>
-                        </Field>
-                        <Field name="amount"/>
-                        <Button type="primary" htmlType={"submit"}>
-                            Save
-                        </Button>
-                    </Form>
-                </Formik>
-            </div>
-        );
-    };
 
     const renderItem = (arg: RenderItemProps<Posting>) => {
         return (
@@ -200,16 +124,17 @@ const LedgerDetail = (props: LedgerProps) => {
                         }}
                     >
                         <h1> {mstr ? mstr?.name : "Select a name"} </h1>
+
                         <span> {}</span>
-                        <div>
+                        {mstr?<div>
                             <span> Closing Balance: {Math.abs(closing)} {closing <= 0 ? "Dr" : "Cr"} </span>
                             -
                             <span> Pending Cheques: {Math.abs(total)} </span>
                             =
                             <span>{Math.abs(closing + total)} {closing + total <= 0 ? "Dr" : "Cr"}</span>
-                        </div>
+                        </div>:null}
                     </p>
-
+                    {mstr?<div>
                     <Button
                         size="small"
                         onClick={() => {
@@ -227,6 +152,7 @@ const LedgerDetail = (props: LedgerProps) => {
                     >
                         Add
                     </Button>
+                    </div>:null}
                 </div>
             );
         }
@@ -236,7 +162,7 @@ const LedgerDetail = (props: LedgerProps) => {
     const handleEnter = (cursor: number) => {
         if (postings) {
             const post = postings?.normalized[cursor];
-            dispatch(FetchJournal(post.journal_id));
+            dispatch(FetchJournal(post.journal_id, refetch));
         }
     };
 
@@ -282,7 +208,7 @@ const LedgerDetail = (props: LedgerProps) => {
 
     return (
         <div style={{backgroundColor: "white", color: "black", height: "100%"}}>
-            <Button
+            { props.hideTopBar? null : <Button
                 type="danger"
                 size="small"
                 onClick={() => {
@@ -297,9 +223,12 @@ const LedgerDetail = (props: LedgerProps) => {
                 }}
             >
                 Close
-            </Button>
+            </Button> }
             &nbsp;
             {masterItem(masters?.normalized[props.cust], postingDetail.closing_balance, total)}
+            {
+                props.hideTopBar && !masters?.normalized[props.cust]? null :
+            <div>
             <div style={{marginLeft: 5, display: "flex", maxWidth:"100%" ,flexDirection: "row", alignItems: "center"}}>
                 Start date <DatePicker value={moment(startDate)} onChange={(e) => {
                 if (e) setStartDate(e.format("YYYY-MM-DD"))
@@ -420,6 +349,7 @@ const LedgerDetail = (props: LedgerProps) => {
                     </div>
                 </div>
             </div>
+            </div> }
         </div>
     );
 };

@@ -44,15 +44,16 @@ const Nav = (props: PropsFromRedux) => {
         display: "flex",
         flexDirection: "row",
         alignContent: "center",
-        paddingTop: 5,
-        paddingLeft: 10,
-        marginBottom: 5,
+        paddingTop: 7,
+        paddingBottom: 7,
+        paddingLeft: 15,
+        marginBottom:5,
         borderRadius: 2,
           width: "100%",
           justifyContent: "space-between"
       }}
     >
-      <div style={{ display:"flex", alignItems:"center" }}>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 0.5fr", gap:2 ,alignItems:"center" }}>
         <Link style={{ fontWeight: "bold" }} to="/menu">
           <h4 style={{ fontWeight: "bolder", color:"#0074D9" }}>{selectedCompany?.name}</h4>
         </Link>

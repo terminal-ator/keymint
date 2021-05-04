@@ -5,6 +5,7 @@ import { Master } from '../types/master';
 import { NormalizedCache } from '../types/generic';
 import { Select as RelSelect } from 'antd';
 import NameSelect from "./nameSelect";
+import "./VoucherRow.css";
 
 
 interface Props {
@@ -48,6 +49,7 @@ const PostingForm = (props: Props) => {
           <div style={{ minWidth:"40%"}}><NameSelect onSelect={ (e)=>{handleMasterChange(props.pKey,e)} } cursor={posting.master_id} /></div>
             <input
                 disabled={toBy == "1"}
+                className={"covert-input"}
                 value={toBy == "0" ? -posting.amount : ""}
                 type="number"
                 onChange={(e) => {
@@ -61,6 +63,7 @@ const PostingForm = (props: Props) => {
                 disabled={toBy == "0"}
                 value={toBy == "1" ? posting.amount : ""}
                 type="number"
+                className={"covert-input"}
                 onChange={(e) => {
                     const amnt = parseFloat(e.target.value);
                     handleAmount(props.pKey, amnt)

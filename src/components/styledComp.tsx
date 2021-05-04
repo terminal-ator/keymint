@@ -26,6 +26,8 @@ export const PageDiv = styled.div`
   min-height: 100% !important;
   color: black;
   overflow-y: scroll;
+  display:flex;
+  flex-direction: column;
   h1 {
     color: black;
   }

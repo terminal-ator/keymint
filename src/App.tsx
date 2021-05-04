@@ -38,6 +38,7 @@ import LoginPage from "./pages/login";
 import AuthRoute from "./components/AuthRoute";
 import SignUpPage from "./pages/signup";
 import ApprovalPage from "./pages/approval";
+import TrialPage from "./pages/trial";
 
 const persistConfig = {
   key: "root",
@@ -82,6 +83,7 @@ const App: React.FC = () => {
             <AuthRoute path={"/orders"} component={OrderPage} />
             <Route path={"/login"} component={LoginPage} />
             <Route path={"/signup"} component={SignUpPage} />
+            <Route path={"/trial"} component={TrialPage} />
             <Route path={"/approvals"} component={ApprovalPage} />
           <Glob />
           </Router>

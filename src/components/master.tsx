@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {FC, useEffect, useRef, useState} from "react";
 import { AppState, stateSelector } from "../reducers";
 import {ConnectedProps, connect, useDispatch} from "react-redux";
 
@@ -8,12 +8,16 @@ import {Button, Input, message, Select} from "antd";
 import {fetchBeats, GetGroupsAndBeats, PostCreateBeats, postCreateMaster, putUpdateMaster} from "../api";
 import { Master } from "../types/master";
 import dotPropImmutable from "dot-prop-immutable";
-import {FetchJournal, ToggleMasterForm} from "../actions/uiActions";
+import {FetchJournal, LOADING_END, LOADING_START, ToggleMasterForm} from "../actions/uiActions";
 import {Beat, FetchBeat} from "../actions/beatActions";
 import {Group} from "../types/group";
 import {AxiosResponse} from "axios";
 import {fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
 import QuickCreate from "./QuickCreate";
+import {GeneralResponse} from "../types/response";
+import {Account} from "../types/ledger";
+import useSWR from "swr";
+import {GetAccountsForMaster, PostUpdateAccountName} from "../api/masters";
 
 
 interface fetchResult {
@@ -58,11 +62,31 @@ const BeautifyName = (txt: string): string=>{
   return splitStr.join(' '); 
 }
 
-const MasterForm = (props: Props) => {
+interface AccountProps {
+    account: Account;
+    update(id: number, name: string):void;
+}
+const AccountRow: FC<AccountProps> = ({ account, update }) =>{
+    const [ heldName, setHeldName ] = useState();
+    useEffect(()=>{
+        setHeldName(account.name);
+    }, [account])
+    return(
+        <div style={{ display:"flex", flexDirection: "row"}} key={account.id.toString()}>
+            <Input value={heldName} style={{ flex: 7}} onChange={(e)=>{setHeldName(e.target.value)}} />
+            {
+                heldName!==account.name? <Button style={{ flex: 2 }} onClick={()=>{update(account.id, heldName)}}> Update</Button> : null
+            }
+        </div>
+    )
+}
 
-  const [ data, setData ] = useState<fetchResult>();
+const MasterForm = (props: Props) => {
+    type M = GeneralResponse<Array<Account>>
+  const [ fetched, setData ] = useState<fetchResult>();
   const [ drCr, setDrCr ] = useState(-1);
   const [ loading, setLoading ] = useState(false);
+  const [ accounts, setAccounts ] = useState<Array<Account>>([]);
 
   const inputR = useRef<Input>(null);
 
@@ -71,13 +95,16 @@ const MasterForm = (props: Props) => {
     if (props.companyID) {
       GetGroupsAndBeats(props.companyID).then((res:AxiosResponse<fetchResult>)=>{
         setData(res.data);
-        if(!master && data){
-            const n = dotPropImmutable.set(formValues, "beat_id", data.beats[0]?.id);
+        if(!master && fetched){
+            const n = dotPropImmutable.set(formValues, "beat_id", fetched.beats[0]?.id);
             setValues(n);
         }
       })
     }
   }, [props.companyID]);
+
+
+
 
   useEffect(()=>{
     if(inputR.current)inputR.current.focus();
@@ -107,12 +134,12 @@ const MasterForm = (props: Props) => {
 
   const [formValues, setValues] = useState(master || initialValues);
     useEffect(()=>{
-      if(data && !master) {
-        const n = dotPropImmutable.set(formValues, "beat_id", data.beats[0]?.id)
-        const g = dotPropImmutable.set(n,"group_id", data.groups[0]?.id)
+      if(fetched && !master) {
+        const n = dotPropImmutable.set(formValues, "beat_id", fetched.beats[0]?.id)
+        const g = dotPropImmutable.set(n,"group_id", fetched.groups[0]?.id)
         setValues(g);
       }
-    },[data])
+    },[fetched])
 
     useEffect(()=>{
         if(master){
@@ -126,6 +153,17 @@ const MasterForm = (props: Props) => {
         }
     }, [master])
 
+    useEffect(()=>{
+        if(master){
+            GetAccountsForMaster(master.cust_id.Int64).then((res)=>{
+                if(res.data.data) {
+                    console.log({ nae:  [res.data.data]});
+                    setAccounts(res?.data?.data)
+                }
+            })
+        }
+    }, [master])
+
    const createrBeat = async ( name: string )=>{
         PostCreateBeats(name).then((res: AxiosResponse<fetchResult>)=>{
             setData(res.data);
@@ -134,14 +172,33 @@ const MasterForm = (props: Props) => {
 
    }
 
+   const UpdateAccountName = async ( id: number, name: string)=>{
+       try{
+           dispatch({ type: LOADING_START});
+           PostUpdateAccountName(id, name).then(()=>{
+               if(master){
+                   GetAccountsForMaster(master.cust_id.Int64).then((res)=>{
+                       if(res.data.data){
+                           setAccounts(res.data.data)
+                       }
+                   })
+               }
+           })
+       }catch (e) {
+           message.error("Failed to update account name");
+       }finally {
+           dispatch({ type: LOADING_END });
+       }
+   }
+
   return (
-    <form>
+    <form style={{ minWidth: "0.5em", maxWidth:"400px", margin:"0px auto"}}>
       <Select value={formValues.group_id} style={{ width: 200, marginBottom: 10}} onChange={(e)=>{
         const n = dotPropImmutable.set(formValues,'group_id', e);
         setValues(n);
       }} >
-        {data &&
-        data.groups.map(b => (
+        {fetched &&
+        fetched.groups.map(b => (
             <Select.Option key={b.id} value={b.id}>
               {b.name}
             </Select.Option>
@@ -163,8 +220,8 @@ const MasterForm = (props: Props) => {
         const n = dotPropImmutable.set(formValues,'beat_id', e);
         setValues(n);
       }} >
-        {data &&
-          data.beats.map(b => (
+        {fetched &&
+          fetched.beats.map(b => (
             <Select.Option key={b.id} value={b.id}>
               {b.name}
             </Select.Option>
@@ -182,6 +239,10 @@ const MasterForm = (props: Props) => {
         setValues(n)
       }} placeholder={"Opening Balance"} type={"number"} />
       </div>
+        <div style={{ padding: 15, backgroundColor:"rgb(244, 245, 247)", marginTop:5, borderRadius: 10, maxHeight:" 300px", overflowY:"scroll"}} >
+            <p>Accounts Mapped</p>
+            { accounts.map((account)=> <AccountRow account={account} update={UpdateAccountName} /> )}
+        </div>
       <Button value={"Save"} disabled={loading} style={{ display: "block", marginTop: 10}} type={"primary"}  onClick={async (e)=>{
         setLoading(true);
           try {

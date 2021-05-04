@@ -68,6 +68,11 @@ const MenuRoutes = [
     id: 12,
     name: "Approvals",
     route: "approvals"
+  },
+  {
+    id:13,
+    name: "Trials",
+    route: "trial"
   }
 ];
 
@@ -102,15 +107,15 @@ export default () => {
   return (
     <PageDiv>
       <Nav />
-      <div style={{ maxWidth: "400px"}}>
+      <div style={{ maxWidth: "250px", marginLeft: 10}}>
         <ImKeyList
           columns={["Menu"]}
           cursor={cursor}
           data={MenuRoutes}
           maxHeight={400}
           numberOfRows={12}
-          width={"250px"}
-          rowHeight={30}
+          width={"150px"}
+          rowHeight={40}
           renderItem={renderItem}
           handleEnter={handleEnter}
           handleMisc={keyMap}
