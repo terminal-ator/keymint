@@ -20,6 +20,7 @@ export interface Posting {
   ref_no: string;
   stat_id: number;
   amount: number;
+  running?: number;
 }
 
 export interface TPosting {

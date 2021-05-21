@@ -16,6 +16,14 @@ export const TOGGLE_PRODUCT = `TOGGLE_PRODUCT`;
 export const UPDATE_JOURNAL = `UPDATE_JOURNAL`;
 export const LOADING_START = `LOADING_START`;
 export const LOADING_END = `LOADING_END`;
+export const SET_START_DATE = `SET_START_DATE`;
+export const SET_END_DATE = `SET_END_DATE`;
+
+
+interface DatePayload{
+    type: typeof SET_START_DATE | typeof SET_END_DATE
+    payload: string;
+}
 
 interface journalPayload {
     show: boolean
@@ -65,7 +73,8 @@ interface LoadingEnd {
 }
 
 export type UiActions =  ShowProduct|ShowCreateMaster | UpdateMaster
-    | ShowJournal | FetchJouralAction  | ShowMasterForm | LoadingStart | LoadingEnd ;
+    | ShowJournal | FetchJouralAction  |
+    ShowMasterForm | LoadingStart | LoadingEnd | DatePayload ;
 
 export const ToggleMaster = (show: boolean) => {
     return ({
@@ -110,6 +119,20 @@ export const ToggleProduct = (show: boolean, product_id?: string | null): ShowPr
         product_id
     })
 };
+
+export const setStartDateX = (date: string): DatePayload=>{
+    return({
+        type: SET_START_DATE,
+        payload: date
+    })
+}
+
+export const setEndDateX = (date: string): DatePayload=>{
+    return ({
+        type: SET_END_DATE,
+        payload: date
+    })
+}
 
 
 

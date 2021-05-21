@@ -7,7 +7,7 @@ import {Master} from "../types/master";
 import {Button, Checkbox, Input, message, Select} from "antd";
 import ChequeForm from "./chqForm";
 import {postNewJournal} from "../api";
-import {fetchCheques, fetchPosting} from "../actions/postingActions";
+import {fetchCheques, fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
 import {FetchMasters} from "../actions/masterActions";
 import {ToggleJournal} from "../actions/uiActions";
 import {useDispatch} from "react-redux";
@@ -26,6 +26,8 @@ const Receipt = () => {
     const cmpnyId = stateSelector(stt => stt.sys.SelectedCompany);
     const masters = stateSelector(stt => stt.master.masters);
     const selectedID = stateSelector(stt => stt.posts.postId);
+    const startDate = stateSelector( stt => stt.ui.start_date);
+    const endDate = stateSelector( stt => stt.ui.end_date);
     const mstrs = DeNormalize(masters);
     const journalID = stateSelector(state => state.ui.journalID);
     const stateJournal = stateSelector(state => state.ui.journal);
@@ -148,7 +150,7 @@ const Receipt = () => {
                 message.success("Successfully added journal entry");
                 setPostings([generateRandomPosting()]);
                 setJrnl(journal);
-                await dispatch(fetchPosting(selectedID));
+                await dispatch(fetchPostingWithDate(selectedID,startDate, endDate));
                 await dispatch(FetchMasters());
                 // await dispatch(ToggleJournal(false, false, 0, ()=>{}));
             } else {

@@ -1,13 +1,16 @@
 import {
-    UiActions,
-    TOGGLE_MASTER,
-    UPDATE_MASTER,
-    TOGGLE_JOURNAL,
     FETCH_JOURNAL,
-    TOGGLE_PRODUCT
+    SET_END_DATE,
+    SET_START_DATE,
+    TOGGLE_JOURNAL,
+    TOGGLE_MASTER,
+    TOGGLE_PRODUCT,
+    UiActions,
+    UPDATE_MASTER
 } from '../actions/uiActions';
-import { Journal } from '../types/ledger';
-import { Master } from "../types/master";
+import {Journal} from '../types/ledger';
+import {Master} from "../types/master";
+
 interface UIState {
     masterToggle: boolean
     masterToUpdate: boolean
@@ -23,6 +26,9 @@ interface UIState {
     productToggle: boolean
     product_id?: string | null,
     loading: boolean
+    start_date: string
+    end_date: string
+
 }
 
 const initialState: UIState = {
@@ -38,7 +44,9 @@ const initialState: UIState = {
     masterFormToggle: false,
     master: undefined,
     productToggle: false,
-    loading:false
+    loading:false,
+    start_date: "",
+    end_date:""
 
 };
 
@@ -60,6 +68,10 @@ export const UIReducer = (state = initialState, action: UiActions): UIState => {
             return { ...state, loading:true}
         case "LOADING_END":
             return {...state, loading:false}
+        case SET_START_DATE:
+            return { ...state, start_date: action.payload }
+        case SET_END_DATE:
+            return { ... state, end_date: action.payload }
         default:
             return state
     }

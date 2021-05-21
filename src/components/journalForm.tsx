@@ -26,6 +26,8 @@ const JournalForm:FC<JournalProps> = (props) => {
   const mstrs = DeNormalize(masters);
   const ui = stateSelector(state => state.ui.journalID);
   const stateJournal = stateSelector(state => state.ui.journal);
+  const startDate = stateSelector( stt => stt.ui.start_date);
+  const endDate = stateSelector( stt => stt.ui.end_date);
   const dispatch = useDispatch();
 
   let journal: Journal = {
@@ -119,7 +121,7 @@ const JournalForm:FC<JournalProps> = (props) => {
         setJrnl(journal);
       } else if (resp.status == 200 && ui.valid) {
         message.success("Update Success");
-        await dispatch(fetchPostingWithDate(selectedID,"",""));
+        await dispatch(fetchPostingWithDate(selectedID,startDate,endDate));
         if(props.onComplete){
           await props.onComplete();
         }

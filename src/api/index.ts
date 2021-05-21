@@ -96,7 +96,7 @@ export const postCreateMaster = async (value: any, companyID: number) => {
 }
 
 export const fetchBeats = async (companyID: number) => {
-  return ax.get(`/beat/${companyID}`)
+  return ax.get(`/beat/${companyID}`, { headers: AuthHeader()})
 }
 
 export const putUpdateMaster = async (master: { name: string, beat_id: number, group_id: number, cust_id: NullInt, opening_balance: number }, companyID:number) => {
@@ -149,7 +149,7 @@ export const getPendingCheques = async ()=>{
 export const CreateCompany = createCompany;
 
 export const GetGroupsAndBeats = async (companyID: number)=>{
-  return ax.get(`/beats/${companyID}`)
+  return ax.get(`/beats/${companyID}`, { headers: AuthHeader()})
 }
 
 export const PostCreateBeats = async (beatName: string) => {

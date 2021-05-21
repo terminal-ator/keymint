@@ -27,6 +27,8 @@ const Payment = () => {
     const mstrs = DeNormalize(masters);
     const journalID = stateSelector(state => state.ui.journalID);
     const stateJournal = stateSelector(state => state.ui.journal);
+    const startDate = stateSelector( stt => stt.ui.start_date);
+    const endDate = stateSelector( stt => stt.ui.end_date);
     const dispatch = useDispatch();
 
     let journal: Journal = {
@@ -142,7 +144,7 @@ const Payment = () => {
                 message.success("Successfully added journal entry");
                 setPostings([generateRandomPosting()]);
                 setJrnl(journal);
-                await dispatch(fetchPostingWithDate(selectedID,"",""));
+                await dispatch(fetchPostingWithDate(selectedID,startDate,endDate));
                 await dispatch(FetchMasters());
                 // await dispatch(ToggleJournal(false, false, 0, ()=>{}));
             } else {

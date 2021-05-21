@@ -42,7 +42,7 @@ const OrderDetail = () => {
     const history = useHistory()
     const [order, setOrder] = useState<Order>();
     const beats = stateSelector(stt => stt.beats.beats)
-
+    
     const fetchOrder = () => {
         if (id !== undefined) {
             try {
@@ -77,6 +77,7 @@ const OrderDetail = () => {
             borderLeft: "1px solid #f2f2f2",
             background: "white", right: 0, top: 0,
             display: "flex",
+            maxHeight:"100%",
             alignItems: "stretch",
         }}>
             <div style={{display: "grid",gridTemplateRows: "2fr 8fr 1fr", width:"100%" ,position: "relative"}}>
@@ -181,7 +182,7 @@ const OrderView = () => {
                     setEndDate(datestring[1])
                 }}
             />
-            <ul>
+            <ul style={{ maxHeight:"700px", overflowY:"scroll"}}>
                 {
                     orderResult && orderResult.orders?.map((ord) =>
                         <Link to={`/orders/${ord.id}`} key={ord.id}>

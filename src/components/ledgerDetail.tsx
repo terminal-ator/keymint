@@ -20,7 +20,7 @@ import {
     UpdateMaster,
     FetchJournal,
     ToggleJournal,
-    ToggleMasterForm
+    ToggleMasterForm, setStartDateX, setEndDateX
 } from "../actions/uiActions";
 import {Formik, Field, Form} from "formik";
 import {PageDiv, Select} from "./styledComp";
@@ -52,7 +52,10 @@ const {RangePicker} = DatePicker;
 
 const LedgerDetail = (props: LedgerProps) => {
     const [ledgers, setLedgers] = useState<Array<Posting>>();
+    const dispatch = useDispatch();
     const postingDetail = stateSelector(state => state.posts);
+    const startDate = stateSelector( state => state.ui.start_date);
+    const endDate = stateSelector(state => state.ui.end_date);
     const postings = postingDetail.postings
     const [total, setTotal] = useState(0);
     // const [postings, setPosting] = useState(propPostings);
@@ -60,12 +63,22 @@ const LedgerDetail = (props: LedgerProps) => {
     const masters = stateSelector(state => state.master.masters);
     const companyID = stateSelector(state => state.sys.SelectedCompany);
     const chqs = stateSelector(state => state.posts.cheques);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+    const [_startDate, _setStartDate] = useState("");
+    const [_endDate, _setEndDate] = useState("");
 
+    const setStartDate = (date:string)=>{
+        if(date!=startDate){
+            dispatch(setStartDateX(date))
+        }
+    }
+
+    const setEndDate = (date:string)=>{
+        if(date!=endDate)
+        dispatch(setEndDateX(date))
+    }
 
     console.log({chqs});
-    const dispatch = useDispatch();
+
     useEffect(() => {
         let sum = 0;
         if (chqs) {
@@ -106,6 +119,9 @@ const LedgerDetail = (props: LedgerProps) => {
                     align={"right"}>{arg.item.amount < 0 ? ` ${Math.abs(arg.item.amount).toLocaleString()}` : null}</DetailTd>
                 <DetailTd
                     align={"right"}>{arg.item.amount >= 0 ? ` ${arg.item.amount.toLocaleString()}` : null}</DetailTd>
+                <DetailTd>
+                    { arg.item.running && `${ (Math.round(Math.abs(arg.item.running)*100)/100).toFixed(2)} ${arg.item.running<0?"DR":"CR"}` }
+                </DetailTd>
             </tr>
         );
     };
@@ -246,7 +262,7 @@ const LedgerDetail = (props: LedgerProps) => {
                     <div style={{flex: 2}}>
                         {postings && (
                             <KeyList
-                                columns={["Date", "Narration", "", "Debit", "Credit"]}
+                                columns={["Date", "Narration", "", "Debit", "Credit", "Running"]}
                                 headers={[Header]}
                                 footers={[Header, RunningFooter, ClosingFooter]}
                                 cursor={0}

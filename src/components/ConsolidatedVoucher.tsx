@@ -21,6 +21,8 @@ const ConsolidatedVoucher = ()=>{
     const [ voucherState, setVoucherState ] = useState<string>("1");
     const  journalID = stateSelector(stt => stt.ui.journalID);
     const stateJournal = stateSelector( stt => stt.ui.journal);
+    const startDate = stateSelector( stt => stt.ui.start_date);
+    const endDate = stateSelector( stt => stt.ui.end_date);
     const postingID = stateSelector(state=>state.posts.postId)
     const dispatch = useDispatch();
     const [ total, setTotal ] = useState()
@@ -48,7 +50,7 @@ const ConsolidatedVoucher = ()=>{
                 await dispatch(ToggleJournal(false, false, 0, () => {
                 }));
                 await dispatch(FetchMasters());
-                await dispatch(fetchPostingWithDate(postingID,"",""));
+                await dispatch(fetchPostingWithDate(postingID,startDate,endDate));
 
             } catch (e) {
                 message.error("Failed to delete the voucher");
