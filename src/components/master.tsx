@@ -87,6 +87,7 @@ const MasterForm = (props: Props) => {
   const [ drCr, setDrCr ] = useState(-1);
   const [ loading, setLoading ] = useState(false);
   const [ accounts, setAccounts ] = useState<Array<Account>>([]);
+  const [ selectedGroup, setSelectedGroup ] = useState<Group>();
 
   const inputR = useRef<Input>(null);
 
@@ -159,10 +160,23 @@ const MasterForm = (props: Props) => {
                 if(res.data.data) {
                     console.log({ nae:  [res.data.data]});
                     setAccounts(res?.data?.data)
+
                 }
             })
         }
     }, [master])
+
+    useEffect(()=>{
+        console.log("We are here")
+        if(formValues && formValues.group_id && fetched?.groups){
+            for( let i=0; i<fetched.groups.length;i++){
+                console.log("This Works?")
+                if(fetched.groups[i].id == formValues?.group_id){
+                    setSelectedGroup(fetched.groups[i])
+                }
+            }
+        }
+    }, [formValues.group_id])
 
    const createrBeat = async ( name: string )=>{
         PostCreateBeats(name).then((res: AxiosResponse<fetchResult>)=>{
@@ -242,6 +256,11 @@ const MasterForm = (props: Props) => {
         <div style={{ padding: 15, backgroundColor:"rgb(244, 245, 247)", marginTop:5, borderRadius: 10, maxHeight:" 300px", overflowY:"scroll"}} >
             <p>Accounts Mapped</p>
             { accounts.map((account)=> <AccountRow account={account} update={UpdateAccountName} /> )}
+        </div>
+        <div>
+            {
+                selectedGroup && selectedGroup.has_addn && "Has Additional details"
+            }
         </div>
       <Button value={"Save"} disabled={loading} style={{ display: "block", marginTop: 10}} type={"primary"}  onClick={async (e)=>{
         setLoading(true);

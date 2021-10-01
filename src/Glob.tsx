@@ -52,7 +52,7 @@ const Glob = () => {
           <Modal
             visible={productToggle}
             destroyOnClose
-            onCancel={() => { dispatch(ToggleProduct(false)) }}
+            onCancel={() => { dispatch(ToggleProduct(false, null)) }}
             title={"Create/Edit Product"}
             footer={null}
             style={{ minWidth: "100%" ,width:"100%", height:"100%",minHeight: "100vh", top: 0 }}

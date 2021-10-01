@@ -2,7 +2,7 @@ import axios from "axios";
 import {ax} from "./base";
 import {message} from "antd";
 import {AuthHeader} from "./auth";
-import {CreateCompanyType} from "../types/company";
+import {CreateCompanyType, FullCompany} from "../types/company";
 
 export const GetCompanies = async () => {
     try{
@@ -21,4 +21,12 @@ export const SelectCompanyApi = async (companyID: number)=>{
 
 export const createCompany = async (item: CreateCompanyType)=>{
     return ax.post(`/company/`, item, { headers: AuthHeader() } );
+}
+
+export const FetchCompany = async ()=>{
+    return ax.get(`/company/`)
+}
+
+export const UpdateCompany = async ( company: FullCompany) => {
+    return ax.put('/company/', company);
 }

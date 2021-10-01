@@ -55,6 +55,10 @@ export const fetchPostingWithDate = (
     endDate: string
 ): ThunkAction<void,AppState, null, Action<String>> => async (dispatch)=>{
   dispatch({type:LOADING_START});
+  dispatch({
+    type: SET_POSTING_PARENT_ID,
+    payload: id,
+  });
   try{
     const postings: AxiosResponse<PostingResponse> = await getPostingsWithDate(id, startDate, endDate);
     dispatch({

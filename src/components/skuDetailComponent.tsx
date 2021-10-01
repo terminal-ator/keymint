@@ -49,7 +49,7 @@ const SkuDetailComponent = (props:Props)=>{
    if(data){
     return <div>
         <h2 >{data?.getProduct.name}</h2>
-        <Button onClick={()=>{ dispatch(ToggleProduct(true,product_id))}} variant={"contained"}>Edit</Button>
+        <Button onClick={()=>{ dispatch(ToggleProduct(true,null))}} variant={"contained"}>Edit</Button>
         <ul>
           {
             data?.getProduct.skus.map((sku)=><li key={sku.code}>{sku.name}</li>)

@@ -1,13 +1,15 @@
-import React, {FC, useRef, useState} from 'react';
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {Button, Input, Modal, Select} from "antd";
 import useSWR from "swr";
 import {GeneralResponse} from "../types/response";
 import {fetcher} from "../api/base";
 import dotPropImmutable from "dot-prop-immutable";
 import {TextField} from "@material-ui/core";
-import {CreateProduct, CreateProductCompany, CreateSku} from "../api/product";
+import {CreateProduct, CreateProductCompany, CreateSku, FetchSkuByID} from "../api/product";
 import {dark} from "@material-ui/core/styles/createPalette";
 import QuickCreate from "./QuickCreate";
+import {TaxCategory} from "./Invoice";
+import {stateSelector} from "../reducers";
 
 export interface Sku {
     id?: number;
@@ -18,6 +20,21 @@ export interface Sku {
     igst?: number;
     cess?: number;
     product_id?: number;
+    hsn?:string
+    tax_category?: TaxCategory;
+}
+
+export interface SkuFromServer {
+    id: number;
+    name: string;
+    unit?: string;
+    pur_rate?: number;
+    rate: number;
+    igst?: number;
+    cess?: number;
+    hsn?:string;
+    product_id?: number;
+    tax_category?: TaxCategory;
 }
 
 export interface Product {
@@ -34,6 +51,7 @@ export interface ProductCompany {
 }
 
 const ProductFormV2 = () => {
+    const productID = stateSelector(stt => stt.ui.product_id)
     const [productState, setProductState] = useState("");
     type M = GeneralResponse<Array<Product>>
     const nameRef = useRef<HTMLInputElement>(null);
@@ -44,12 +62,29 @@ const ProductFormV2 = () => {
         igst: 0,
         cess: 0,
         pur_rate: 0,
-
     }
+    const globalSKU = stateSelector( stt => stt.ui.sku)
     const [sku, setSku] = useState(defaultSKU);
     const [loading, setLoading] = useState(false);
     const [createProduct, setCreateProduct] = useState(false);
     const {data: products, error, revalidate} = useSWR<M>("/product/product", fetcher)
+
+    useEffect(()=>{
+        if(globalSKU!== null && globalSKU!=undefined){
+            setLoading(true);
+            // fetch global sku from server.
+            FetchSkuByID(globalSKU.id).then((res)=>{
+                setSku(res.data.data);
+                if(res.data.data.product_id){
+                    setProductState(res?.data?.data?.product_id.toString())
+                }
+            }).finally(()=>{
+                setLoading(false);
+            })
+            // setProductState()
+            // setProductState(globalSKU.product_id?.toString() || "x")
+        }
+    },[globalSKU])
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         setLoading(true);
@@ -117,6 +152,8 @@ const ProductFormV2 = () => {
                             value={productState}
                             onChange={(e) => {
                                 setProductState(e)
+                                const n: Sku = dotPropImmutable.set(sku, "product_id", parseInt(e));
+                                setSku(n);
                             }} loading={!products}>
                         <Select.Option value={""} key={"x"}>
                             Product Name
@@ -144,6 +181,17 @@ const ProductFormV2 = () => {
                                variant={"filled"}
                                required
                                label={"Name of the Sku"}/>
+                               <TextField
+                                   value={sku.hsn}
+                                   style={{ gridColumn: "1/3"}}
+                                   label={"HSN code"}
+                                   required
+                                   variant={"filled"}
+                                   onChange={(e)=>{
+                                       const n = dotPropImmutable.set(sku, "hsn",e.target.value);
+                                       setSku(n);
+                                   }}
+                               />
                     <TextField label={"Unit"}
                                required
                                onChange={(e) => {
@@ -190,7 +238,7 @@ const ProductFormV2 = () => {
                     />
                     <Button loading={loading} style={{gridColumn: "1/2"}} type={"primary"}
                             size={"large"}
-                            htmlType={"submit"}>Save</Button></form>
+                            htmlType={"submit"}> { globalSKU?"Update":"Save"}</Button></form>
             </div>
         </div>)
 }

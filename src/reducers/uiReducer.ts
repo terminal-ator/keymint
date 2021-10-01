@@ -10,6 +10,7 @@ import {
 } from '../actions/uiActions';
 import {Journal} from '../types/ledger';
 import {Master} from "../types/master";
+import {SkuFromServer} from "../components/ProductFormV2";
 
 interface UIState {
     masterToggle: boolean
@@ -28,6 +29,7 @@ interface UIState {
     loading: boolean
     start_date: string
     end_date: string
+    sku: SkuFromServer | null
 
 }
 
@@ -46,7 +48,8 @@ const initialState: UIState = {
     productToggle: false,
     loading:false,
     start_date: "",
-    end_date:""
+    end_date:"",
+    sku: null
 
 };
 
@@ -61,7 +64,7 @@ export const UIReducer = (state = initialState, action: UiActions): UIState => {
         case FETCH_JOURNAL:
             return { ...state, journal: action.payload };
         case TOGGLE_PRODUCT:
-            return { ...state, productToggle: action.payload,product_id: action.product_id};
+            return { ...state, productToggle: action.payload,sku: action.sku};
         case "SHOW_MASTER_FORM":
             return { ...state, masterFormToggle: action.show, master: action.master }
         case "LOADING_START":

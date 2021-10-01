@@ -36,6 +36,7 @@ export interface Sku {
   outerUnits?: number;
   purRate?:number;
   mrp?: number;
+  hsn?:string;
   saleRates: number[];
   quantity?: number;
 }
@@ -132,6 +133,10 @@ const SkuForm = (props:skuProps)=>{
         label={"Sku Name"}
         value={sku.name}
         onChange={(e)=>{ handleUpdate(idx, "name",e.target.value)}}
+      />
+      <TextField label={"HSN"}
+                 value={sku.hsn}
+                 onChange={(e)=>{handleUpdate(idx, "hsn", e.target.value)}}
       />
       <TextField label={"MRP"} value={sku.mrp} type={"number"}
                  onChange={(e)=>{handleUpdate(idx,"mrp",parseFloat(e.target.value))}} />

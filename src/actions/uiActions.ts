@@ -5,6 +5,7 @@ import { AppState } from "../reducers";
 import { Action } from "redux";
 import {Master} from "../types/master";
 import {message} from "antd";
+import {SkuFromServer} from "../components/ProductFormV2";
 
 export const TOGGLE_MASTER = `TOGGLE_MASTER`;
 export const UPDATE_MASTER = `UPDATE_MASTER`;
@@ -61,7 +62,7 @@ interface ShowMasterForm {
 interface ShowProduct {
     type: typeof TOGGLE_PRODUCT;
     payload: boolean;
-    product_id?: string | null
+    sku: SkuFromServer | null;
 }
 
 interface LoadingStart{
@@ -112,11 +113,11 @@ export const ToggleJournal = (show: boolean, valid: boolean, id: number, onCompl
     })
 }
 
-export const ToggleProduct = (show: boolean, product_id?: string | null): ShowProduct =>{
+export const ToggleProduct = (show: boolean, sku: SkuFromServer | null): ShowProduct =>{
     return ({
         type: TOGGLE_PRODUCT,
         payload: show,
-        product_id
+        sku
     })
 };
 

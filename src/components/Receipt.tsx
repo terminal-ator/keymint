@@ -122,7 +122,7 @@ const Receipt = () => {
     };
 
     const fetchDetails = async (id: number) => {
-        await dispatch(fetchPosting(id));
+        await dispatch(fetchPostingWithDate(id,startDate, endDate));
         await dispatch(fetchCheques());
         setSelectedCust(id);
     }

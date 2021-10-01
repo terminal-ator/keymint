@@ -6,6 +6,7 @@ import { useHistory } from "react-router";
 import { PageDiv } from "../components/styledComp";
 import Nav from "../components/nav";
 import ImKeyList from "../components/ImprovedKeyList";
+import {Link} from "react-router-dom";
 
 interface MenuItem {
   id: number;
@@ -107,25 +108,25 @@ export default () => {
   return (
     <PageDiv>
       <Nav />
-      <div style={{ maxWidth: "250px", marginLeft: 10}}>
+      <div style={{ marginLeft: 10, display: "flex", flexDirection:"row", justifyContent:"space-between" }}>
         <ImKeyList
           columns={["Menu"]}
           cursor={cursor}
           data={MenuRoutes}
           maxHeight={400}
           numberOfRows={12}
-          width={"150px"}
+          width={"400px"}
           rowHeight={40}
           renderItem={renderItem}
           handleEnter={handleEnter}
           handleMisc={keyMap}
           autoFocus={true}
         />
-        {/*<ImKeyList cursor={cursor} data={MenuRoutes}*/}
-        {/*           renderItem={renderItem}*/}
-        {/*           autoFocus={true}*/}
-        {/*           scrollMode={true}*/}
-        {/*           columns={["menu"]} rowHeight={40} numberOfRows={2} maxHeight={400} />*/}
+        <div>
+          <div style={{ padding:"15px"}} className={"middle-frontpage"}>
+            <Link to={'/edit'}>Set Company Details</Link>
+          </div>
+        </div>
       </div>
     </PageDiv>
   );

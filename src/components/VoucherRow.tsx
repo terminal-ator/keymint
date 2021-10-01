@@ -10,6 +10,7 @@ import {Cheque, genChq, NewCheque} from "../pages/cheque";
 import NameSelect from "./nameSelect";
 import './chqForm.css';
 import './VoucherRow.css';
+import {stateSelector} from "../reducers";
 interface ChequeFormProps {
     MasterList: NormalizedCache<Master>;
     Chq: Cheque;
@@ -23,6 +24,7 @@ const VoucherRow = (props: ChequeFormProps) => {
     const masters = DeNormalize<Master>(props.MasterList);
     const selectRef = useRef<HTMLSelectElement>(null);
     const { Chq, handleModify, add, fetchDetails } = props;
+
 
 
     useEffect(() => {
@@ -61,6 +63,7 @@ const VoucherRow = (props: ChequeFormProps) => {
                     // onPressEnter={()=>{if(props.showAdd)add();}}
                     onKeyDown={(e)=>{if(e.keyCode===13){e.preventDefault();add();}}}
                     type="number"
+
                     placeholder="amount"
                     defaultValue={ Math.abs(Chq.amount)}
                 />

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AppState } from "../reducers";
+import {AppState, stateSelector} from "../reducers";
 import { connect, ConnectedProps, useDispatch } from "react-redux";
 import { PageDiv } from "../components/styledComp";
 import Nav from "../components/nav";
@@ -15,7 +15,8 @@ import {
   RouteComponentProps
 } from "react-router-dom";
 import renderDetail from "../components/renderDetails";
-import {fetchCheques, fetchPosting} from "../actions/postingActions";
+import {fetchCheques, fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
+import {message} from "antd";
 
 const mapState = (state: AppState) => {
   return {
@@ -31,18 +32,24 @@ type PropType = ConnectedProps<typeof connector> & RouteComponentProps;
 const LedgerPage = (props: PropType) => {
   const [cust, setCust] = useState<Master>();
   const [show, setShow] = useState(false);
+  const startDate = stateSelector( stt => stt.ui.start_date);
+  const endDate = stateSelector( stt => stt.ui.end_date);
   const dispatch = useDispatch();
 
   const selectMaster = async (masterID: number) => {
     if (props.masters) {
+      try {
 
-      setCust(props.masters.normalized[masterID]);
-      await dispatch(
-        fetchPosting(props.masters.normalized[masterID].cust_id.Int64)
-      );
-      await dispatch(fetchCheques())
-      setShow(true);
-      props.history.push(`/ledgers/${masterID}`);
+        setCust(props.masters.normalized[masterID]);
+        await dispatch(
+            fetchPostingWithDate(props.masters.normalized[masterID].cust_id.Int64, startDate, endDate)
+        );
+        await dispatch(fetchCheques())
+        setShow(true);
+        props.history.push(`/ledgers/${masterID}`);
+      }catch (e) {
+        message.error("Failed to get cheques"+ e,)
+      }
     }
   };
 

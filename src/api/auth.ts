@@ -22,3 +22,5 @@ export const SignUpUserApi = async (username: string, password: string)=>{
 }
 
 export const AuthenticatedGet = <T>(url:string)=> ax.get<T>(url, { headers: AuthHeader()}).then((res)=>res.data);
+
+export const ApiGet = <T>(url: string) => ax.get<T>(url).then((res)=>res.data);

@@ -13,6 +13,7 @@ import {useDispatch} from "react-redux";
 import {ToggleJournal} from "../actions/uiActions";
 import {FetchMasters} from "../actions/masterActions";
 import {fetchPosting, fetchPostingWithDate} from "../actions/postingActions";
+import Invoice from "./Invoice";
 
 const { TabPane } = Tabs;
 
@@ -78,13 +79,16 @@ const ConsolidatedVoucher = ()=>{
             {/*    VoucherSwitch(voucherState)*/}
             {/*}*/}
             <Tabs activeKey={voucherState} tabPosition={"left"  } onChange={activeKey => { setVoucherState(activeKey)}}>
-                <TabPane tab={"Receipt"} key={"1"}>
+                <TabPane tab={"Sales"} key={"1"}>
+                    <Invoice />
+                </TabPane>
+                <TabPane tab={"Receipt"} key={"2"}>
                     <ReceiptForm />
                 </TabPane>
-                <TabPane tab={"Payment"} key={"2"}>
+                <TabPane tab={"Payment"} key={"3"}>
                     <Payment />
                 </TabPane>
-                <TabPane tab={"Journal"} key={"3"}>
+                <TabPane tab={"Journal"} key={"4"}>
                     <JournalForm />
                 </TabPane>
             </Tabs>

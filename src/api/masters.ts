@@ -5,8 +5,7 @@ import {Account} from "../types/ledger";
 
 
 export const GetMasters = async ()=> {
-    const req = await ax.get(`/master/`, {
-        headers: AuthHeader() } );
+    const req = await ax.get(`/master/`,);
     return req.data;
 };
 

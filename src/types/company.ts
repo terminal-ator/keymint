@@ -4,6 +4,18 @@ export interface Company {
   year: string;
 }
 
+
+export interface FullCompany {
+  id: number;
+  name: string;
+  gstin: string;
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  mobile: string;
+}
+
 export interface UplCompany {
   id: number;
   name: string;
