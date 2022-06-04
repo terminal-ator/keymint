@@ -135,6 +135,10 @@ export const postToggleCheque = async (cid: number)=>{
   return ax.post(`/cheque/toggle/${cid}`)
 }
 
+export const deleteCheque = async (cid: number)=>{
+  return ax.delete(`/cheque/${cid}`);
+}
+
 export const getRecommended = async ( amount: number )=>{
   const token = await localStorage.getItem('company');
   return ax.get(`/cheque/recommended/${amount}`, { headers: { "authorization" : token}});

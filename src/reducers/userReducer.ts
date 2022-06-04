@@ -18,6 +18,7 @@ export const UserReducer = (
         case "LOGIN_USER":
             return {...state, token:action.payload, isLoggedIn: true}
         case "LOGOUT_USER":
+            localStorage.removeItem('persist:root')
             return { ...state, token: "", isLoggedIn: false}
         default:
             return state;

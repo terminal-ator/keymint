@@ -1,6 +1,6 @@
 import React, {FC, useEffect, useState} from "react";
 import {Ledger, Posting} from "../types/ledger";
-import {putLedger, getPostings, postToggleCheque, getPostingsWithDate} from "../api";
+import {putLedger, getPostings, postToggleCheque, getPostingsWithDate, deleteCheque} from "../api";
 import {Master} from "../types/master";
 import {
     NullInt,
@@ -171,6 +171,17 @@ const LedgerDetail = (props: LedgerProps) => {
         await postToggleCheque(id);
         dispatch(fetchCheques());
     };
+
+    const DeleteCheque = async (id: number)=>{
+        try{
+            await deleteCheque(id);
+            dispatch(fetchCheques());
+
+        }catch (e) {
+            message.error("Failed to delete cheque");
+        }
+
+    }
 
     const Header: FC = () => {
         const opening = postingDetail.opening_balance;
@@ -382,6 +393,7 @@ const LedgerDetail = (props: LedgerProps) => {
                                                     <span>{chq.name ? chq.name : null}</span>
                                                     <span>Rs. {chq.amount}</span>
                                                     <span>{chq.type}</span>
+                                                    <span onClick={async()=>{ await DeleteCheque(chq.id)}}>Delete</span>
                                                 </li>
                                             ))}
                                         </ul>

@@ -31,11 +31,13 @@ const ConsolidatedVoucher = ()=>{
     useEffect(()=>{
         if(journalID.id!==0 && stateJournal && journalID.valid){
             if(stateJournal.type=="Receipt"){
-                setVoucherState("1");
-            }else if (stateJournal.type == "Payment"){
                 setVoucherState("2");
-            }else{
+            }else if (stateJournal.type == "Payment"){
                 setVoucherState("3");
+            }else if(stateJournal.type=="Journal"){
+                setVoucherState("4");
+            }else if(stateJournal.type=="Sales"){
+                setVoucherState("1");
             }
         }
     },[journalID])

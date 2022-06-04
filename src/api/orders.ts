@@ -24,3 +24,9 @@ export const toggleOrderLineByID = (packet:{ id: number, toggle: boolean }) => a
         headers: AuthHeader()
     }
 )
+
+export const toggleOrderStatus = (id: number)=> ax.post(
+    `/order/byID/${id}`,{},{
+        headers: AuthHeader()
+    }
+)

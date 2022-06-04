@@ -74,7 +74,8 @@ export const SignUpUser = (username:string, password:string): ThunkAction<void, 
 }
 
 export const LogOut = ()=>{
-    localStorage.setItem("token", "")
+    localStorage.removeItem("token")
+    localStorage.removeItem("persist:root");
     return {
         type: LOGIN_USER
     }

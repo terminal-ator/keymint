@@ -21,6 +21,7 @@ import {LongTd} from "./sttmntTR";
 import {ToggleMaster, ToggleMasterForm} from "../actions/uiActions";
 import ImKeyList from "./ImprovedKeyList";
 import {useWindowSize} from "../Hooks/misc";
+import {FetchMasters} from "../actions/masterActions";
 
 interface MasterListProps {
   masters: NormalizedCache<Master>;
@@ -41,6 +42,11 @@ const MasterList: FC<MProps> = (props: MProps) => {
   const dispatch = useDispatch();
   const bts = stateSelector(state => state.beats.beats);
   const { height } = useWindowSize();
+
+  const refetchMasters = async ()=>{
+    await dispatch(FetchMasters());
+  }
+
   useEffect(() => {
     setMasters(props.masters);
   }, [props.masters]);
@@ -101,12 +107,23 @@ const MasterList: FC<MProps> = (props: MProps) => {
           </span>
         </div>
         <div style={{  flexBasis: "10%"}}>{bts?.normalized[arg.item.beat_id]?.short_name}</div>
-        <div style={{ flexBasis:"30%"}}>
-          {Math.abs(arg.item.balance || 0).toString()}&nbsp;
-          {arg.item.balance && (arg.item.balance  <= 0) ? "DR" : "CR"}
-          {/*<span style={{ backgroundColor:  (arg?.item?.balance) && (arg.item.balance) > 0 ?"red":"#53c97c", width: 5, float: "right" }}>*/}
-          {/*      &nbsp;{" "}*/}
-          {/*</span>*/}
+        {
+          arg.item.balance && arg.item.balance <0 ? <div style={{ flexBasis:"30%"}}>
+            {Math.abs(arg.item.balance || 0).toString()}
+            &nbsp;
+            {arg.item.balance && (arg.item.balance  <= 0) ? "DR" : "CR"}
+          </div> : <div style={{ flexBasis:"30%" }} />
+        }
+        {
+          arg.item.balance && arg.item.balance >=0 ? <div style={{ flexBasis:"30%"}}>
+            {Math.abs(arg.item.balance || 0).toString()}
+            &nbsp;
+            {arg.item.balance && (arg.item.balance  <= 0) ? "DR" : "CR"}
+          </div> : <div style={{ flexBasis:"30%" }} />
+        }
+
+        <div>
+
         </div>
       </div>
     );
@@ -194,8 +211,10 @@ const MasterList: FC<MProps> = (props: MProps) => {
           <label htmlFor="handle">&nbsp; Hide Balanced</label>
 
         </span>
+        <Button onClick={async ()=> { await refetchMasters()}}>Refresh</Button>
         <Button onClick={CreateMaster} > Add Master </Button>
       </div>
+
       <div style={{ marginTop: 10 }}>
       <ImKeyList
         key={"master-list"}

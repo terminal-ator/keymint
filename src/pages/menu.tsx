@@ -7,6 +7,7 @@ import { PageDiv } from "../components/styledComp";
 import Nav from "../components/nav";
 import ImKeyList from "../components/ImprovedKeyList";
 import {Link} from "react-router-dom";
+import Dashboard from "../components/Dashboard";
 
 interface MenuItem {
   id: number;
@@ -108,6 +109,7 @@ export default () => {
   return (
     <PageDiv>
       <Nav />
+      <div style={{ display: 'flex', justifyContent: 'space-around'}}>
       <div style={{ marginLeft: 10, display: "flex", flexDirection:"row", justifyContent:"space-between" }}>
         <ImKeyList
           columns={["Menu"]}
@@ -123,10 +125,14 @@ export default () => {
           autoFocus={true}
         />
         <div>
+          <Dashboard />
+        </div>
+        <div>
           <div style={{ padding:"15px"}} className={"middle-frontpage"}>
             <Link to={'/edit'}>Set Company Details</Link>
           </div>
         </div>
+      </div>
       </div>
     </PageDiv>
   );

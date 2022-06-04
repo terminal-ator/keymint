@@ -4,13 +4,14 @@ import {GeneralResponse} from "../types/response";
 import useSWR from "swr";
 import {fetcher} from "../api/base";
 import moment from "moment";
-import {Button, Checkbox, DatePicker, message} from "antd";
+import {Button, Checkbox, DatePicker, message, Spin} from "antd";
 import {getBankWiseStatements} from "../api";
-import {fetchOrderByID, fetchOrders, toggleOrderLineByID} from "../api/orders";
+import {fetchOrderByID, fetchOrders, toggleOrderLineByID, toggleOrderStatus} from "../api/orders";
 import {AxiosResponse} from "axios";
 import {Link, Route, useParams, useHistory} from 'react-router-dom';
 import {Sku} from "./ProductFormV2";
 import {stateSelector} from "../reducers";
+import {LOADING_END} from "../actions/uiActions";
 
 export interface OrderLine {
     id: number;
@@ -54,6 +55,17 @@ const OrderDetail = () => {
             }
         }
     }
+    const processOrder = async  ()=>{
+        try{
+            if(order){
+                await toggleOrderStatus(order.id);
+                // refetch order after toggling
+                await fetchOrder();
+            }
+        }catch (e) {
+            message.error("Failed to change order status")
+        }
+    }
 
     const toggleOrderID = async (id: number, toggle: boolean)=>{
         try{
@@ -91,6 +103,10 @@ const OrderDetail = () => {
                     {
                        order && beats && beats.normalized[order?.master.beat_id]?.name
                     }
+                    </span>
+                    <span>
+                        <p>This order is { order && order.order_processed? "Processed" : "UnProcessed" }</p>
+                        <Button onClick={processOrder}>{ order && order.order_processed? "Unprocess" : "Process" }</Button>
                     </span>
                 </div>
                 <div style={{ overflowY: "scroll", paddingLeft:10}}>
@@ -151,14 +167,21 @@ const OrderView = () => {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("")
     const [orderResult, setOrderResult] = useState<OrderResult>();
+    const [loading, setLoading] = useState(false);
 
     const getOrder = () => {
-        fetchOrders(startDate, endDate).then((res) => {
+            setLoading(true)
+            fetchOrders(startDate, endDate).then((res) => {
             setStartDate(res.data.data.start_date)
             setEndDate(res.data.data.end_date)
             console.log([res.data])
-            setOrderResult(res.data.data)
-        })
+            setOrderResult(res.data.data)}).catch((err)=>{
+                message.error("Failed to do something", err)
+                setLoading(false);
+
+            }).finally(()=>{
+                setLoading(false);
+            })
     }
 
     useEffect(() => {
@@ -168,6 +191,12 @@ const OrderView = () => {
     useEffect(() => {
         getOrder()
     }, [startDate, endDate])
+
+    if(loading){
+        return (
+            <Spin spinning={true} size={"large"} style={{ marginTop: 10 }} />
+        )
+    }
 
 
     return (
@@ -182,6 +211,9 @@ const OrderView = () => {
                     setEndDate(datestring[1])
                 }}
             />
+            <div>
+                <Button onClick={getOrder}>Refetch</Button>
+            </div>
             <ul style={{ maxHeight:"700px", overflowY:"scroll"}}>
                 {
                     orderResult && orderResult.orders?.map((ord) =>
