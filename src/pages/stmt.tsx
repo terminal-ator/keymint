@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { RouteComponentProps, useParams, useHistory } from "react-router";
 import MasterList from "../components/mstrlist";
 import KeyList from "../components/keylist";
+import './stmt.css';
 import {
   NormalizedCache,
   normalize,
@@ -22,7 +23,7 @@ import withPop from "../components/popup";
 import styled from "styled-components";
 import Loading from "../components/loading";
 import Nav from "../components/nav";
-import {Card, DatePicker} from "antd";
+import {Button, Card, DatePicker} from "antd";
 import moment from "moment";
 import {PageDiv} from "../components/styledComp";
 
@@ -84,6 +85,7 @@ const STMT = (props: Props) => {
   let { id } = useParams();
   let history = useHistory();
   let [showDialog, setDialog] = useState(false);
+  let [ mouseMode, setMouseMode ] = useState(false);
   const [ sd, setSd ] = useState("");
   const [ ed, setEd ] = useState("");
 
@@ -121,7 +123,7 @@ const STMT = (props: Props) => {
     setHide(e.target.checked);
   };
 
-  const handleStmtSelect = (cursor: number) => {
+  const handleStmtSelect = (cursor: number | string) => {
     if (filtered) {
       console.log(cursor);
       const stat = filtered.normalized[cursor];
@@ -187,6 +189,7 @@ const STMT = (props: Props) => {
       <div
         style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
       >
+        <p><input type="checkbox" onChange={(e)=>{setMouseMode(e.target.checked)}}/>Mouse Mode</p>
         <h2 style={{ color: "#0074D9"}} >{ id && props.masters.normalized[parseInt(id)].name}</h2>
         <label style={{ marginLeft: "10px" }}>
           <input
@@ -200,32 +203,46 @@ const STMT = (props: Props) => {
       <RangePicker onChange={(date,dateString)=>{
         setSd(dateString[0]);setEd(dateString[1]);
       }}  />
-      {filtered ? (
-        <KeyList
-          key={"stats"}
-          columns={[
-            "Date",
-            "Narration",
-            "Master",
-            "Reference",
-            "Deposit",
-            "Withdrawl"
-          ]}
-          cursor={cursor}
-          maxHeight={700}
-          rowHeight={10}
-          numberOfRows={10}
-          data={filtered}
-          renderItem={renderItem}
-          handleEscape={goBack}
-          handleEnter={handleStmtSelect}
-          filter={filterOutstanding}
+      <div>
+        {mouseMode?<div>
+          { filtered?.all.map((row)=>
+          {
+            const statement = filtered?.normalized[row]
+            return <div
+                onClick={()=>{handleStmtSelect(row)}}
+                className="sttRow" style={{ display: "grid",gridTemplateColumns:"0.5fr 2fr 2fr 0.5fr 0.5fr", margin: 5}}>
+              <div>{ moment(statement?.date).format("LL")}</div>
+              <div>{statement?.narration}</div>
+              <div>{statement?.master.name || "No master"}</div>
+              <div>{statement?.deposit.Valid? <span style={{ borderRadius:2, padding: 4, backgroundColor:"green", color:"white"}} >{statement.deposit.Float64}</span>:""}</div>
+              <div>{statement?.withdrawl.Valid? <span style={{borderRadius:2, padding: 4, backgroundColor:"red", color:"white"}} >{statement.withdrawl.Float64}</span>:""}</div>
+            </div>})}
+        </div>:filtered ? (
+            <KeyList
+                key={"stats"}
+                columns={[
+                  "Date",
+                  "Narration",
+                  "Master",
+                  "Reference",
+                  "Deposit",
+                  "Withdrawl"
+                ]}
+                cursor={cursor}
+                maxHeight={700}
+                rowHeight={10}
+                numberOfRows={10}
+                data={filtered}
+                renderItem={renderItem}
+                handleEscape={goBack}
+                handleEnter={handleStmtSelect}
+                filter={filterOutstanding}
 
-          maxWidth={"100%"}
-        />
-      ) : (
-        <Loading />
-      )}
+                maxWidth={"100%"}
+            />
+        ) : (
+            <Loading />
+        )}
       {props.masters
         ? withPop(
             <DialogWrapper>
@@ -233,6 +250,7 @@ const STMT = (props: Props) => {
                 <Card
                   style={{  margin: "0px auto", width: "80%", marginTop: 40, backgroundColor:"white" }}
                 >
+                  <Button type={"danger"} onClick={()=>{setDialog(false)}}>Close</Button>
                   <h4>Statement Detail</h4>
                   {selected && filtered && (
                     <div>
@@ -268,6 +286,7 @@ const STMT = (props: Props) => {
                             <span>{moment(re.date).format("MMM Do")}</span>
                             <span>{re.name}</span>
                             <span>Rs.{re.amount}</span>
+                            <span><Button onClick={()=>{ handleMasterChange(re.master_id)}} type={"dashed"} >Select</Button></span>
                           </li>)
                         }</ul>
                       </div>
@@ -293,6 +312,8 @@ const STMT = (props: Props) => {
       {/* {props.masters && (
         <MasterList masters={props.masters} companies={props.companies} />
       )} */}
+      </div>
+
     </PageDiv>
   );
 };

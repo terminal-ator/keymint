@@ -10,7 +10,8 @@ const TrialPage:FC = ()=>{
     const [ date, setDate ] = useState(moment().format("YYYY-MM-DD"))
     const downloadTrialBalance = ()=>{
         DownloadTrialBalance(date).then((res)=>{
-            FileDownload(res.data,"trial.xlsx")
+            let filename = 'trial_'+moment().format()+'.csv';
+            FileDownload(res.data,filename)
         })
     }
     return(
